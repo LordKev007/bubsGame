@@ -1,0 +1,1648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Boardgame Tracker</title>
+  <style>
+    :root {
+      --bg: #f4ead6;
+      --panel: #fff8e9;
+      --panel-strong: #efe0bf;
+      --ink: #2b2118;
+      --muted: #6c5d4a;
+      --blue: #244d78;
+      --blue-dark: #17314e;
+      --red: #a12b24;
+      --gold: #d7a52c;
+      --silver: #aab0b7;
+      --bronze: #b36a2e;
+      --green: #467847;
+      --purple: #6b3d86;
+      --border: #9b845f;
+      --shadow: rgba(48, 31, 12, 0.22);
+      --dead: #7a7a7a;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.55), transparent 30%),
+        linear-gradient(135deg, #e7d3aa, #f8efd9 45%, #d3b982);
+    }
+
+    body {
+      padding: 12px;
+      overflow-x: hidden;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    .app {
+      max-width: 1366px;
+      min-height: calc(100vh - 24px);
+      margin: 0 auto;
+      display: grid;
+      grid-template-rows: auto auto auto 1fr auto;
+      gap: 10px;
+    }
+
+    .top-bar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .title-card,
+    .currency-panel,
+    .controls,
+    .unit-card,
+    .detail-panel,
+    .summon-panel,
+    .inventory-panel {
+      border: 2px solid var(--border);
+      background: rgba(255, 248, 233, 0.92);
+      box-shadow: 0 6px 18px var(--shadow);
+      border-radius: 18px;
+    }
+
+    .title-card {
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .crest {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(145deg, #12365a, #246091);
+      color: #ffd66d;
+      font-size: 34px;
+      border: 3px solid #d4a845;
+      flex: 0 0 auto;
+      box-shadow: inset 0 0 0 3px rgba(255,255,255,0.12);
+    }
+
+    h1 {
+      margin: 0;
+      line-height: 0.95;
+      font-size: clamp(34px, 5vw, 64px);
+      letter-spacing: 1px;
+      color: #24160e;
+      text-shadow: 0 2px 0 rgba(255,255,255,0.55);
+      white-space: nowrap;
+    }
+
+    .subtitle {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .currency-panel {
+      min-width: 330px;
+      padding: 10px 12px;
+    }
+
+    .panel-heading {
+      margin: -2px -4px 8px;
+      padding: 6px 10px;
+      border-radius: 12px;
+      background: linear-gradient(180deg, var(--blue), var(--blue-dark));
+      color: white;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .currency-row {
+      display: grid;
+      grid-template-columns: 70px 44px 36px 44px;
+      align-items: center;
+      gap: 8px;
+      margin: 6px 0;
+    }
+
+    .currency-label {
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .gold { color: #946b04; }
+    .silver { color: #646b73; }
+    .bronze { color: #8c451c; }
+
+    .count {
+      height: 34px;
+      min-width: 36px;
+      display: grid;
+      place-items: center;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      background: #fffdf6;
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .small-btn,
+    .hp-btn,
+    .reset-btn,
+    .filter-btn,
+    .add-btn,
+    .remove-btn,
+    .item-btn {
+      border: 1px solid rgba(43, 33, 24, 0.3);
+      background: linear-gradient(180deg, #fff9eb, #ead7af);
+      color: var(--ink);
+      border-radius: 10px;
+      min-height: 34px;
+      cursor: pointer;
+      box-shadow: 0 2px 0 rgba(0,0,0,0.18);
+      user-select: none;
+      touch-action: manipulation;
+    }
+
+    .small-btn:active,
+    .hp-btn:active,
+    .reset-btn:active,
+    .filter-btn:active,
+    .add-btn:active,
+    .remove-btn:active,
+    .item-btn:active {
+      transform: translateY(1px);
+      box-shadow: 0 1px 0 rgba(0,0,0,0.18);
+    }
+
+    .controls {
+      padding: 8px;
+      display: grid;
+      grid-template-columns: 1fr auto auto auto auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .search {
+      width: 100%;
+      min-height: 40px;
+      padding: 8px 12px;
+      border-radius: 12px;
+      border: 2px solid var(--border);
+      background: #fffdf6;
+      color: var(--ink);
+      font-size: 17px;
+    }
+
+    .filter-btn,
+    .reset-btn {
+      padding: 0 12px;
+      font-weight: 700;
+    }
+
+    .filter-btn.active {
+      background: linear-gradient(180deg, #366b9c, #17314e);
+      color: white;
+      border-color: #102741;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 10px;
+      min-height: 0;
+    }
+
+    .units-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(185px, 1fr));
+      gap: 8px;
+      align-content: start;
+      min-width: 0;
+    }
+
+    .unit-card {
+      position: relative;
+      padding: 9px;
+      min-height: 154px;
+      display: grid;
+      grid-template-rows: auto auto auto 1fr;
+      gap: 5px;
+      cursor: pointer;
+      transition: transform 140ms ease, box-shadow 140ms ease, opacity 140ms ease;
+      overflow: hidden;
+    }
+
+    .unit-card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 22px var(--shadow);
+    }
+
+    .unit-card.selected {
+      outline: 4px solid rgba(36, 77, 120, 0.45);
+      outline-offset: -4px;
+    }
+
+    .unit-card.dead {
+      opacity: 0.58;
+      filter: grayscale(0.7);
+    }
+
+    .unit-card.dead::after {
+      content: "DEFEATED";
+      position: absolute;
+      right: -36px;
+      top: 24px;
+      transform: rotate(35deg);
+      background: rgba(120, 35, 28, 0.9);
+      color: white;
+      font-weight: 900;
+      letter-spacing: 1px;
+      padding: 4px 42px;
+      font-size: 12px;
+    }
+
+    .unit-top {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 7px;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .badge {
+      width: 34px;
+      height: 34px;
+      border-radius: 11px;
+      display: grid;
+      place-items: center;
+      color: white;
+      font-weight: 900;
+      background: linear-gradient(160deg, var(--blue), #122f4e);
+      border: 2px solid #d5b76d;
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,0.13);
+    }
+
+    .unit-name {
+      font-weight: 900;
+      text-transform: uppercase;
+      font-size: 15px;
+      line-height: 1.05;
+      min-width: 0;
+    }
+
+    .copy-label {
+      padding: 3px 7px;
+      border-radius: 999px;
+      background: rgba(36, 77, 120, 0.12);
+      color: var(--blue-dark);
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .stat-pill {
+      border: 1px solid rgba(43, 33, 24, 0.24);
+      background: rgba(255,255,255,0.55);
+      border-radius: 10px;
+      padding: 5px 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 5px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .stat-pill strong {
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .move-value { color: var(--blue); }
+    .hp-value { color: var(--red); }
+
+    .hp-controls {
+      display: grid;
+      grid-template-columns: 36px 1fr 36px;
+      gap: 5px;
+      align-items: center;
+    }
+
+    .hp-btn {
+      min-height: 32px;
+      font-size: 22px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .hp-readout {
+      min-height: 32px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.72);
+      border: 1px solid rgba(43, 33, 24, 0.22);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      color: var(--red);
+      white-space: nowrap;
+      font-size: 14px;
+    }
+
+    .quick-action {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.2;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .detail-panel {
+      padding: 12px;
+      min-height: 0;
+      display: grid;
+      grid-template-rows: auto auto auto 1fr auto;
+      gap: 10px;
+      position: sticky;
+      top: 12px;
+      align-self: start;
+    }
+
+    .detail-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .detail-title h2 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .detail-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .detail-box {
+      background: rgba(255,255,255,0.65);
+      border: 1px solid rgba(43, 33, 24, 0.24);
+      border-radius: 14px;
+      padding: 9px;
+    }
+
+    .detail-box .label {
+      color: var(--muted);
+      text-transform: uppercase;
+      font-weight: 800;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    .detail-box .big {
+      font-size: 34px;
+      line-height: 1;
+      font-weight: 900;
+      margin-top: 3px;
+    }
+
+    .section-title {
+      margin: 0 0 4px;
+      font-size: 13px;
+      text-transform: uppercase;
+      color: var(--blue-dark);
+      letter-spacing: 0.7px;
+      font-weight: 900;
+    }
+
+    .detail-text {
+      line-height: 1.35;
+      font-size: 17px;
+    }
+
+    .ritual-cost {
+      display: inline-block;
+      margin-top: 4px;
+      padding: 6px 9px;
+      border-radius: 999px;
+      background: rgba(107, 61, 134, 0.12);
+      color: var(--purple);
+      font-weight: 900;
+    }
+
+    .detail-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .reset-btn {
+      padding: 8px 10px;
+      font-weight: 800;
+    }
+
+    .danger,
+    .remove-btn {
+      background: linear-gradient(180deg, #ffe4df, #e6b5ac);
+    }
+
+    .summon-panel,
+    .inventory-panel {
+      padding: 10px;
+    }
+
+    .summon-header,
+    .inventory-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .summon-header h2,
+    .inventory-header h2 {
+      margin: 0;
+      font-size: 20px;
+      color: var(--blue-dark);
+    }
+
+    .summon-note,
+    .inventory-note {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .summon-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(145px, 1fr));
+      gap: 6px;
+    }
+
+    .summon-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 5px;
+      align-items: center;
+      border: 1px solid rgba(43, 33, 24, 0.22);
+      background: rgba(255,255,255,0.5);
+      border-radius: 12px;
+      padding: 6px;
+      min-width: 0;
+    }
+
+    .summon-name {
+      font-weight: 900;
+      font-size: 13px;
+      line-height: 1.05;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .summon-count {
+      color: var(--muted);
+      font-weight: 900;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .add-btn {
+      min-height: 30px;
+      padding: 0 8px;
+      font-weight: 900;
+      background: linear-gradient(180deg, #edf8ed, #c8e0c4);
+    }
+
+    .add-btn:disabled,
+    .item-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .inventory-grid {
+      display: grid;
+      grid-template-columns: repeat(9, minmax(112px, 1fr));
+      gap: 6px;
+    }
+
+    .inventory-item {
+      display: grid;
+      grid-template-columns: 32px 1fr 32px;
+      gap: 5px;
+      align-items: center;
+      border: 1px solid rgba(43, 33, 24, 0.22);
+      background: rgba(255,255,255,0.5);
+      border-radius: 12px;
+      padding: 6px;
+      min-width: 0;
+    }
+
+    .inventory-item.has-items {
+      background: rgba(255, 252, 240, 0.95);
+      border-color: rgba(36, 77, 120, 0.45);
+    }
+
+    .item-name {
+      min-width: 0;
+      text-align: center;
+      font-weight: 900;
+      font-size: 13px;
+      line-height: 1.05;
+    }
+
+    .item-count {
+      display: block;
+      margin-top: 3px;
+      color: var(--blue-dark);
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .item-btn {
+      min-height: 30px;
+      padding: 0;
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .empty-state {
+      padding: 18px;
+      text-align: center;
+      color: var(--muted);
+      border: 2px dashed rgba(43, 33, 24, 0.25);
+      border-radius: 18px;
+      background: rgba(255, 248, 233, 0.7);
+    }
+
+    .footer-note {
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+      padding-bottom: 2px;
+    }
+
+    @media (max-width: 1100px) {
+      body {
+        padding: 8px;
+      }
+
+      .app {
+        min-height: calc(100vh - 16px);
+      }
+
+      .top-bar {
+        grid-template-columns: 1fr;
+      }
+
+      .currency-panel {
+        min-width: 0;
+      }
+
+      .currency-row {
+        grid-template-columns: 80px 48px 40px 48px;
+      }
+
+      .controls {
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+      }
+
+      .search {
+        grid-column: 1 / -1;
+      }
+
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .detail-panel {
+        position: static;
+      }
+
+      .units-grid {
+        grid-template-columns: repeat(3, minmax(185px, 1fr));
+      }
+
+      .summon-grid {
+        grid-template-columns: repeat(4, minmax(145px, 1fr));
+      }
+
+      .inventory-grid {
+        grid-template-columns: repeat(5, minmax(112px, 1fr));
+      }
+    }
+
+    @media (max-width: 760px) {
+      h1 {
+        white-space: normal;
+      }
+
+      .title-card {
+        padding: 10px;
+      }
+
+      .crest {
+        width: 46px;
+        height: 46px;
+        font-size: 27px;
+      }
+
+      .controls {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .units-grid {
+        grid-template-columns: repeat(2, minmax(160px, 1fr));
+      }
+
+      .unit-card {
+        min-height: 164px;
+      }
+
+      .detail-stats,
+      .detail-buttons {
+        grid-template-columns: 1fr;
+      }
+
+      .summon-grid {
+        grid-template-columns: repeat(2, minmax(145px, 1fr));
+      }
+
+      .inventory-grid {
+        grid-template-columns: repeat(3, minmax(112px, 1fr));
+      }
+    }
+
+    @media (max-width: 480px) {
+      .units-grid,
+      .summon-grid,
+      .inventory-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .currency-row {
+        grid-template-columns: 1fr 42px 34px 42px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="top-bar" aria-label="Boardgame tracker header">
+      <div class="title-card">
+        <div class="crest" aria-hidden="true">♛</div>
+        <div>
+          <h1>Boardgame Tracker</h1>
+          <div class="subtitle">Add only the pieces currently on the board. Each unit type can have up to three copies.</div>
+        </div>
+      </div>
+
+      <section class="currency-panel" aria-label="Currency tracker">
+        <div class="panel-heading">Currency</div>
+        <div class="currency-row gold">
+          <div class="currency-label">Gold</div>
+          <button class="small-btn" data-currency="gold" data-change="-1" aria-label="Decrease gold">−</button>
+          <div class="count" id="goldCount">0</div>
+          <button class="small-btn" data-currency="gold" data-change="1" aria-label="Increase gold">+</button>
+        </div>
+        <div class="currency-row silver">
+          <div class="currency-label">Silver</div>
+          <button class="small-btn" data-currency="silver" data-change="-1" aria-label="Decrease silver">−</button>
+          <div class="count" id="silverCount">0</div>
+          <button class="small-btn" data-currency="silver" data-change="1" aria-label="Increase silver">+</button>
+        </div>
+        <div class="currency-row bronze">
+          <div class="currency-label">Bronze</div>
+          <button class="small-btn" data-currency="bronze" data-change="-1" aria-label="Decrease bronze">−</button>
+          <div class="count" id="bronzeCount">0</div>
+          <button class="small-btn" data-currency="bronze" data-change="1" aria-label="Increase bronze">+</button>
+        </div>
+      </section>
+    </section>
+
+    <section class="summon-panel" aria-label="Add pieces to board">
+      <div class="summon-header">
+        <h2>Add Pieces to Board</h2>
+        <div class="summon-note">Maximum: 3 copies of each unit type</div>
+      </div>
+      <div class="summon-grid" id="summonGrid"></div>
+    </section>
+
+    <section class="inventory-panel" aria-label="Player inventory tracker">
+      <div class="inventory-header">
+        <h2>Inventory</h2>
+        <div class="inventory-note"><span id="inventoryUsed">0</span> / 11 item slots used</div>
+      </div>
+      <div class="inventory-grid" id="inventoryGrid"></div>
+    </section>
+
+    <section class="controls" aria-label="Filters and reset controls">
+      <input class="search" id="searchInput" type="search" placeholder="Search active pieces, actions, costs…" autocomplete="off" />
+      <button class="filter-btn active" data-filter="all">All Active</button>
+      <button class="filter-btn" data-filter="alive">Alive</button>
+      <button class="filter-btn" data-filter="defeated">Defeated</button>
+      <button class="filter-btn" data-filter="rules">Rules Only</button>
+    </section>
+
+    <section class="main-grid">
+      <section class="units-grid" id="unitsGrid" aria-label="Unit tracker cards"></section>
+
+      <aside class="detail-panel" id="detailPanel" aria-label="Selected unit details">
+        <div class="detail-title">
+          <div class="badge" id="detailBadge">1</div>
+          <h2 id="detailName">King</h2>
+        </div>
+
+        <div class="detail-stats">
+          <div class="detail-box">
+            <div class="label">Movement</div>
+            <div class="big move-value" id="detailMove">1</div>
+          </div>
+          <div class="detail-box">
+            <div class="label">HP</div>
+            <div class="big hp-value" id="detailHp">1 / 1</div>
+          </div>
+        </div>
+
+        <div class="hp-controls">
+          <button class="hp-btn" id="detailHpMinus" aria-label="Decrease selected unit HP">−</button>
+          <div class="hp-readout" id="detailHpReadout">HP 1 / 1</div>
+          <button class="hp-btn" id="detailHpPlus" aria-label="Increase selected unit HP">+</button>
+        </div>
+
+        <div>
+          <h3 class="section-title">Action / Passive</h3>
+          <div class="detail-text" id="detailAction">None</div>
+          <h3 class="section-title" style="margin-top:12px;">Ritual Cost</h3>
+          <div class="ritual-cost" id="detailRitual">N/A</div>
+        </div>
+
+        <div class="detail-buttons">
+          <button class="reset-btn" id="healSelected" data-detail-action="restore-selected">Restore Selected HP</button>
+          <button class="reset-btn danger" id="removeSelected" data-detail-action="remove-selected">Remove Selected</button>
+          <button class="reset-btn" id="healAll" data-detail-action="restore-all">Restore All HP</button>
+          <button class="reset-btn danger" id="resetAll" data-detail-action="reset-game">Reset Game</button>
+        </div>
+      </aside>
+    </section>
+
+    <div class="footer-note">Tip: In Safari on iPad, use Share → Add to Home Screen to make this feel like a little boardgame app.</div>
+  </main>
+
+  <script>
+    // ------------------------------------------------------------
+    // Boardgame Tracker
+    // Single-file, offline-friendly tracker for iPad / browser use.
+    //
+    // Main idea:
+    // - unitTypes are the rulebook entries.
+    // - activePieces are the actual pieces currently on the board.
+    // - Each unit type can have up to MAX_COPIES_PER_UNIT active copies.
+    // - State is stored in localStorage so accidental refreshes do not
+    //   wipe the current game state.
+    // ------------------------------------------------------------
+
+    const MAX_COPIES_PER_UNIT = 3;
+    const MAX_INVENTORY_ITEMS = 11;
+
+    const inventoryItems = [
+      "Gems",
+      "Wood",
+      "Stone",
+      "Iron",
+      "Sulphur",
+      "Rope",
+      "Bread",
+      "Leather",
+      "Glass"
+    ];
+
+    const unitTypes = [
+      {
+        id: 1,
+        name: "King",
+        move: 1,
+        maxHp: 1,
+        action: "None",
+        ritual: "N/A",
+        category: "leader"
+      },
+      {
+        id: 2,
+        name: "Base Builder",
+        move: 2,
+        maxHp: 1,
+        action: "Build Base — Choose a location within 1 tile that has at least 3 adjacent Base Keepers. That tile becomes a Base tile.",
+        ritual: "—",
+        category: "builder"
+      },
+      {
+        id: 3,
+        name: "Wood Worker",
+        move: 2,
+        maxHp: 6,
+        action: "Build Wooden Defence — Place a wooden defence within 1 tile. Cost: 1 Wood.",
+        ritual: "—",
+        category: "builder"
+      },
+      {
+        id: 4,
+        name: "Stone Worker",
+        move: 2,
+        maxHp: 6,
+        action: "Build Stone Defence — Place a stone defence within 1 tile. Cost: 1 Stone.",
+        ritual: "—",
+        category: "builder"
+      },
+      {
+        id: 5,
+        name: "Iron Worker",
+        move: 2,
+        maxHp: 6,
+        action: "Build Iron Defence — Place an iron defence within 1 tile. Cost: 1 Iron.",
+        ritual: "—",
+        category: "builder"
+      },
+      {
+        id: 6,
+        name: "Warrior (Sword)",
+        move: 3,
+        maxHp: 4,
+        action: "Melee Attack — Range 1, Damage 2.",
+        ritual: "4 Bronze",
+        category: "fighter"
+      },
+      {
+        id: 7,
+        name: "Warrior (Spear)",
+        move: 2,
+        maxHp: 4,
+        action: "Melee Attack — Range 3, Damage 1.",
+        ritual: "2 Bronze, 1 Wood, 1 Stone",
+        category: "fighter"
+      },
+      {
+        id: 8,
+        name: "Warrior (Bow)",
+        move: 1,
+        maxHp: 2,
+        action: "Ranged Attack — Range 7, Damage 1. Cost: 1 Arrow.",
+        ritual: "1 Silver",
+        category: "fighter"
+      },
+      {
+        id: 9,
+        name: "Warrior (Lance & Horse)",
+        move: 4,
+        maxHp: 3,
+        action: "Melee Attack — Range 2, Damage 1.",
+        ritual: "1 Wood, 1 Stone, 1 Rope, 1 Leather",
+        category: "fighter"
+      },
+      {
+        id: 10,
+        name: "Mage",
+        move: 3,
+        maxHp: 1,
+        action: "Magic Attack — Range 7, Damage 1, targets 3 different units. Cost: delete 1 ally unit, not Mage.",
+        ritual: "—",
+        category: "magic"
+      },
+      {
+        id: 11,
+        name: "Medic",
+        move: 1,
+        maxHp: 1,
+        action: "Heal — Choose an eligible dead ally and revive them with full HP.",
+        ritual: "—",
+        category: "support"
+      },
+      {
+        id: 12,
+        name: "Priest",
+        move: 1,
+        maxHp: 6,
+        action: "Heal a damaged unit by 1 HP. Cannot heal a Priest.",
+        ritual: "—",
+        category: "support"
+      },
+      {
+        id: 13,
+        name: "Necromacer",
+        move: 1,
+        maxHp: 1,
+        action: "Heal — Choose an eligible dead ally unit and revive it with full HP.",
+        ritual: "—",
+        category: "magic"
+      },
+      {
+        id: 14,
+        name: "Farmer",
+        move: 1,
+        maxHp: 6,
+        action: "Gain 1 Bread item card.",
+        ritual: "—",
+        category: "support"
+      },
+      {
+        id: 15,
+        name: "Artierist",
+        move: 2,
+        maxHp: 2,
+        action: "May load and fire a cannon as one action. Must be adjacent to the cannon.",
+        ritual: "—",
+        category: "fighter"
+      },
+      {
+        id: 16,
+        name: "Spy",
+        move: 4,
+        maxHp: 2,
+        action: "Look — If within 5 tiles of the opponent's King, reveal the opponent's hand until the Spy leaves the 5-tile range or the King escapes the range.",
+        ritual: "—",
+        category: "special"
+      },
+      {
+        id: 17,
+        name: "Ritual Caster",
+        move: 1,
+        maxHp: 1,
+        action: "Summon a unit. Costs still apply.",
+        ritual: "—",
+        category: "magic"
+      },
+      {
+        id: 18,
+        name: "Thief",
+        move: 4,
+        maxHp: 1,
+        action: "If within 5 tiles of the opponent's King, steal 1 Bronze from the opponent's hand. May go over the 5 Bronze limit with this effect.",
+        ritual: "—",
+        category: "special"
+      },
+      {
+        id: 19,
+        name: "Strategist",
+        move: 1,
+        maxHp: 1,
+        action: "Delete this unit on any ally unit's turn to grant that ally a second action for the round.",
+        ritual: "—",
+        category: "special"
+      },
+      {
+        id: 20,
+        name: "Trader",
+        move: 2,
+        maxHp: 3,
+        action: "Passive — Allows the Item Trade feature in the turn order.",
+        ritual: "1 Iron",
+        category: "support"
+      }
+    ];
+
+    const STORAGE_KEY = "boardgameTrackerStateV2";
+
+    const defaultState = {
+      selectedPieceId: null,
+      selectedRuleTypeId: 1,
+      filter: "all",
+      search: "",
+      nextPieceId: 1,
+      currency: {
+        gold: 0,
+        silver: 0,
+        bronze: 0
+      },
+      inventory: Object.fromEntries(inventoryItems.map(itemName => [itemName, 0])),
+      activePieces: []
+    };
+
+    function cloneDefaultState() {
+      // Use JSON cloning instead of structuredClone so this works reliably
+      // on older iPads / Safari versions as well as modern browsers.
+      return JSON.parse(JSON.stringify(defaultState));
+    }
+
+    function createFreshGameState() {
+      const freshState = cloneDefaultState();
+      const king = getUnitType(1);
+
+      freshState.activePieces.push({
+        pieceId: freshState.nextPieceId,
+        typeId: king.id,
+        currentHp: king.maxHp
+      });
+
+      freshState.selectedPieceId = freshState.nextPieceId;
+      freshState.selectedRuleTypeId = king.id;
+      freshState.nextPieceId += 1;
+
+      return freshState;
+    }
+
+    let state = loadState();
+
+    const summonGrid = document.getElementById("summonGrid");
+    const inventoryGrid = document.getElementById("inventoryGrid");
+    const inventoryUsed = document.getElementById("inventoryUsed");
+    const unitsGrid = document.getElementById("unitsGrid");
+    const searchInput = document.getElementById("searchInput");
+    const filterButtons = Array.from(document.querySelectorAll(".filter-btn"));
+
+    const detailBadge = document.getElementById("detailBadge");
+    const detailName = document.getElementById("detailName");
+    const detailMove = document.getElementById("detailMove");
+    const detailHp = document.getElementById("detailHp");
+    const detailHpReadout = document.getElementById("detailHpReadout");
+    const detailAction = document.getElementById("detailAction");
+    const detailRitual = document.getElementById("detailRitual");
+
+    function loadState() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+
+        if (!saved) {
+          return createFreshGameState();
+        }
+
+        return {
+          ...cloneDefaultState(),
+          ...saved,
+          currency: {
+            ...defaultState.currency,
+            ...(saved.currency || {})
+          },
+          inventory: {
+            ...defaultState.inventory,
+            ...(saved.inventory || {})
+          },
+          activePieces: Array.isArray(saved.activePieces) ? saved.activePieces : []
+        };
+      } catch (error) {
+        return createFreshGameState();
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function getUnitType(typeId) {
+      return unitTypes.find(unit => unit.id === Number(typeId)) || unitTypes[0];
+    }
+
+    function getPiece(pieceId) {
+      return state.activePieces.find(piece => piece.pieceId === Number(pieceId)) || null;
+    }
+
+    function getPiecesForType(typeId) {
+      return state.activePieces.filter(piece => piece.typeId === Number(typeId));
+    }
+
+    function getCopyNumber(piece) {
+      const matchingPieces = getPiecesForType(piece.typeId).sort((a, b) => a.pieceId - b.pieceId);
+      return matchingPieces.findIndex(item => item.pieceId === piece.pieceId) + 1;
+    }
+
+    function addPiece(typeId) {
+      const unitType = getUnitType(typeId);
+      const existingCount = getPiecesForType(typeId).length;
+
+      if (existingCount >= MAX_COPIES_PER_UNIT) {
+        return;
+      }
+
+      const newPiece = {
+        pieceId: state.nextPieceId,
+        typeId: unitType.id,
+        currentHp: unitType.maxHp
+      };
+
+      state.nextPieceId += 1;
+      state.activePieces.push(newPiece);
+      state.selectedPieceId = newPiece.pieceId;
+      state.selectedRuleTypeId = unitType.id;
+      state.filter = state.filter === "rules" ? "all" : state.filter;
+      saveState();
+      render();
+    }
+
+    function removePiece(pieceId) {
+      const piece = getPiece(pieceId);
+
+      if (!piece) {
+        return;
+      }
+
+      state.activePieces = state.activePieces.filter(item => item.pieceId !== piece.pieceId);
+
+      if (state.selectedPieceId === piece.pieceId) {
+        state.selectedPieceId = state.activePieces.length > 0 ? state.activePieces[0].pieceId : null;
+        state.selectedRuleTypeId = piece.typeId;
+      }
+
+      saveState();
+      render();
+    }
+
+    function setHp(pieceId, newHp) {
+      const piece = getPiece(pieceId);
+
+      if (!piece) {
+        return;
+      }
+
+      const unitType = getUnitType(piece.typeId);
+      piece.currentHp = clamp(newHp, 0, unitType.maxHp);
+      saveState();
+      render();
+    }
+
+    function restorePiece(pieceId) {
+      const piece = getPiece(pieceId);
+
+      if (!piece) {
+        return;
+      }
+
+      const unitType = getUnitType(piece.typeId);
+      piece.currentHp = unitType.maxHp;
+      saveState();
+      render();
+    }
+
+    function changeCurrency(currencyName, amount) {
+      const current = state.currency[currencyName] || 0;
+      state.currency[currencyName] = clamp(current + amount, 0, 99);
+      saveState();
+      renderCurrency();
+    }
+
+    function getInventoryTotal() {
+      return inventoryItems.reduce((total, itemName) => total + (state.inventory[itemName] || 0), 0);
+    }
+
+    function changeInventory(itemName, amount) {
+      const current = state.inventory[itemName] || 0;
+      const currentTotal = getInventoryTotal();
+
+      if (amount > 0 && currentTotal >= MAX_INVENTORY_ITEMS) {
+        return;
+      }
+
+      state.inventory[itemName] = clamp(current + amount, 0, MAX_INVENTORY_ITEMS);
+      saveState();
+      renderInventory();
+    }
+
+    function getBadgeColour(category) {
+      switch (category) {
+        case "leader": return "linear-gradient(160deg, #d6a42d, #77510a)";
+        case "builder": return "linear-gradient(160deg, #467847, #214d28)";
+        case "fighter": return "linear-gradient(160deg, #a12b24, #5b1510)";
+        case "magic": return "linear-gradient(160deg, #6b3d86, #35194d)";
+        case "support": return "linear-gradient(160deg, #3f7a56, #1f4c35)";
+        case "special": return "linear-gradient(160deg, #244d78, #132c47)";
+        default: return "linear-gradient(160deg, #244d78, #122f4e)";
+      }
+    }
+
+    function getVisiblePieces() {
+      const query = state.search.trim().toLowerCase();
+
+      if (state.filter === "rules") {
+        return [];
+      }
+
+      return state.activePieces.filter(piece => {
+        const unitType = getUnitType(piece.typeId);
+        const copyNumber = getCopyNumber(piece);
+        const displayName = `${unitType.name} #${copyNumber}`;
+
+        const matchesFilter =
+          state.filter === "all" ||
+          (state.filter === "alive" && piece.currentHp > 0) ||
+          (state.filter === "defeated" && piece.currentHp <= 0);
+
+        const haystack = `${displayName} ${unitType.name} ${unitType.action} ${unitType.ritual} ${unitType.move} ${unitType.maxHp}`.toLowerCase();
+        const matchesSearch = query === "" || haystack.includes(query);
+
+        return matchesFilter && matchesSearch;
+      });
+    }
+
+    function getVisibleRuleTypes() {
+      const query = state.search.trim().toLowerCase();
+
+      return unitTypes.filter(unitType => {
+        const haystack = `${unitType.name} ${unitType.action} ${unitType.ritual} ${unitType.move} ${unitType.maxHp}`.toLowerCase();
+        return query === "" || haystack.includes(query);
+      });
+    }
+
+    function renderCurrency() {
+      document.getElementById("goldCount").textContent = state.currency.gold;
+      document.getElementById("silverCount").textContent = state.currency.silver;
+      document.getElementById("bronzeCount").textContent = state.currency.bronze;
+    }
+
+    function renderInventory() {
+      const totalItems = getInventoryTotal();
+      const inventoryIsFull = totalItems >= MAX_INVENTORY_ITEMS;
+      inventoryUsed.textContent = totalItems;
+      inventoryGrid.innerHTML = "";
+
+      const fragment = document.createDocumentFragment();
+
+      inventoryItems.forEach(itemName => {
+        const itemCount = state.inventory[itemName] || 0;
+        const row = document.createElement("div");
+        row.className = `inventory-item${itemCount > 0 ? " has-items" : ""}`;
+        row.innerHTML = `
+          <button class="item-btn" data-inventory-item="${itemName}" data-inventory-change="-1" ${itemCount <= 0 ? "disabled" : ""} aria-label="Remove ${itemName}">−</button>
+          <div class="item-name">${itemName}<span class="item-count">${itemCount}</span></div>
+          <button class="item-btn" data-inventory-item="${itemName}" data-inventory-change="1" ${inventoryIsFull ? "disabled" : ""} aria-label="Add ${itemName}">+</button>
+        `;
+        fragment.appendChild(row);
+      });
+
+      inventoryGrid.appendChild(fragment);
+    }
+
+    function renderSummonPanel() {
+      summonGrid.innerHTML = "";
+      const fragment = document.createDocumentFragment();
+
+      unitTypes.forEach(unitType => {
+        const activeCount = getPiecesForType(unitType.id).length;
+        const row = document.createElement("div");
+        row.className = "summon-row";
+        row.innerHTML = `
+          <div class="summon-name" title="${unitType.name}">${unitType.name}</div>
+          <div class="summon-count">${activeCount}/${MAX_COPIES_PER_UNIT}</div>
+          <button class="add-btn" data-add-type-id="${unitType.id}" ${activeCount >= MAX_COPIES_PER_UNIT ? "disabled" : ""}>Add</button>
+        `;
+        fragment.appendChild(row);
+      });
+
+      summonGrid.appendChild(fragment);
+    }
+
+    function renderUnits() {
+      unitsGrid.innerHTML = "";
+
+      if (state.filter === "rules") {
+        renderRuleCards();
+        return;
+      }
+
+      const visiblePieces = getVisiblePieces();
+
+      if (visiblePieces.length === 0) {
+        unitsGrid.innerHTML = `<div class="empty-state">No active pieces match the current search/filter. Add pieces from the panel above.</div>`;
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+
+      visiblePieces.forEach(piece => {
+        const unitType = getUnitType(piece.typeId);
+        const copyNumber = getCopyNumber(piece);
+        const isDead = piece.currentHp <= 0;
+        const isSelected = piece.pieceId === state.selectedPieceId;
+
+        const card = document.createElement("article");
+        card.className = `unit-card${isDead ? " dead" : ""}${isSelected ? " selected" : ""}`;
+        card.dataset.pieceId = piece.pieceId;
+        card.setAttribute("role", "button");
+        card.setAttribute("tabindex", "0");
+        card.setAttribute("aria-label", `${unitType.name} copy ${copyNumber}, movement ${unitType.move}, HP ${piece.currentHp} of ${unitType.maxHp}`);
+
+        card.innerHTML = `
+          <div class="unit-top">
+            <div class="badge" style="background:${getBadgeColour(unitType.category)}">${unitType.id}</div>
+            <div class="unit-name">${unitType.name}</div>
+            <div class="copy-label">#${copyNumber}</div>
+          </div>
+          <div class="stats">
+            <div class="stat-pill"><span>Move</span><strong class="move-value">${unitType.move}</strong></div>
+            <div class="stat-pill"><span>HP</span><strong class="hp-value">${piece.currentHp}/${unitType.maxHp}</strong></div>
+          </div>
+          <div class="hp-controls">
+            <button class="hp-btn" data-hp-change="-1" data-piece-id="${piece.pieceId}" aria-label="Decrease ${unitType.name} copy ${copyNumber} HP">−</button>
+            <div class="hp-readout">HP ${piece.currentHp} / ${unitType.maxHp}</div>
+            <button class="hp-btn" data-hp-change="1" data-piece-id="${piece.pieceId}" aria-label="Increase ${unitType.name} copy ${copyNumber} HP">+</button>
+          </div>
+          <div class="quick-action">${unitType.action}</div>
+        `;
+
+        card.addEventListener("click", event => {
+          if (event.target.closest("button")) {
+            return;
+          }
+          state.selectedPieceId = piece.pieceId;
+          state.selectedRuleTypeId = unitType.id;
+          saveState();
+          render();
+        });
+
+        card.addEventListener("keydown", event => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            state.selectedPieceId = piece.pieceId;
+            state.selectedRuleTypeId = unitType.id;
+            saveState();
+            render();
+          }
+        });
+
+        fragment.appendChild(card);
+      });
+
+      unitsGrid.appendChild(fragment);
+    }
+
+    function renderRuleCards() {
+      const visibleRuleTypes = getVisibleRuleTypes();
+
+      if (visibleRuleTypes.length === 0) {
+        unitsGrid.innerHTML = `<div class="empty-state">No rules match the current search.</div>`;
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+
+      visibleRuleTypes.forEach(unitType => {
+        const activeCount = getPiecesForType(unitType.id).length;
+        const card = document.createElement("article");
+        card.className = `unit-card${unitType.id === state.selectedRuleTypeId ? " selected" : ""}`;
+        card.dataset.typeId = unitType.id;
+        card.setAttribute("role", "button");
+        card.setAttribute("tabindex", "0");
+        card.setAttribute("aria-label", `${unitType.name} rules, movement ${unitType.move}, max HP ${unitType.maxHp}`);
+
+        card.innerHTML = `
+          <div class="unit-top">
+            <div class="badge" style="background:${getBadgeColour(unitType.category)}">${unitType.id}</div>
+            <div class="unit-name">${unitType.name}</div>
+            <div class="copy-label">${activeCount}/${MAX_COPIES_PER_UNIT}</div>
+          </div>
+          <div class="stats">
+            <div class="stat-pill"><span>Move</span><strong class="move-value">${unitType.move}</strong></div>
+            <div class="stat-pill"><span>Max HP</span><strong class="hp-value">${unitType.maxHp}</strong></div>
+          </div>
+          <button class="add-btn" data-add-type-id="${unitType.id}" ${activeCount >= MAX_COPIES_PER_UNIT ? "disabled" : ""}>Add to Board</button>
+          <div class="quick-action">${unitType.action}</div>
+        `;
+
+        card.addEventListener("click", event => {
+          if (event.target.closest("button")) {
+            return;
+          }
+          state.selectedRuleTypeId = unitType.id;
+          state.selectedPieceId = null;
+          saveState();
+          render();
+        });
+
+        fragment.appendChild(card);
+      });
+
+      unitsGrid.appendChild(fragment);
+    }
+
+    function renderDetails() {
+      const selectedPiece = getPiece(state.selectedPieceId);
+
+      if (selectedPiece) {
+        const unitType = getUnitType(selectedPiece.typeId);
+        const copyNumber = getCopyNumber(selectedPiece);
+        detailBadge.textContent = unitType.id;
+        detailBadge.style.background = getBadgeColour(unitType.category);
+        detailName.textContent = `${unitType.name} #${copyNumber}`;
+        detailMove.textContent = unitType.move;
+        detailHp.textContent = `${selectedPiece.currentHp} / ${unitType.maxHp}`;
+        detailHpReadout.textContent = `HP ${selectedPiece.currentHp} / ${unitType.maxHp}`;
+        detailAction.textContent = unitType.action;
+        detailRitual.textContent = unitType.ritual;
+        setDetailButtonsEnabled(true);
+        return;
+      }
+
+      const unitType = getUnitType(state.selectedRuleTypeId);
+      detailBadge.textContent = unitType.id;
+      detailBadge.style.background = getBadgeColour(unitType.category);
+      detailName.textContent = unitType.name;
+      detailMove.textContent = unitType.move;
+      detailHp.textContent = `0 active / ${unitType.maxHp} max`;
+      detailHpReadout.textContent = "No active copy selected";
+      detailAction.textContent = unitType.action;
+      detailRitual.textContent = unitType.ritual;
+      setDetailButtonsEnabled(false);
+    }
+
+    function setDetailButtonsEnabled(enabled) {
+      document.getElementById("detailHpMinus").disabled = !enabled;
+      document.getElementById("detailHpPlus").disabled = !enabled;
+      document.getElementById("healSelected").disabled = !enabled;
+      document.getElementById("removeSelected").disabled = !enabled;
+    }
+
+    function renderFilters() {
+      filterButtons.forEach(button => {
+        button.classList.toggle("active", button.dataset.filter === state.filter);
+      });
+      searchInput.value = state.search;
+    }
+
+    function render() {
+      renderCurrency();
+      renderInventory();
+      renderSummonPanel();
+      renderFilters();
+      renderUnits();
+      renderDetails();
+    }
+
+    // Currency controls.
+    document.querySelectorAll("[data-currency]").forEach(button => {
+      button.addEventListener("click", () => {
+        changeCurrency(button.dataset.currency, Number(button.dataset.change));
+      });
+    });
+
+    // Inventory item controls.
+    inventoryGrid.addEventListener("click", event => {
+      const itemButton = event.target.closest("[data-inventory-item]");
+      if (!itemButton) {
+        return;
+      }
+
+      changeInventory(itemButton.dataset.inventoryItem, Number(itemButton.dataset.inventoryChange));
+    });
+
+    // Add-piece buttons appear in both the summon panel and the Rules Only cards.
+    document.addEventListener("click", event => {
+      const addButton = event.target.closest("[data-add-type-id]");
+      if (!addButton) {
+        return;
+      }
+
+      addPiece(Number(addButton.dataset.addTypeId));
+    });
+
+    // HP controls on active unit cards.
+    unitsGrid.addEventListener("click", event => {
+      const hpButton = event.target.closest("[data-hp-change]");
+      if (!hpButton) {
+        return;
+      }
+
+      const pieceId = Number(hpButton.dataset.pieceId);
+      const piece = getPiece(pieceId);
+      const amount = Number(hpButton.dataset.hpChange);
+
+      if (!piece) {
+        return;
+      }
+
+      setHp(pieceId, piece.currentHp + amount);
+    });
+
+    // Detail-panel HP controls.
+    document.getElementById("detailHpMinus").addEventListener("click", () => {
+      const selectedPiece = getPiece(state.selectedPieceId);
+      if (selectedPiece) {
+        setHp(selectedPiece.pieceId, selectedPiece.currentHp - 1);
+      }
+    });
+
+    document.getElementById("detailHpPlus").addEventListener("click", () => {
+      const selectedPiece = getPiece(state.selectedPieceId);
+      if (selectedPiece) {
+        setHp(selectedPiece.pieceId, selectedPiece.currentHp + 1);
+      }
+    });
+
+    // Detail-panel action buttons.
+    // Use one delegated handler because the preview/browser environment can be
+    // fussy with direct button listeners after live updates. This keeps the
+    // side-panel buttons working consistently.
+    document.addEventListener("click", event => {
+      const detailButton = event.target.closest("[data-detail-action]");
+
+      if (!detailButton) {
+        return;
+      }
+
+      const action = detailButton.dataset.detailAction;
+
+      if (action === "restore-selected") {
+        const selectedPiece = getPiece(state.selectedPieceId);
+
+        if (!selectedPiece) {
+          return;
+        }
+
+        restorePiece(selectedPiece.pieceId);
+        return;
+      }
+
+      if (action === "remove-selected") {
+        const selectedPiece = getPiece(state.selectedPieceId);
+
+        if (!selectedPiece) {
+          return;
+        }
+
+        const unitType = getUnitType(selectedPiece.typeId);
+        const copyNumber = getCopyNumber(selectedPiece);
+        const confirmed = window.confirm(`Remove ${unitType.name} #${copyNumber} from the board?`);
+
+        if (!confirmed) {
+          return;
+        }
+
+        removePiece(selectedPiece.pieceId);
+        return;
+      }
+
+      if (action === "restore-all") {
+        state.activePieces.forEach(piece => {
+          const unitType = getUnitType(piece.typeId);
+          piece.currentHp = unitType.maxHp;
+        });
+
+        saveState();
+        render();
+        return;
+      }
+
+      if (action === "reset-game") {
+        const confirmed = window.confirm("Reset the whole game? This removes all active pieces, resets currency, and clears inventory.");
+
+        if (!confirmed) {
+          return;
+        }
+
+        localStorage.removeItem(STORAGE_KEY);
+        state = createFreshGameState();
+        saveState();
+        render();
+      }
+    });
+
+    // Search and filter controls.
+    searchInput.addEventListener("input", () => {
+      state.search = searchInput.value;
+      saveState();
+      renderUnits();
+    });
+
+    filterButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        state.filter = button.dataset.filter;
+        if (state.filter === "rules") {
+          state.selectedPieceId = null;
+        }
+        saveState();
+        render();
+      });
+    });
+
+    // Initial render. A fresh game starts with one King already on the board.
+    render();
+  </script>
+</body>
+</html>
