@@ -6,22 +6,16 @@
   <title>Boardgame Tracker</title>
   <style>
     :root {
-      --bg: #f4ead6;
       --panel: #fff8e9;
-      --panel-strong: #efe0bf;
       --ink: #2b2118;
       --muted: #6c5d4a;
       --blue: #244d78;
       --blue-dark: #17314e;
       --red: #a12b24;
-      --gold: #d7a52c;
-      --silver: #aab0b7;
-      --bronze: #b36a2e;
       --green: #467847;
       --purple: #6b3d86;
       --border: #9b845f;
       --shadow: rgba(48, 31, 12, 0.22);
-      --dead: #7a7a7a;
     }
 
     * {
@@ -55,7 +49,7 @@
       min-height: calc(100vh - 24px);
       margin: 0 auto;
       display: grid;
-      grid-template-rows: auto auto auto 1fr auto;
+      grid-template-rows: auto auto auto auto 1fr auto;
       gap: 10px;
     }
 
@@ -72,7 +66,8 @@
     .unit-card,
     .detail-panel,
     .summon-panel,
-    .inventory-panel {
+    .tracker-panel,
+    .shop-panel {
       border: 2px solid var(--border);
       background: rgba(255, 248, 233, 0.92);
       box-shadow: 0 6px 18px var(--shadow);
@@ -168,8 +163,10 @@
     .reset-btn,
     .filter-btn,
     .add-btn,
-    .remove-btn,
-    .item-btn {
+    .counter-btn,
+    .shop-btn,
+    .buy-btn,
+    .craft-btn {
       border: 1px solid rgba(43, 33, 24, 0.3);
       background: linear-gradient(180deg, #fff9eb, #ead7af);
       color: var(--ink);
@@ -186,10 +183,45 @@
     .reset-btn:active,
     .filter-btn:active,
     .add-btn:active,
-    .remove-btn:active,
-    .item-btn:active {
+    .counter-btn:active,
+    .shop-btn:active,
+    .buy-btn:active,
+    .craft-btn:active {
       transform: translateY(1px);
       box-shadow: 0 1px 0 rgba(0,0,0,0.18);
+    }
+
+    .small-btn:disabled,
+    .hp-btn:disabled,
+    .reset-btn:disabled,
+    .add-btn:disabled,
+    .counter-btn:disabled,
+    .buy-btn:disabled,
+    .craft-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .shop-btn {
+      width: 100%;
+      margin-top: 8px;
+      min-height: 38px;
+      font-weight: 900;
+      background: linear-gradient(180deg, #edf8ed, #c8e0c4);
+    }
+
+    .shop-btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      filter: grayscale(0.45);
+    }
+
+    .shop-lock-note {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+      font-weight: 800;
     }
 
     .controls {
@@ -221,6 +253,260 @@
       background: linear-gradient(180deg, #366b9c, #17314e);
       color: white;
       border-color: #102741;
+    }
+
+    .summon-panel,
+    .tracker-panel,
+    .shop-panel {
+      padding: 10px;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .panel-header h2 {
+      margin: 0;
+      font-size: 20px;
+      color: var(--blue-dark);
+    }
+
+    .panel-note {
+      color: var(--muted);
+      font-size: 13px;
+      text-align: right;
+    }
+
+    .summon-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(145px, 1fr));
+      gap: 6px;
+    }
+
+    .summon-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 5px;
+      align-items: center;
+      border: 1px solid rgba(43, 33, 24, 0.22);
+      background: rgba(255,255,255,0.5);
+      border-radius: 12px;
+      padding: 6px;
+      min-width: 0;
+    }
+
+    .summon-name {
+      font-weight: 900;
+      font-size: 13px;
+      line-height: 1.05;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .summon-count {
+      color: var(--muted);
+      font-weight: 900;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .add-btn {
+      min-height: 30px;
+      padding: 0 8px;
+      font-weight: 900;
+      background: linear-gradient(180deg, #edf8ed, #c8e0c4);
+    }
+
+    .resource-grid,
+    .item-grid {
+      display: grid;
+      gap: 6px;
+    }
+
+    .resource-grid {
+      grid-template-columns: repeat(9, minmax(112px, 1fr));
+    }
+
+    .item-grid {
+      grid-template-columns: repeat(5, minmax(132px, 1fr));
+    }
+
+    .counter-card {
+      display: grid;
+      grid-template-columns: 32px 1fr 32px;
+      gap: 5px;
+      align-items: center;
+      border: 1px solid rgba(43, 33, 24, 0.22);
+      background: rgba(255,255,255,0.5);
+      border-radius: 12px;
+      padding: 6px;
+      min-width: 0;
+    }
+
+    .counter-card.has-count {
+      background: rgba(255, 252, 240, 0.95);
+      border-color: rgba(36, 77, 120, 0.45);
+    }
+
+    .counter-name {
+      min-width: 0;
+      text-align: center;
+      font-weight: 900;
+      font-size: 13px;
+      line-height: 1.05;
+    }
+
+    .counter-value {
+      display: block;
+      margin-top: 3px;
+      color: var(--blue-dark);
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .counter-btn {
+      min-height: 30px;
+      padding: 0;
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .shop-panel.hidden {
+      display: none;
+    }
+
+    .crafting-panel.hidden {
+      display: none;
+    }
+
+    .shop-content,
+    .crafting-content {
+      display: grid;
+      gap: 12px;
+    }
+
+    .conversion-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(220px, 1fr));
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .conversion-card {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+      border: 1px solid rgba(43, 33, 24, 0.22);
+      background: rgba(255,255,255,0.54);
+      border-radius: 12px;
+      padding: 8px;
+    }
+
+    .conversion-card.disabled {
+      opacity: 0.55;
+      filter: grayscale(0.35);
+    }
+
+    .conversion-title {
+      font-weight: 900;
+      color: var(--blue-dark);
+    }
+
+    .conversion-note {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .shop-groups {
+      display: grid;
+      gap: 12px;
+    }
+
+    .shop-group {
+      display: grid;
+      gap: 8px;
+    }
+
+    .shop-group-title {
+      margin: 0;
+      padding: 6px 10px;
+      border-radius: 12px;
+      background: rgba(36, 77, 120, 0.12);
+      color: var(--blue-dark);
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      border: 1px solid rgba(36, 77, 120, 0.2);
+    }
+
+    .shop-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(190px, 1fr));
+      gap: 8px;
+    }
+
+    .shop-card,
+    .craft-card {
+      display: grid;
+      grid-template-rows: auto auto auto;
+      gap: 6px;
+      border: 1px solid rgba(43, 33, 24, 0.22);
+      background: rgba(255,255,255,0.54);
+      border-radius: 12px;
+      padding: 8px;
+      min-width: 0;
+    }
+
+    .shop-card.disabled,
+    .craft-card.disabled {
+      opacity: 0.55;
+      filter: grayscale(0.35);
+    }
+
+    .shop-title,
+    .craft-title {
+      font-weight: 900;
+      line-height: 1.1;
+      color: var(--blue-dark);
+    }
+
+    .shop-cost,
+    .craft-cost {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .buy-row,
+    .craft-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .buy-quantity,
+    .craft-status {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .buy-btn,
+    .craft-btn {
+      min-height: 32px;
+      padding: 0 10px;
+      font-weight: 900;
+      background: linear-gradient(180deg, #edf8ed, #c8e0c4);
     }
 
     .main-grid {
@@ -263,6 +549,33 @@
     .unit-card.dead {
       opacity: 0.58;
       filter: grayscale(0.7);
+    }
+
+    .unit-card.shielded {
+      outline: 4px solid rgba(36, 77, 120, 0.55);
+      outline-offset: -4px;
+      background:
+        linear-gradient(135deg, rgba(36, 77, 120, 0.12), rgba(255,255,255,0.08)),
+        rgba(255, 248, 233, 0.92);
+    }
+
+    .unit-card.selected.shielded {
+      outline: 4px solid rgba(36, 77, 120, 0.85);
+    }
+
+    .shield-ribbon {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      z-index: 2;
+      padding: 4px 7px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #e9f4ff, #b7d4ee);
+      border: 1px solid rgba(36, 77, 120, 0.45);
+      color: var(--blue-dark);
+      font-size: 12px;
+      font-weight: 900;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.16);
     }
 
     .unit-card.dead::after {
@@ -457,6 +770,17 @@
       font-weight: 900;
     }
 
+    .shield-status {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(36, 77, 120, 0.12);
+      color: var(--blue-dark);
+      border: 1px solid rgba(36, 77, 120, 0.25);
+      font-weight: 900;
+    }
+
     .detail-buttons {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -468,129 +792,8 @@
       font-weight: 800;
     }
 
-    .danger,
-    .remove-btn {
+    .danger {
       background: linear-gradient(180deg, #ffe4df, #e6b5ac);
-    }
-
-    .summon-panel,
-    .inventory-panel {
-      padding: 10px;
-    }
-
-    .summon-header,
-    .inventory-header {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-
-    .summon-header h2,
-    .inventory-header h2 {
-      margin: 0;
-      font-size: 20px;
-      color: var(--blue-dark);
-    }
-
-    .summon-note,
-    .inventory-note {
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .summon-grid {
-      display: grid;
-      grid-template-columns: repeat(5, minmax(145px, 1fr));
-      gap: 6px;
-    }
-
-    .summon-row {
-      display: grid;
-      grid-template-columns: 1fr auto auto;
-      gap: 5px;
-      align-items: center;
-      border: 1px solid rgba(43, 33, 24, 0.22);
-      background: rgba(255,255,255,0.5);
-      border-radius: 12px;
-      padding: 6px;
-      min-width: 0;
-    }
-
-    .summon-name {
-      font-weight: 900;
-      font-size: 13px;
-      line-height: 1.05;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .summon-count {
-      color: var(--muted);
-      font-weight: 900;
-      font-size: 13px;
-      white-space: nowrap;
-    }
-
-    .add-btn {
-      min-height: 30px;
-      padding: 0 8px;
-      font-weight: 900;
-      background: linear-gradient(180deg, #edf8ed, #c8e0c4);
-    }
-
-    .add-btn:disabled,
-    .item-btn:disabled {
-      opacity: 0.45;
-      cursor: not-allowed;
-    }
-
-    .inventory-grid {
-      display: grid;
-      grid-template-columns: repeat(9, minmax(112px, 1fr));
-      gap: 6px;
-    }
-
-    .inventory-item {
-      display: grid;
-      grid-template-columns: 32px 1fr 32px;
-      gap: 5px;
-      align-items: center;
-      border: 1px solid rgba(43, 33, 24, 0.22);
-      background: rgba(255,255,255,0.5);
-      border-radius: 12px;
-      padding: 6px;
-      min-width: 0;
-    }
-
-    .inventory-item.has-items {
-      background: rgba(255, 252, 240, 0.95);
-      border-color: rgba(36, 77, 120, 0.45);
-    }
-
-    .item-name {
-      min-width: 0;
-      text-align: center;
-      font-weight: 900;
-      font-size: 13px;
-      line-height: 1.05;
-    }
-
-    .item-count {
-      display: block;
-      margin-top: 3px;
-      color: var(--blue-dark);
-      font-size: 18px;
-      line-height: 1;
-    }
-
-    .item-btn {
-      min-height: 30px;
-      padding: 0;
-      font-size: 20px;
-      font-weight: 900;
     }
 
     .empty-state {
@@ -609,107 +812,49 @@
       padding-bottom: 2px;
     }
 
+    @media (max-width: 1200px) {
+      .resource-grid { grid-template-columns: repeat(5, minmax(112px, 1fr)); }
+      .shop-grid { grid-template-columns: repeat(3, minmax(190px, 1fr)); }
+    }
+
     @media (max-width: 1100px) {
-      body {
-        padding: 8px;
-      }
-
-      .app {
-        min-height: calc(100vh - 16px);
-      }
-
-      .top-bar {
-        grid-template-columns: 1fr;
-      }
-
-      .currency-panel {
-        min-width: 0;
-      }
-
-      .currency-row {
-        grid-template-columns: 80px 48px 40px 48px;
-      }
-
-      .controls {
-        grid-template-columns: 1fr 1fr 1fr 1fr;
-      }
-
-      .search {
-        grid-column: 1 / -1;
-      }
-
-      .main-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .detail-panel {
-        position: static;
-      }
-
-      .units-grid {
-        grid-template-columns: repeat(3, minmax(185px, 1fr));
-      }
-
-      .summon-grid {
-        grid-template-columns: repeat(4, minmax(145px, 1fr));
-      }
-
-      .inventory-grid {
-        grid-template-columns: repeat(5, minmax(112px, 1fr));
-      }
+      body { padding: 8px; }
+      .app { min-height: calc(100vh - 16px); }
+      .top-bar { grid-template-columns: 1fr; }
+      .currency-panel { min-width: 0; }
+      .currency-row { grid-template-columns: 80px 48px 40px 48px; }
+      .controls { grid-template-columns: 1fr 1fr 1fr 1fr; }
+      .search { grid-column: 1 / -1; }
+      .main-grid { grid-template-columns: 1fr; }
+      .detail-panel { position: static; }
+      .units-grid { grid-template-columns: repeat(3, minmax(185px, 1fr)); }
+      .summon-grid { grid-template-columns: repeat(4, minmax(145px, 1fr)); }
+      .item-grid { grid-template-columns: repeat(5, minmax(112px, 1fr)); }
     }
 
     @media (max-width: 760px) {
-      h1 {
-        white-space: normal;
-      }
-
-      .title-card {
-        padding: 10px;
-      }
-
-      .crest {
-        width: 46px;
-        height: 46px;
-        font-size: 27px;
-      }
-
-      .controls {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      .units-grid {
-        grid-template-columns: repeat(2, minmax(160px, 1fr));
-      }
-
-      .unit-card {
-        min-height: 164px;
-      }
-
+      h1 { white-space: normal; }
+      .title-card { padding: 10px; }
+      .crest { width: 46px; height: 46px; font-size: 27px; }
+      .controls { grid-template-columns: 1fr 1fr; }
+      .units-grid { grid-template-columns: repeat(2, minmax(160px, 1fr)); }
+      .unit-card { min-height: 164px; }
       .detail-stats,
-      .detail-buttons {
-        grid-template-columns: 1fr;
-      }
-
-      .summon-grid {
-        grid-template-columns: repeat(2, minmax(145px, 1fr));
-      }
-
-      .inventory-grid {
-        grid-template-columns: repeat(3, minmax(112px, 1fr));
-      }
+      .detail-buttons { grid-template-columns: 1fr; }
+      .summon-grid { grid-template-columns: repeat(2, minmax(145px, 1fr)); }
+      .resource-grid,
+      .item-grid { grid-template-columns: repeat(3, minmax(112px, 1fr)); }
+      .shop-grid { grid-template-columns: repeat(2, minmax(160px, 1fr)); }
+      .conversion-grid { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 480px) {
       .units-grid,
       .summon-grid,
-      .inventory-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .currency-row {
-        grid-template-columns: 1fr 42px 34px 42px;
-      }
+      .resource-grid,
+      .item-grid,
+      .shop-grid { grid-template-columns: 1fr; }
+      .currency-row { grid-template-columns: 1fr 42px 34px 42px; }
     }
   </style>
 </head>
@@ -720,7 +865,7 @@
         <div class="crest" aria-hidden="true">♛</div>
         <div>
           <h1>Boardgame Tracker</h1>
-          <div class="subtitle">Add only the pieces currently on the board. Each unit type can have up to three copies.</div>
+          <div class="subtitle">Add only the pieces currently on the board. The King is limited to one copy; other unit types can have up to three copies.</div>
         </div>
       </div>
 
@@ -744,23 +889,50 @@
           <div class="count" id="bronzeCount">0</div>
           <button class="small-btn" data-currency="bronze" data-change="1" aria-label="Increase bronze">+</button>
         </div>
+        <button class="shop-btn" id="toggleShop" type="button">Open Shop</button>
+        <button class="shop-btn" id="toggleCrafting" type="button">Open Crafting</button>
+        <div class="shop-lock-note" id="shopLockNote">Requires an active Trader.</div>
       </section>
     </section>
 
+    <section class="shop-panel hidden" id="shopPanel" aria-label="Shop">
+      <div class="panel-header">
+        <h2>Shop</h2>
+        <div class="panel-note">Purchases use currency and fill available Resources or Items slots.</div>
+      </div>
+      <div class="shop-content" id="shopGrid"></div>
+    </section>
+
+    <section class="shop-panel hidden crafting-panel" id="craftingPanel" aria-label="Crafting">
+      <div class="panel-header">
+        <h2>Crafting</h2>
+        <div class="panel-note">Crafting requires full resources and enough item space. No partial crafting.</div>
+      </div>
+      <div class="crafting-content" id="craftingGrid"></div>
+    </section>
+
     <section class="summon-panel" aria-label="Add pieces to board">
-      <div class="summon-header">
+      <div class="panel-header">
         <h2>Add Pieces to Board</h2>
-        <div class="summon-note">Maximum: 3 copies of each unit type</div>
+        <div class="panel-note">King max: 1 · Other units max: 3</div>
       </div>
       <div class="summon-grid" id="summonGrid"></div>
     </section>
 
-    <section class="inventory-panel" aria-label="Player inventory tracker">
-      <div class="inventory-header">
-        <h2>Inventory</h2>
-        <div class="inventory-note"><span id="inventoryUsed">0</span> / 11 item slots used</div>
+    <section class="tracker-panel" aria-label="Resource tracker">
+      <div class="panel-header">
+        <h2>Resources</h2>
+        <div class="panel-note"><span id="resourceUsed">0</span> / 11 resource slots used</div>
       </div>
-      <div class="inventory-grid" id="inventoryGrid"></div>
+      <div class="resource-grid" id="resourceGrid"></div>
+    </section>
+
+    <section class="tracker-panel" aria-label="Item tracker">
+      <div class="panel-header">
+        <h2>Items</h2>
+        <div class="panel-note"><span id="itemUsed">0</span> / 11 item slots used</div>
+      </div>
+      <div class="item-grid" id="itemGrid"></div>
     </section>
 
     <section class="controls" aria-label="Filters and reset controls">
@@ -802,10 +974,13 @@
           <div class="detail-text" id="detailAction">None</div>
           <h3 class="section-title" style="margin-top:12px;">Ritual Cost</h3>
           <div class="ritual-cost" id="detailRitual">N/A</div>
+          <div class="shield-status" id="detailShieldStatus">No shield equipped</div>
         </div>
 
         <div class="detail-buttons">
           <button class="reset-btn" id="healSelected" data-detail-action="restore-selected">Restore Selected HP</button>
+          <button class="reset-btn" id="equipShield" data-detail-action="equip-shield">Equip Shield</button>
+          <button class="reset-btn" id="unequipShield" data-detail-action="unequip-shield">Unequip Shield</button>
           <button class="reset-btn danger" id="removeSelected" data-detail-action="remove-selected">Remove Selected</button>
           <button class="reset-btn" id="healAll" data-detail-action="restore-all">Restore All HP</button>
           <button class="reset-btn danger" id="resetAll" data-detail-action="reset-game">Reset Game</button>
@@ -820,20 +995,15 @@
     // ------------------------------------------------------------
     // Boardgame Tracker
     // Single-file, offline-friendly tracker for iPad / browser use.
-    //
-    // Main idea:
-    // - unitTypes are the rulebook entries.
-    // - activePieces are the actual pieces currently on the board.
-    // - Each unit type can have up to MAX_COPIES_PER_UNIT active copies.
-    // - State is stored in localStorage so accidental refreshes do not
-    //   wipe the current game state.
     // ------------------------------------------------------------
 
     const MAX_COPIES_PER_UNIT = 3;
-    const MAX_INVENTORY_ITEMS = 11;
+    const MAX_KING_COPIES = 1;
+    const MAX_RESOURCE_SLOTS = 11;
+    const MAX_ITEM_SLOTS = 11;
 
-    const inventoryItems = [
-      "Gems",
+    const resourceTypes = [
+      "Gem",
       "Wood",
       "Stone",
       "Iron",
@@ -844,190 +1014,129 @@
       "Glass"
     ];
 
-    const unitTypes = [
+    const itemTypes = [
+      "Arrow",
+      "Shield",
+      "Cannon Ball",
+      "Cannon",
+      "Artifact"
+    ];
+
+    const craftingRecipes = [
       {
-        id: 1,
-        name: "King",
-        move: 1,
-        maxHp: 1,
-        action: "None",
-        ritual: "N/A",
-        category: "leader"
+        id: "craft-cannon",
+        resultName: "Cannon",
+        resultQuantity: 1,
+        costs: [
+          { type: "resource", name: "Iron", quantity: 6 },
+          { type: "resource", name: "Rope", quantity: 2 },
+          { type: "resource", name: "Sulphur", quantity: 2 }
+        ]
       },
       {
-        id: 2,
-        name: "Base Builder",
-        move: 2,
-        maxHp: 1,
-        action: "Build Base — Choose a location within 1 tile that has at least 3 adjacent Base Keepers. That tile becomes a Base tile.",
-        ritual: "—",
-        category: "builder"
+        id: "craft-cannon-ball",
+        resultName: "Cannon Ball",
+        resultQuantity: 1,
+        costs: [
+          { type: "resource", name: "Iron", quantity: 2 }
+        ]
       },
       {
-        id: 3,
-        name: "Wood Worker",
-        move: 2,
-        maxHp: 6,
-        action: "Build Wooden Defence — Place a wooden defence within 1 tile. Cost: 1 Wood.",
-        ritual: "—",
-        category: "builder"
+        id: "craft-arrows",
+        resultName: "Arrow",
+        resultQuantity: 3,
+        costs: [
+          { type: "resource", name: "Wood", quantity: 1 },
+          { type: "resource", name: "Stone", quantity: 1 },
+          { type: "resource", name: "Rope", quantity: 1 }
+        ]
       },
       {
-        id: 4,
-        name: "Stone Worker",
-        move: 2,
-        maxHp: 6,
-        action: "Build Stone Defence — Place a stone defence within 1 tile. Cost: 1 Stone.",
-        ritual: "—",
-        category: "builder"
+        id: "craft-shield",
+        resultName: "Shield",
+        resultQuantity: 1,
+        costs: [
+          { type: "resource", name: "Wood", quantity: 3 },
+          { type: "resource", name: "Iron", quantity: 1 },
+          { type: "resource", name: "Rope", quantity: 1 }
+        ]
       },
       {
-        id: 5,
-        name: "Iron Worker",
-        move: 2,
-        maxHp: 6,
-        action: "Build Iron Defence — Place an iron defence within 1 tile. Cost: 1 Iron.",
-        ritual: "—",
-        category: "builder"
-      },
-      {
-        id: 6,
-        name: "Warrior (Sword)",
-        move: 3,
-        maxHp: 4,
-        action: "Melee Attack — Range 1, Damage 2.",
-        ritual: "4 Bronze",
-        category: "fighter"
-      },
-      {
-        id: 7,
-        name: "Warrior (Spear)",
-        move: 2,
-        maxHp: 4,
-        action: "Melee Attack — Range 3, Damage 1.",
-        ritual: "2 Bronze, 1 Wood, 1 Stone",
-        category: "fighter"
-      },
-      {
-        id: 8,
-        name: "Warrior (Bow)",
-        move: 1,
-        maxHp: 2,
-        action: "Ranged Attack — Range 7, Damage 1. Cost: 1 Arrow.",
-        ritual: "1 Silver",
-        category: "fighter"
-      },
-      {
-        id: 9,
-        name: "Warrior (Lance & Horse)",
-        move: 4,
-        maxHp: 3,
-        action: "Melee Attack — Range 2, Damage 1.",
-        ritual: "1 Wood, 1 Stone, 1 Rope, 1 Leather",
-        category: "fighter"
-      },
-      {
-        id: 10,
-        name: "Mage",
-        move: 3,
-        maxHp: 1,
-        action: "Magic Attack — Range 7, Damage 1, targets 3 different units. Cost: delete 1 ally unit, not Mage.",
-        ritual: "—",
-        category: "magic"
-      },
-      {
-        id: 11,
-        name: "Medic",
-        move: 1,
-        maxHp: 1,
-        action: "Heal — Choose an eligible dead ally and revive them with full HP.",
-        ritual: "—",
-        category: "support"
-      },
-      {
-        id: 12,
-        name: "Priest",
-        move: 1,
-        maxHp: 6,
-        action: "Heal a damaged unit by 1 HP. Cannot heal a Priest.",
-        ritual: "—",
-        category: "support"
-      },
-      {
-        id: 13,
-        name: "Necromacer",
-        move: 1,
-        maxHp: 1,
-        action: "Heal — Choose an eligible dead ally unit and revive it with full HP.",
-        ritual: "—",
-        category: "magic"
-      },
-      {
-        id: 14,
-        name: "Farmer",
-        move: 1,
-        maxHp: 6,
-        action: "Gain 1 Bread item card.",
-        ritual: "—",
-        category: "support"
-      },
-      {
-        id: 15,
-        name: "Artierist",
-        move: 2,
-        maxHp: 2,
-        action: "May load and fire a cannon as one action. Must be adjacent to the cannon.",
-        ritual: "—",
-        category: "fighter"
-      },
-      {
-        id: 16,
-        name: "Spy",
-        move: 4,
-        maxHp: 2,
-        action: "Look — If within 5 tiles of the opponent's King, reveal the opponent's hand until the Spy leaves the 5-tile range or the King escapes the range.",
-        ritual: "—",
-        category: "special"
-      },
-      {
-        id: 17,
-        name: "Ritual Caster",
-        move: 1,
-        maxHp: 1,
-        action: "Summon a unit. Costs still apply.",
-        ritual: "—",
-        category: "magic"
-      },
-      {
-        id: 18,
-        name: "Thief",
-        move: 4,
-        maxHp: 1,
-        action: "If within 5 tiles of the opponent's King, steal 1 Bronze from the opponent's hand. May go over the 5 Bronze limit with this effect.",
-        ritual: "—",
-        category: "special"
-      },
-      {
-        id: 19,
-        name: "Strategist",
-        move: 1,
-        maxHp: 1,
-        action: "Delete this unit on any ally unit's turn to grant that ally a second action for the round.",
-        ritual: "—",
-        category: "special"
-      },
-      {
-        id: 20,
-        name: "Trader",
-        move: 2,
-        maxHp: 3,
-        action: "Passive — Allows the Item Trade feature in the turn order.",
-        ritual: "1 Iron",
-        category: "support"
+        id: "craft-artifact",
+        resultName: "Artifact",
+        resultQuantity: 1,
+        costs: [
+          { type: "resource", name: "Glass", quantity: 3 },
+          { type: "resource", name: "Stone", quantity: 8 },
+          { type: "resource", name: "Iron", quantity: 1 }
+        ]
       }
     ];
 
-    const STORAGE_KEY = "boardgameTrackerStateV2";
+    const currencyConversions = [
+      { id: "bronze-to-silver", fromCurrency: "bronze", fromAmount: 3, toCurrency: "silver", toAmount: 1 },
+      { id: "silver-to-gold", fromCurrency: "silver", fromAmount: 3, toCurrency: "gold", toAmount: 1 }
+    ];
+
+    const shopPurchases = [
+      { id: "bronze-wood", costCurrency: "bronze", costAmount: 1, targetType: "resource", targetName: "Wood", quantity: 1 },
+      { id: "bronze-stone", costCurrency: "bronze", costAmount: 1, targetType: "resource", targetName: "Stone", quantity: 1 },
+      { id: "bronze-leather", costCurrency: "bronze", costAmount: 2, targetType: "resource", targetName: "Leather", quantity: 1 },
+      { id: "bronze-rope", costCurrency: "bronze", costAmount: 3, targetType: "resource", targetName: "Rope", quantity: 1 },
+      { id: "bronze-three-leather", costCurrency: "bronze", costAmount: 4, targetType: "resource", targetName: "Leather", quantity: 3 },
+      { id: "bronze-sulphur", costCurrency: "bronze", costAmount: 4, targetType: "resource", targetName: "Sulphur", quantity: 1 },
+      { id: "bronze-two-rope", costCurrency: "bronze", costAmount: 5, targetType: "resource", targetName: "Rope", quantity: 2 },
+
+      { id: "silver-four-wood", costCurrency: "silver", costAmount: 1, targetType: "resource", targetName: "Wood", quantity: 4 },
+      { id: "silver-four-stone", costCurrency: "silver", costAmount: 1, targetType: "resource", targetName: "Stone", quantity: 4 },
+      { id: "silver-rope", costCurrency: "silver", costAmount: 1, targetType: "resource", targetName: "Rope", quantity: 1 },
+      { id: "silver-arrow", costCurrency: "silver", costAmount: 1, targetType: "item", targetName: "Arrow", quantity: 1 },
+      { id: "silver-glass", costCurrency: "silver", costAmount: 1, targetType: "resource", targetName: "Glass", quantity: 1 },
+
+      { id: "two-silver-sulphur", costCurrency: "silver", costAmount: 2, targetType: "resource", targetName: "Sulphur", quantity: 2 },
+      { id: "two-silver-arrows", costCurrency: "silver", costAmount: 2, targetType: "item", targetName: "Arrow", quantity: 3 },
+      { id: "two-silver-shield", costCurrency: "silver", costAmount: 2, targetType: "item", targetName: "Shield", quantity: 1 },
+      { id: "two-silver-iron", costCurrency: "silver", costAmount: 2, targetType: "resource", targetName: "Iron", quantity: 1 },
+      { id: "two-silver-glass", costCurrency: "silver", costAmount: 2, targetType: "resource", targetName: "Glass", quantity: 4 },
+
+      { id: "three-silver-wood", costCurrency: "silver", costAmount: 3, targetType: "resource", targetName: "Wood", quantity: 11 },
+      { id: "three-silver-stone", costCurrency: "silver", costAmount: 3, targetType: "resource", targetName: "Stone", quantity: 11 },
+      { id: "three-silver-cannon-ball", costCurrency: "silver", costAmount: 3, targetType: "item", targetName: "Cannon Ball", quantity: 1 },
+      { id: "three-silver-rope", costCurrency: "silver", costAmount: 3, targetType: "resource", targetName: "Rope", quantity: 5 },
+
+      { id: "gold-four-sulphur", costCurrency: "gold", costAmount: 1, targetType: "resource", targetName: "Sulphur", quantity: 4 },
+      { id: "gold-two-shield", costCurrency: "gold", costAmount: 1, targetType: "item", targetName: "Shield", quantity: 2 },
+      { id: "gold-three-iron", costCurrency: "gold", costAmount: 1, targetType: "resource", targetName: "Iron", quantity: 3 },
+      { id: "gold-six-glass", costCurrency: "gold", costAmount: 1, targetType: "resource", targetName: "Glass", quantity: 6 },
+      { id: "gold-cannon-ball", costCurrency: "gold", costAmount: 1, targetType: "item", targetName: "Cannon Ball", quantity: 1 },
+      { id: "gold-eleven-leather", costCurrency: "gold", costAmount: 1, targetType: "resource", targetName: "Leather", quantity: 11 },
+      { id: "two-gold-gem", costCurrency: "gold", costAmount: 2, targetType: "resource", targetName: "Gem", quantity: 1 }
+    ];
+
+    const unitTypes = [
+      { id: 1, name: "King", move: 1, maxHp: 1, action: "None", ritual: "N/A", category: "leader" },
+      { id: 2, name: "Base Builder", move: 2, maxHp: 1, action: "Build Base — Choose a location within 1 tile that has at least 3 adjacent Base Keepers. That tile becomes a Base tile.", ritual: "—", category: "builder" },
+      { id: 3, name: "Wood Worker", move: 2, maxHp: 6, action: "Build Wooden Defence — Place a wooden defence within 1 tile. Cost: 1 Wood.", ritual: "—", category: "builder" },
+      { id: 4, name: "Stone Worker", move: 2, maxHp: 6, action: "Build Stone Defence — Place a stone defence within 1 tile. Cost: 1 Stone.", ritual: "—", category: "builder" },
+      { id: 5, name: "Iron Worker", move: 2, maxHp: 6, action: "Build Iron Defence — Place an iron defence within 1 tile. Cost: 1 Iron.", ritual: "—", category: "builder" },
+      { id: 6, name: "Warrior (Sword)", move: 3, maxHp: 4, action: "Melee Attack — Range 1, Damage 2.", ritual: "4 Bronze", category: "fighter" },
+      { id: 7, name: "Warrior (Spear)", move: 2, maxHp: 4, action: "Melee Attack — Range 3, Damage 1.", ritual: "2 Bronze, 1 Wood, 1 Stone", category: "fighter" },
+      { id: 8, name: "Warrior (Bow)", move: 1, maxHp: 2, action: "Ranged Attack — Range 7, Damage 1. Cost: 1 Arrow.", ritual: "1 Silver", category: "fighter" },
+      { id: 9, name: "Warrior (Lance & Horse)", move: 4, maxHp: 3, action: "Melee Attack — Range 2, Damage 1.", ritual: "1 Wood, 1 Stone, 1 Rope, 1 Leather", category: "fighter" },
+      { id: 10, name: "Mage", move: 3, maxHp: 1, action: "Magic Attack — Range 7, Damage 1, targets 3 different units. Cost: delete 1 ally unit, not Mage.", ritual: "—", category: "magic" },
+      { id: 11, name: "Medic", move: 1, maxHp: 1, action: "Heal — Choose an eligible dead ally and revive them with full HP.", ritual: "—", category: "support" },
+      { id: 12, name: "Priest", move: 1, maxHp: 6, action: "Heal a damaged unit by 1 HP. Cannot heal a Priest.", ritual: "—", category: "support" },
+      { id: 13, name: "Necromacer", move: 1, maxHp: 1, action: "Heal — Choose an eligible dead ally unit and revive it with full HP.", ritual: "—", category: "magic" },
+      { id: 14, name: "Farmer", move: 1, maxHp: 6, action: "Gain 1 Bread item card.", ritual: "—", category: "support" },
+      { id: 15, name: "Artierist", move: 2, maxHp: 2, action: "May load and fire a cannon as one action. Must be adjacent to the cannon.", ritual: "—", category: "fighter" },
+      { id: 16, name: "Spy", move: 4, maxHp: 2, action: "Look — If within 5 tiles of the opponent's King, reveal the opponent's hand until the Spy leaves the 5-tile range or the King escapes the range.", ritual: "—", category: "special" },
+      { id: 17, name: "Ritual Caster", move: 1, maxHp: 1, action: "Summon a unit. Costs still apply.", ritual: "—", category: "magic" },
+      { id: 18, name: "Thief", move: 4, maxHp: 1, action: "If within 5 tiles of the opponent's King, steal 1 Bronze from the opponent's hand. May go over the 5 Bronze limit with this effect.", ritual: "—", category: "special" },
+      { id: 19, name: "Strategist", move: 1, maxHp: 1, action: "Delete this unit on any ally unit's turn to grant that ally a second action for the round.", ritual: "—", category: "special" },
+      { id: 20, name: "Trader", move: 2, maxHp: 3, action: "Passive — Allows the Item Trade feature in the turn order.", ritual: "1 Iron", category: "support" }
+    ];
+
+    const STORAGE_KEY = "boardgameTrackerStateV4";
 
     const defaultState = {
       selectedPieceId: null,
@@ -1035,43 +1144,32 @@
       filter: "all",
       search: "",
       nextPieceId: 1,
+      shopOpen: false,
+      craftingOpen: false,
       currency: {
         gold: 0,
         silver: 0,
         bronze: 0
       },
-      inventory: Object.fromEntries(inventoryItems.map(itemName => [itemName, 0])),
+      resources: Object.fromEntries(resourceTypes.map(resourceName => [resourceName, 0])),
+      items: Object.fromEntries(itemTypes.map(itemName => [itemName, 0])),
       activePieces: []
     };
 
-    function cloneDefaultState() {
-      // Use JSON cloning instead of structuredClone so this works reliably
-      // on older iPads / Safari versions as well as modern browsers.
-      return JSON.parse(JSON.stringify(defaultState));
-    }
-
-    function createFreshGameState() {
-      const freshState = cloneDefaultState();
-      const king = getUnitType(1);
-
-      freshState.activePieces.push({
-        pieceId: freshState.nextPieceId,
-        typeId: king.id,
-        currentHp: king.maxHp
-      });
-
-      freshState.selectedPieceId = freshState.nextPieceId;
-      freshState.selectedRuleTypeId = king.id;
-      freshState.nextPieceId += 1;
-
-      return freshState;
-    }
-
     let state = loadState();
 
+    const shopPanel = document.getElementById("shopPanel");
+    const shopGrid = document.getElementById("shopGrid");
+    const craftingPanel = document.getElementById("craftingPanel");
+    const craftingGrid = document.getElementById("craftingGrid");
+    const toggleShop = document.getElementById("toggleShop");
+    const toggleCrafting = document.getElementById("toggleCrafting");
+    const shopLockNote = document.getElementById("shopLockNote");
     const summonGrid = document.getElementById("summonGrid");
-    const inventoryGrid = document.getElementById("inventoryGrid");
-    const inventoryUsed = document.getElementById("inventoryUsed");
+    const resourceGrid = document.getElementById("resourceGrid");
+    const resourceUsed = document.getElementById("resourceUsed");
+    const itemGrid = document.getElementById("itemGrid");
+    const itemUsed = document.getElementById("itemUsed");
     const unitsGrid = document.getElementById("unitsGrid");
     const searchInput = document.getElementById("searchInput");
     const filterButtons = Array.from(document.querySelectorAll(".filter-btn"));
@@ -1083,6 +1181,29 @@
     const detailHpReadout = document.getElementById("detailHpReadout");
     const detailAction = document.getElementById("detailAction");
     const detailRitual = document.getElementById("detailRitual");
+    const detailShieldStatus = document.getElementById("detailShieldStatus");
+
+    function cloneDefaultState() {
+      return JSON.parse(JSON.stringify(defaultState));
+    }
+
+    function createFreshGameState() {
+      const freshState = cloneDefaultState();
+      const king = getUnitType(1);
+
+      freshState.activePieces.push({
+        pieceId: freshState.nextPieceId,
+        typeId: king.id,
+        currentHp: king.maxHp,
+        hasShield: false
+      });
+
+      freshState.selectedPieceId = freshState.nextPieceId;
+      freshState.selectedRuleTypeId = king.id;
+      freshState.nextPieceId += 1;
+
+      return freshState;
+    }
 
     function loadState() {
       try {
@@ -1099,9 +1220,13 @@
             ...defaultState.currency,
             ...(saved.currency || {})
           },
-          inventory: {
-            ...defaultState.inventory,
-            ...(saved.inventory || {})
+          resources: {
+            ...defaultState.resources,
+            ...(saved.resources || {})
+          },
+          items: {
+            ...defaultState.items,
+            ...(saved.items || {})
           },
           activePieces: Array.isArray(saved.activePieces) ? saved.activePieces : []
         };
@@ -1130,23 +1255,48 @@
       return state.activePieces.filter(piece => piece.typeId === Number(typeId));
     }
 
+    function getMaxCopiesForType(typeId) {
+      return Number(typeId) === 1 ? MAX_KING_COPIES : MAX_COPIES_PER_UNIT;
+    }
+
     function getCopyNumber(piece) {
       const matchingPieces = getPiecesForType(piece.typeId).sort((a, b) => a.pieceId - b.pieceId);
       return matchingPieces.findIndex(item => item.pieceId === piece.pieceId) + 1;
     }
 
+    function getTotalForCollection(collectionName) {
+      const source = state[collectionName];
+      return Object.keys(source).reduce((total, key) => total + (source[key] || 0), 0);
+    }
+
+    function getCapacityForTargetType(targetType) {
+      return targetType === "resource" ? MAX_RESOURCE_SLOTS : MAX_ITEM_SLOTS;
+    }
+
+    function getCollectionNameForTargetType(targetType) {
+      return targetType === "resource" ? "resources" : "items";
+    }
+
+    function getAvailableSpaceForTargetType(targetType) {
+      const collectionName = getCollectionNameForTargetType(targetType);
+      const maxSlots = getCapacityForTargetType(targetType);
+      return Math.max(0, maxSlots - getTotalForCollection(collectionName));
+    }
+
     function addPiece(typeId) {
       const unitType = getUnitType(typeId);
       const existingCount = getPiecesForType(typeId).length;
+      const maxCopies = getMaxCopiesForType(typeId);
 
-      if (existingCount >= MAX_COPIES_PER_UNIT) {
+      if (existingCount >= maxCopies) {
         return;
       }
 
       const newPiece = {
         pieceId: state.nextPieceId,
         typeId: unitType.id,
-        currentHp: unitType.maxHp
+        currentHp: unitType.maxHp,
+        hasShield: false
       };
 
       state.nextPieceId += 1;
@@ -1184,7 +1334,52 @@
       }
 
       const unitType = getUnitType(piece.typeId);
+      const isTakingDamage = newHp < piece.currentHp;
+
+      // A shield absorbs one hit of any strength. Since the current HP control
+      // represents a hit/damage event, the first damage click destroys the
+      // shield and leaves HP unchanged.
+      if (isTakingDamage && piece.hasShield) {
+        piece.hasShield = false;
+        saveState();
+        render();
+        return;
+      }
+
       piece.currentHp = clamp(newHp, 0, unitType.maxHp);
+      saveState();
+      render();
+    }
+
+    function equipShieldToPiece(pieceId) {
+      const piece = getPiece(pieceId);
+
+      if (!piece || piece.hasShield || (state.items.Shield || 0) <= 0) {
+        return;
+      }
+
+      piece.hasShield = true;
+      state.items.Shield -= 1;
+      saveState();
+      render();
+    }
+
+    function unequipShieldFromPiece(pieceId) {
+      const piece = getPiece(pieceId);
+
+      if (!piece || !piece.hasShield) {
+        return;
+      }
+
+      const itemSpaceAvailable = getAvailableSpaceForTargetType("item");
+
+      if (itemSpaceAvailable <= 0) {
+        window.alert("There is no room in Items to unequip this shield.");
+        return;
+      }
+
+      piece.hasShield = false;
+      state.items.Shield += 1;
       saveState();
       render();
     }
@@ -1206,24 +1401,121 @@
       const current = state.currency[currencyName] || 0;
       state.currency[currencyName] = clamp(current + amount, 0, 99);
       saveState();
-      renderCurrency();
+      render();
     }
 
-    function getInventoryTotal() {
-      return inventoryItems.reduce((total, itemName) => total + (state.inventory[itemName] || 0), 0);
-    }
+    function changeCounter(collectionName, itemName, amount) {
+      const current = state[collectionName][itemName] || 0;
+      const maxSlots = collectionName === "resources" ? MAX_RESOURCE_SLOTS : MAX_ITEM_SLOTS;
+      const currentTotal = getTotalForCollection(collectionName);
 
-    function changeInventory(itemName, amount) {
-      const current = state.inventory[itemName] || 0;
-      const currentTotal = getInventoryTotal();
-
-      if (amount > 0 && currentTotal >= MAX_INVENTORY_ITEMS) {
+      if (amount > 0 && currentTotal >= maxSlots) {
         return;
       }
 
-      state.inventory[itemName] = clamp(current + amount, 0, MAX_INVENTORY_ITEMS);
+      state[collectionName][itemName] = clamp(current + amount, 0, maxSlots);
       saveState();
-      renderInventory();
+      render();
+    }
+
+    function getAffordableQuantity(purchase) {
+      const currencyAvailable = state.currency[purchase.costCurrency] || 0;
+      const spaceAvailable = getAvailableSpaceForTargetType(purchase.targetType);
+
+      if (currencyAvailable < purchase.costAmount || spaceAvailable <= 0) {
+        return 0;
+      }
+
+      return Math.min(purchase.quantity, spaceAvailable);
+    }
+
+    function hasActiveTrader() {
+      return state.activePieces.some(piece => {
+        const unitType = getUnitType(piece.typeId);
+        return unitType.name === "Trader" && piece.currentHp > 0;
+      });
+    }
+
+    function convertCurrency(conversionId) {
+      const conversion = currencyConversions.find(item => item.id === conversionId);
+
+      if (!conversion) {
+        return;
+      }
+
+      if ((state.currency[conversion.fromCurrency] || 0) < conversion.fromAmount) {
+        return;
+      }
+
+      state.currency[conversion.fromCurrency] -= conversion.fromAmount;
+      state.currency[conversion.toCurrency] += conversion.toAmount;
+      saveState();
+      render();
+    }
+
+    function canCraftRecipe(recipe) {
+      const hasResources = recipe.costs.every(cost => {
+        if (cost.type !== "resource") {
+          return false;
+        }
+
+        return (state.resources[cost.name] || 0) >= cost.quantity;
+      });
+
+      const hasItemSpace = getAvailableSpaceForTargetType("item") >= recipe.resultQuantity;
+      return hasResources && hasItemSpace;
+    }
+
+    function getRecipeStatus(recipe) {
+      const missingCosts = recipe.costs
+        .filter(cost => (state.resources[cost.name] || 0) < cost.quantity)
+        .map(cost => `${cost.quantity - (state.resources[cost.name] || 0)} more ${cost.name}`);
+
+      if (missingCosts.length > 0) {
+        return `Need ${missingCosts.join(", ")}`;
+      }
+
+      if (getAvailableSpaceForTargetType("item") < recipe.resultQuantity) {
+        return `Need ${recipe.resultQuantity} open item slot${recipe.resultQuantity === 1 ? "" : "s"}`;
+      }
+
+      return "Ready to craft";
+    }
+
+    function craftRecipe(recipeId) {
+      const recipe = craftingRecipes.find(item => item.id === recipeId);
+
+      if (!recipe || !canCraftRecipe(recipe)) {
+        return;
+      }
+
+      recipe.costs.forEach(cost => {
+        state.resources[cost.name] -= cost.quantity;
+      });
+
+      state.items[recipe.resultName] += recipe.resultQuantity;
+      saveState();
+      render();
+    }
+
+    function buyFromShop(purchaseId) {
+      const purchase = shopPurchases.find(item => item.id === purchaseId);
+
+      if (!purchase) {
+        return;
+      }
+
+      const quantityToBuy = getAffordableQuantity(purchase);
+
+      if (quantityToBuy <= 0) {
+        return;
+      }
+
+      const collectionName = getCollectionNameForTargetType(purchase.targetType);
+      state.currency[purchase.costCurrency] -= purchase.costAmount;
+      state[collectionName][purchase.targetName] += quantityToBuy;
+      saveState();
+      render();
     }
 
     function getBadgeColour(category) {
@@ -1277,27 +1569,198 @@
       document.getElementById("bronzeCount").textContent = state.currency.bronze;
     }
 
-    function renderInventory() {
-      const totalItems = getInventoryTotal();
-      const inventoryIsFull = totalItems >= MAX_INVENTORY_ITEMS;
-      inventoryUsed.textContent = totalItems;
-      inventoryGrid.innerHTML = "";
+    function renderCurrencyConversions() {
+      const conversionSection = document.createElement("section");
+      conversionSection.className = "shop-group";
+
+      const title = document.createElement("h3");
+      title.className = "shop-group-title";
+      title.textContent = "Currency Conversion";
+
+      const grid = document.createElement("div");
+      grid.className = "conversion-grid";
+
+      currencyConversions.forEach(conversion => {
+        const canConvert = (state.currency[conversion.fromCurrency] || 0) >= conversion.fromAmount;
+        const fromLabel = conversion.fromCurrency.charAt(0).toUpperCase() + conversion.fromCurrency.slice(1);
+        const toLabel = conversion.toCurrency.charAt(0).toUpperCase() + conversion.toCurrency.slice(1);
+
+        const card = document.createElement("div");
+        card.className = `conversion-card${canConvert ? "" : " disabled"}`;
+        card.innerHTML = `
+          <div>
+            <div class="conversion-title">${conversion.fromAmount} ${fromLabel} → ${conversion.toAmount} ${toLabel}</div>
+            <div class="conversion-note">Upward conversion only</div>
+          </div>
+          <button class="buy-btn" data-convert-id="${conversion.id}" ${canConvert ? "" : "disabled"}>Convert</button>
+        `;
+
+        grid.appendChild(card);
+      });
+
+      conversionSection.appendChild(title);
+      conversionSection.appendChild(grid);
+      shopGrid.appendChild(conversionSection);
+    }
+
+    function getGroupedShopPurchases() {
+      const desiredOrder = [
+        "Wood",
+        "Stone",
+        "Iron",
+        "Sulphur",
+        "Rope",
+        "Bread",
+        "Leather",
+        "Glass",
+        "Gem",
+        "Arrow",
+        "Shield",
+        "Cannon Ball",
+        "Cannon",
+        "Artifact"
+      ];
+
+      return desiredOrder
+        .map(targetName => {
+          const purchases = shopPurchases
+            .filter(purchase => purchase.targetName === targetName)
+            .sort((a, b) => {
+              const currencyOrder = { bronze: 1, silver: 2, gold: 3 };
+              const currencyDifference = currencyOrder[a.costCurrency] - currencyOrder[b.costCurrency];
+
+              if (currencyDifference !== 0) {
+                return currencyDifference;
+              }
+
+              return a.costAmount - b.costAmount;
+            });
+
+          return {
+            title: targetName,
+            purchases
+          };
+        })
+        .filter(group => group.purchases.length > 0);
+    }
+
+    function renderCrafting() {
+      craftingPanel.classList.toggle("hidden", !state.craftingOpen);
+      toggleCrafting.textContent = state.craftingOpen ? "Close Crafting" : "Open Crafting";
+      craftingGrid.innerHTML = "";
+
+      const groupSection = document.createElement("section");
+      groupSection.className = "shop-group";
+
+      const groupTitle = document.createElement("h3");
+      groupTitle.className = "shop-group-title";
+      groupTitle.textContent = "Craftables";
+
+      const groupGrid = document.createElement("div");
+      groupGrid.className = "shop-grid";
+
+      craftingRecipes.forEach(recipe => {
+        const canCraft = canCraftRecipe(recipe);
+        const costText = recipe.costs.map(cost => `${cost.quantity} ${cost.name}`).join(", ");
+        const card = document.createElement("div");
+        card.className = `craft-card${canCraft ? "" : " disabled"}`;
+        card.innerHTML = `
+          <div class="craft-title">${recipe.resultQuantity} ${recipe.resultName}</div>
+          <div class="craft-cost">Cost: ${costText}</div>
+          <div class="craft-row">
+            <div class="craft-status">${getRecipeStatus(recipe)}</div>
+            <button class="craft-btn" data-craft-id="${recipe.id}" ${canCraft ? "" : "disabled"}>Craft</button>
+          </div>
+        `;
+        groupGrid.appendChild(card);
+      });
+
+      groupSection.appendChild(groupTitle);
+      groupSection.appendChild(groupGrid);
+      craftingGrid.appendChild(groupSection);
+    }
+
+    function renderShop() {
+      const traderIsActive = hasActiveTrader();
+
+      if (!traderIsActive) {
+        state.shopOpen = false;
+      }
+
+      toggleShop.disabled = !traderIsActive;
+      toggleShop.textContent = state.shopOpen ? "Close Shop" : "Open Shop";
+      shopLockNote.textContent = traderIsActive ? "Trader active — shop available." : "Requires an active Trader.";
+      shopPanel.classList.toggle("hidden", !state.shopOpen);
+      shopGrid.innerHTML = "";
+
+      // The shop content is deliberately stacked vertically:
+      // 1. Currency Conversion
+      // 2. Purchases grouped by the item/resource being bought
+      // This keeps conversion from being treated as one giant shop card.
+      renderCurrencyConversions();
+
+      const groupedPurchases = getGroupedShopPurchases();
+      const groupsWrapper = document.createElement("div");
+      groupsWrapper.className = "shop-groups";
+
+      groupedPurchases.forEach(group => {
+        const groupSection = document.createElement("section");
+        groupSection.className = "shop-group";
+
+        const groupTitle = document.createElement("h3");
+        groupTitle.className = "shop-group-title";
+        groupTitle.textContent = group.title;
+
+        const groupGrid = document.createElement("div");
+        groupGrid.className = "shop-grid";
+
+        group.purchases.forEach(purchase => {
+          const affordableQuantity = getAffordableQuantity(purchase);
+          const canBuy = affordableQuantity > 0;
+          const currencyLabel = purchase.costCurrency.charAt(0).toUpperCase() + purchase.costCurrency.slice(1);
+
+          const card = document.createElement("div");
+          card.className = `shop-card${canBuy ? "" : " disabled"}`;
+          card.innerHTML = `
+            <div class="shop-title">${purchase.quantity} ${purchase.targetName}</div>
+            <div class="shop-cost">Cost: ${purchase.costAmount} ${currencyLabel}</div>
+            <div class="buy-row">
+              <div class="buy-quantity">Buys now: ${canBuy ? affordableQuantity : 0}</div>
+              <button class="buy-btn" data-buy-id="${purchase.id}" ${canBuy ? "" : "disabled"}>Buy</button>
+            </div>
+          `;
+          groupGrid.appendChild(card);
+        });
+
+        groupSection.appendChild(groupTitle);
+        groupSection.appendChild(groupGrid);
+        groupsWrapper.appendChild(groupSection);
+      });
+
+      shopGrid.appendChild(groupsWrapper);
+    }
+
+    function renderCounterGrid(gridElement, collectionName, typeNames, usedElement, maxSlots) {
+      const totalUsed = getTotalForCollection(collectionName);
+      const isFull = totalUsed >= maxSlots;
+      usedElement.textContent = totalUsed;
+      gridElement.innerHTML = "";
 
       const fragment = document.createDocumentFragment();
 
-      inventoryItems.forEach(itemName => {
-        const itemCount = state.inventory[itemName] || 0;
-        const row = document.createElement("div");
-        row.className = `inventory-item${itemCount > 0 ? " has-items" : ""}`;
-        row.innerHTML = `
-          <button class="item-btn" data-inventory-item="${itemName}" data-inventory-change="-1" ${itemCount <= 0 ? "disabled" : ""} aria-label="Remove ${itemName}">−</button>
-          <div class="item-name">${itemName}<span class="item-count">${itemCount}</span></div>
-          <button class="item-btn" data-inventory-item="${itemName}" data-inventory-change="1" ${inventoryIsFull ? "disabled" : ""} aria-label="Add ${itemName}">+</button>
+      typeNames.forEach(typeName => {
+        const count = state[collectionName][typeName] || 0;
+        const card = document.createElement("div");
+        card.className = `counter-card${count > 0 ? " has-count" : ""}`;
+        card.innerHTML = `
+          <button class="counter-btn" data-counter-collection="${collectionName}" data-counter-name="${typeName}" data-counter-change="-1" ${count <= 0 ? "disabled" : ""} aria-label="Remove ${typeName}">−</button>
+          <div class="counter-name">${typeName}<span class="counter-value">${count}</span></div>
+          <button class="counter-btn" data-counter-collection="${collectionName}" data-counter-name="${typeName}" data-counter-change="1" ${isFull ? "disabled" : ""} aria-label="Add ${typeName}">+</button>
         `;
-        fragment.appendChild(row);
+        fragment.appendChild(card);
       });
 
-      inventoryGrid.appendChild(fragment);
+      gridElement.appendChild(fragment);
     }
 
     function renderSummonPanel() {
@@ -1306,12 +1769,13 @@
 
       unitTypes.forEach(unitType => {
         const activeCount = getPiecesForType(unitType.id).length;
+        const maxCopies = getMaxCopiesForType(unitType.id);
         const row = document.createElement("div");
         row.className = "summon-row";
         row.innerHTML = `
           <div class="summon-name" title="${unitType.name}">${unitType.name}</div>
-          <div class="summon-count">${activeCount}/${MAX_COPIES_PER_UNIT}</div>
-          <button class="add-btn" data-add-type-id="${unitType.id}" ${activeCount >= MAX_COPIES_PER_UNIT ? "disabled" : ""}>Add</button>
+          <div class="summon-count">${activeCount}/${maxCopies}</div>
+          <button class="add-btn" data-add-type-id="${unitType.id}" ${activeCount >= maxCopies ? "disabled" : ""}>Add</button>
         `;
         fragment.appendChild(row);
       });
@@ -1341,15 +1805,17 @@
         const copyNumber = getCopyNumber(piece);
         const isDead = piece.currentHp <= 0;
         const isSelected = piece.pieceId === state.selectedPieceId;
+        const hasShield = Boolean(piece.hasShield);
 
         const card = document.createElement("article");
-        card.className = `unit-card${isDead ? " dead" : ""}${isSelected ? " selected" : ""}`;
+        card.className = `unit-card${isDead ? " dead" : ""}${isSelected ? " selected" : ""}${hasShield ? " shielded" : ""}`;
         card.dataset.pieceId = piece.pieceId;
         card.setAttribute("role", "button");
         card.setAttribute("tabindex", "0");
         card.setAttribute("aria-label", `${unitType.name} copy ${copyNumber}, movement ${unitType.move}, HP ${piece.currentHp} of ${unitType.maxHp}`);
 
         card.innerHTML = `
+          ${hasShield ? `<div class="shield-ribbon">🛡 Shield</div>` : ""}
           <div class="unit-top">
             <div class="badge" style="background:${getBadgeColour(unitType.category)}">${unitType.id}</div>
             <div class="unit-name">${unitType.name}</div>
@@ -1377,16 +1843,6 @@
           render();
         });
 
-        card.addEventListener("keydown", event => {
-          if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            state.selectedPieceId = piece.pieceId;
-            state.selectedRuleTypeId = unitType.id;
-            saveState();
-            render();
-          }
-        });
-
         fragment.appendChild(card);
       });
 
@@ -1405,6 +1861,7 @@
 
       visibleRuleTypes.forEach(unitType => {
         const activeCount = getPiecesForType(unitType.id).length;
+        const maxCopies = getMaxCopiesForType(unitType.id);
         const card = document.createElement("article");
         card.className = `unit-card${unitType.id === state.selectedRuleTypeId ? " selected" : ""}`;
         card.dataset.typeId = unitType.id;
@@ -1416,13 +1873,13 @@
           <div class="unit-top">
             <div class="badge" style="background:${getBadgeColour(unitType.category)}">${unitType.id}</div>
             <div class="unit-name">${unitType.name}</div>
-            <div class="copy-label">${activeCount}/${MAX_COPIES_PER_UNIT}</div>
+            <div class="copy-label">${activeCount}/${maxCopies}</div>
           </div>
           <div class="stats">
             <div class="stat-pill"><span>Move</span><strong class="move-value">${unitType.move}</strong></div>
             <div class="stat-pill"><span>Max HP</span><strong class="hp-value">${unitType.maxHp}</strong></div>
           </div>
-          <button class="add-btn" data-add-type-id="${unitType.id}" ${activeCount >= MAX_COPIES_PER_UNIT ? "disabled" : ""}>Add to Board</button>
+          <button class="add-btn" data-add-type-id="${unitType.id}" ${activeCount >= maxCopies ? "disabled" : ""}>Add to Board</button>
           <div class="quick-action">${unitType.action}</div>
         `;
 
@@ -1456,7 +1913,9 @@
         detailHpReadout.textContent = `HP ${selectedPiece.currentHp} / ${unitType.maxHp}`;
         detailAction.textContent = unitType.action;
         detailRitual.textContent = unitType.ritual;
+        detailShieldStatus.textContent = selectedPiece.hasShield ? "🛡 Shield equipped — next hit breaks it" : "No shield equipped";
         setDetailButtonsEnabled(true);
+        setShieldButtons(selectedPiece);
         return;
       }
 
@@ -1469,7 +1928,9 @@
       detailHpReadout.textContent = "No active copy selected";
       detailAction.textContent = unitType.action;
       detailRitual.textContent = unitType.ritual;
+      detailShieldStatus.textContent = "No active copy selected";
       setDetailButtonsEnabled(false);
+      setShieldButtons(null);
     }
 
     function setDetailButtonsEnabled(enabled) {
@@ -1477,6 +1938,20 @@
       document.getElementById("detailHpPlus").disabled = !enabled;
       document.getElementById("healSelected").disabled = !enabled;
       document.getElementById("removeSelected").disabled = !enabled;
+    }
+
+    function setShieldButtons(selectedPiece) {
+      const equipButton = document.getElementById("equipShield");
+      const unequipButton = document.getElementById("unequipShield");
+
+      if (!selectedPiece) {
+        equipButton.disabled = true;
+        unequipButton.disabled = true;
+        return;
+      }
+
+      equipButton.disabled = Boolean(selectedPiece.hasShield) || (state.items.Shield || 0) <= 0;
+      unequipButton.disabled = !selectedPiece.hasShield;
     }
 
     function renderFilters() {
@@ -1488,31 +1963,65 @@
 
     function render() {
       renderCurrency();
-      renderInventory();
+      renderShop();
+      renderCrafting();
       renderSummonPanel();
+      renderCounterGrid(resourceGrid, "resources", resourceTypes, resourceUsed, MAX_RESOURCE_SLOTS);
+      renderCounterGrid(itemGrid, "items", itemTypes, itemUsed, MAX_ITEM_SLOTS);
       renderFilters();
       renderUnits();
       renderDetails();
     }
 
-    // Currency controls.
     document.querySelectorAll("[data-currency]").forEach(button => {
       button.addEventListener("click", () => {
         changeCurrency(button.dataset.currency, Number(button.dataset.change));
       });
     });
 
-    // Inventory item controls.
-    inventoryGrid.addEventListener("click", event => {
-      const itemButton = event.target.closest("[data-inventory-item]");
-      if (!itemButton) {
+    toggleShop.addEventListener("click", () => {
+      if (!hasActiveTrader()) {
+        state.shopOpen = false;
+        saveState();
+        render();
         return;
       }
 
-      changeInventory(itemButton.dataset.inventoryItem, Number(itemButton.dataset.inventoryChange));
+      state.shopOpen = !state.shopOpen;
+      saveState();
+      render();
     });
 
-    // Add-piece buttons appear in both the summon panel and the Rules Only cards.
+    toggleCrafting.addEventListener("click", () => {
+      state.craftingOpen = !state.craftingOpen;
+      saveState();
+      render();
+    });
+
+    shopGrid.addEventListener("click", event => {
+      const convertButton = event.target.closest("[data-convert-id]");
+      if (convertButton) {
+        convertCurrency(convertButton.dataset.convertId);
+        return;
+      }
+
+      const buyButton = event.target.closest("[data-buy-id]");
+      if (!buyButton) {
+        return;
+      }
+
+      buyFromShop(buyButton.dataset.buyId);
+    });
+
+    craftingGrid.addEventListener("click", event => {
+      const craftButton = event.target.closest("[data-craft-id]");
+      if (!craftButton) {
+        return;
+      }
+
+      craftRecipe(craftButton.dataset.craftId);
+    });
+
     document.addEventListener("click", event => {
       const addButton = event.target.closest("[data-add-type-id]");
       if (!addButton) {
@@ -1522,7 +2031,19 @@
       addPiece(Number(addButton.dataset.addTypeId));
     });
 
-    // HP controls on active unit cards.
+    document.addEventListener("click", event => {
+      const counterButton = event.target.closest("[data-counter-collection]");
+      if (!counterButton) {
+        return;
+      }
+
+      changeCounter(
+        counterButton.dataset.counterCollection,
+        counterButton.dataset.counterName,
+        Number(counterButton.dataset.counterChange)
+      );
+    });
+
     unitsGrid.addEventListener("click", event => {
       const hpButton = event.target.closest("[data-hp-change]");
       if (!hpButton) {
@@ -1540,7 +2061,6 @@
       setHp(pieceId, piece.currentHp + amount);
     });
 
-    // Detail-panel HP controls.
     document.getElementById("detailHpMinus").addEventListener("click", () => {
       const selectedPiece = getPiece(state.selectedPieceId);
       if (selectedPiece) {
@@ -1555,10 +2075,6 @@
       }
     });
 
-    // Detail-panel action buttons.
-    // Use one delegated handler because the preview/browser environment can be
-    // fussy with direct button listeners after live updates. This keeps the
-    // side-panel buttons working consistently.
     document.addEventListener("click", event => {
       const detailButton = event.target.closest("[data-detail-action]");
 
@@ -1570,18 +2086,30 @@
 
       if (action === "restore-selected") {
         const selectedPiece = getPiece(state.selectedPieceId);
-
-        if (!selectedPiece) {
-          return;
+        if (selectedPiece) {
+          restorePiece(selectedPiece.pieceId);
         }
+        return;
+      }
 
-        restorePiece(selectedPiece.pieceId);
+      if (action === "equip-shield") {
+        const selectedPiece = getPiece(state.selectedPieceId);
+        if (selectedPiece) {
+          equipShieldToPiece(selectedPiece.pieceId);
+        }
+        return;
+      }
+
+      if (action === "unequip-shield") {
+        const selectedPiece = getPiece(state.selectedPieceId);
+        if (selectedPiece) {
+          unequipShieldFromPiece(selectedPiece.pieceId);
+        }
         return;
       }
 
       if (action === "remove-selected") {
         const selectedPiece = getPiece(state.selectedPieceId);
-
         if (!selectedPiece) {
           return;
         }
@@ -1590,11 +2118,9 @@
         const copyNumber = getCopyNumber(selectedPiece);
         const confirmed = window.confirm(`Remove ${unitType.name} #${copyNumber} from the board?`);
 
-        if (!confirmed) {
-          return;
+        if (confirmed) {
+          removePiece(selectedPiece.pieceId);
         }
-
-        removePiece(selectedPiece.pieceId);
         return;
       }
 
@@ -1603,14 +2129,13 @@
           const unitType = getUnitType(piece.typeId);
           piece.currentHp = unitType.maxHp;
         });
-
         saveState();
         render();
         return;
       }
 
       if (action === "reset-game") {
-        const confirmed = window.confirm("Reset the whole game? This removes all active pieces, resets currency, and clears inventory.");
+        const confirmed = window.confirm("Reset the whole game? This removes active pieces, resets currency, clears resources, and clears items.");
 
         if (!confirmed) {
           return;
@@ -1623,7 +2148,6 @@
       }
     });
 
-    // Search and filter controls.
     searchInput.addEventListener("input", () => {
       state.search = searchInput.value;
       saveState();
@@ -1641,7 +2165,6 @@
       });
     });
 
-    // Initial render. A fresh game starts with one King already on the board.
     render();
   </script>
 </body>
