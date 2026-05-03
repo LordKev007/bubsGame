@@ -912,7 +912,7 @@
         <div class="crest" aria-hidden="true">♛</div>
         <div>
           <h1>Boardgame Tracker</h1>
-          <div class="subtitle">Add only the pieces currently on the board. The King is limited to one copy; other unit types can have up to three copies.</div>
+          <div class="subtitle">Add only the pieces currently on the board. The King is limited to one copy; other unit types can have up to three copies. Maximum 15 pieces total.</div>
           <div class="team-selector" aria-label="Team colour selector">
             <span class="team-label">Team</span>
             <button class="team-btn" type="button" data-team="blue">Blue</button>
@@ -966,7 +966,7 @@
     <section class="summon-panel" aria-label="Add pieces to board">
       <div class="panel-header">
         <h2>Add Pieces to Board</h2>
-        <div class="panel-note">King max: 1 · Other units max: 3</div>
+        <div class="panel-note"><span id="activePieceCount">0</span> / 15 pieces · King max: 1 · Other units max: 3</div>
       </div>
       <div class="summon-grid" id="summonGrid"></div>
     </section>
@@ -1051,6 +1051,7 @@
 
     const MAX_COPIES_PER_UNIT = 3;
     const MAX_KING_COPIES = 1;
+    const MAX_ACTIVE_PIECES = 15;
     const MAX_RESOURCE_SLOTS = 11;
     const MAX_ITEM_SLOTS = 11;
 
@@ -1167,22 +1168,22 @@
 
     const unitTypes = [
       { id: 1, name: "King", move: 1, maxHp: 1, action: "None", ritual: "N/A", category: "leader" },
-      { id: 2, name: "Base Builder", move: 2, maxHp: 1, action: "Build Base — Choose a location within 1 tile that has at least 3 adjacent Base Keepers. That tile becomes a Base tile.", ritual: "—", category: "builder" },
-      { id: 3, name: "Wood Worker", move: 2, maxHp: 6, action: "Build Wooden Defence — Place a wooden defence within 1 tile. Cost: 1 Wood.", ritual: "—", category: "builder" },
-      { id: 4, name: "Stone Worker", move: 2, maxHp: 6, action: "Build Stone Defence — Place a stone defence within 1 tile. Cost: 1 Stone.", ritual: "—", category: "builder" },
-      { id: 5, name: "Iron Worker", move: 2, maxHp: 6, action: "Build Iron Defence — Place an iron defence within 1 tile. Cost: 1 Iron.", ritual: "—", category: "builder" },
+      { id: 2, name: "Base Builder", move: 2, maxHp: 1, action: "Build Base — Choose a location within 1 tile that has at least 3 adjacent Base Keepers. That tile becomes a Base tile.", ritual: "—", category: "worker" },
+      { id: 3, name: "Wood Worker", move: 2, maxHp: 6, action: "Build Wooden Defence — Place a wooden defence within 1 tile. Cost: 1 Wood.", ritual: "—", category: "worker" },
+      { id: 4, name: "Stone Worker", move: 2, maxHp: 6, action: "Build Stone Defence — Place a stone defence within 1 tile. Cost: 1 Stone.", ritual: "—", category: "worker" },
+      { id: 5, name: "Iron Worker", move: 2, maxHp: 6, action: "Build Iron Defence — Place an iron defence within 1 tile. Cost: 1 Iron.", ritual: "—", category: "worker" },
       { id: 6, name: "Warrior (Sword)", move: 3, maxHp: 4, action: "Melee Attack — Range 1, Damage 2.", ritual: "4 Bronze", category: "fighter" },
       { id: 7, name: "Warrior (Spear)", move: 2, maxHp: 4, action: "Melee Attack — Range 3, Damage 1.", ritual: "2 Bronze, 1 Wood, 1 Stone", category: "fighter" },
       { id: 8, name: "Warrior (Bow)", move: 1, maxHp: 2, action: "Ranged Attack — Range 7, Damage 1. Cost: 1 Arrow.", ritual: "1 Silver", category: "fighter" },
       { id: 9, name: "Warrior (Lance & Horse)", move: 4, maxHp: 3, action: "Melee Attack — Range 2, Damage 1.", ritual: "1 Wood, 1 Stone, 1 Rope, 1 Leather", category: "fighter" },
-      { id: 10, name: "Mage", move: 3, maxHp: 1, action: "Magic Attack — Range 7, Damage 1, targets 3 different units. Cost: delete 1 ally unit, not Mage.", ritual: "—", category: "magic" },
+      { id: 10, name: "Mage", move: 3, maxHp: 1, action: "Magic Attack — Range 7, Damage 1, targets 3 different units. Cost: delete 1 ally unit, not Mage.", ritual: "—", category: "fighter" },
       { id: 11, name: "Medic", move: 1, maxHp: 1, action: "Heal — Choose an eligible dead ally and revive them with full HP.", ritual: "—", category: "support" },
       { id: 12, name: "Priest", move: 1, maxHp: 6, action: "Heal a damaged unit by 1 HP. Cannot heal a Priest.", ritual: "—", category: "support" },
-      { id: 13, name: "Necromacer", move: 1, maxHp: 1, action: "Heal — Choose an eligible dead ally unit and revive it with full HP.", ritual: "—", category: "magic" },
+      { id: 13, name: "Necromacer", move: 1, maxHp: 1, action: "Heal — Choose an eligible dead ally unit and revive it with full HP.", ritual: "—", category: "support" },
       { id: 14, name: "Farmer", move: 1, maxHp: 6, action: "Gain 1 Bread item card.", ritual: "—", category: "support" },
       { id: 15, name: "Artierist", move: 2, maxHp: 2, action: "May load and fire a cannon as one action. Must be adjacent to the cannon.", ritual: "—", category: "fighter" },
       { id: 16, name: "Spy", move: 4, maxHp: 2, action: "Look — If within 5 tiles of the opponent's King, reveal the opponent's hand until the Spy leaves the 5-tile range or the King escapes the range.", ritual: "—", category: "special" },
-      { id: 17, name: "Ritual Caster", move: 1, maxHp: 1, action: "Summon a unit. Costs still apply.", ritual: "—", category: "magic" },
+      { id: 17, name: "Ritual Caster", move: 1, maxHp: 1, action: "Summon a unit. Costs still apply.", ritual: "—", category: "special" },
       { id: 18, name: "Thief", move: 4, maxHp: 1, action: "If within 5 tiles of the opponent's King, steal 1 Bronze from the opponent's hand. May go over the 5 Bronze limit with this effect.", ritual: "—", category: "special" },
       { id: 19, name: "Strategist", move: 1, maxHp: 1, action: "Delete this unit on any ally unit's turn to grant that ally a second action for the round.", ritual: "—", category: "special" },
       { id: 20, name: "Trader", move: 2, maxHp: 3, action: "Passive — Allows the Item Trade feature in the turn order.", ritual: "1 Iron", category: "support" }
@@ -1219,6 +1220,7 @@
     const toggleCrafting = document.getElementById("toggleCrafting");
     const shopLockNote = document.getElementById("shopLockNote");
     const summonGrid = document.getElementById("summonGrid");
+    const activePieceCount = document.getElementById("activePieceCount");
     const resourceGrid = document.getElementById("resourceGrid");
     const resourceUsed = document.getElementById("resourceUsed");
     const itemGrid = document.getElementById("itemGrid");
@@ -1338,6 +1340,10 @@
     }
 
     function addPiece(typeId) {
+      if (state.activePieces.length >= MAX_ACTIVE_PIECES) {
+        return;
+      }
+
       const unitType = getUnitType(typeId);
       const existingCount = getPiecesForType(typeId).length;
       const maxCopies = getMaxCopiesForType(typeId);
@@ -1574,12 +1580,21 @@
 
     function getBadgeColour(category) {
       switch (category) {
+        // King
         case "leader": return "linear-gradient(160deg, #d6a42d, #77510a)";
-        case "builder": return "linear-gradient(160deg, #467847, #214d28)";
+
+        // Base Builder, Wood Worker, Stone Worker, Iron Worker
+        case "worker": return "linear-gradient(160deg, #8f969e, #4d535a)";
+
+        // All Warriors and Mage
         case "fighter": return "linear-gradient(160deg, #a12b24, #5b1510)";
-        case "magic": return "linear-gradient(160deg, #6b3d86, #35194d)";
+
+        // Medic, Priest, Necromacer, Farmer
         case "support": return "linear-gradient(160deg, #3f7a56, #1f4c35)";
+
+        // Artierist, Spy, Ritual Caster, Thief, Strategist, Trader
         case "special": return "linear-gradient(160deg, #244d78, #132c47)";
+
         default: return "linear-gradient(160deg, #244d78, #122f4e)";
       }
     }
@@ -1591,21 +1606,29 @@
         return [];
       }
 
-      return state.activePieces.filter(piece => {
-        const unitType = getUnitType(piece.typeId);
-        const copyNumber = getCopyNumber(piece);
-        const displayName = `${unitType.name} #${copyNumber}`;
+      return state.activePieces
+        .filter(piece => {
+          const unitType = getUnitType(piece.typeId);
+          const copyNumber = getCopyNumber(piece);
+          const displayName = `${unitType.name} #${copyNumber}`;
 
-        const matchesFilter =
-          state.filter === "all" ||
-          (state.filter === "alive" && piece.currentHp > 0) ||
-          (state.filter === "defeated" && piece.currentHp <= 0);
+          const matchesFilter =
+            state.filter === "all" ||
+            (state.filter === "alive" && piece.currentHp > 0) ||
+            (state.filter === "defeated" && piece.currentHp <= 0);
 
-        const haystack = `${displayName} ${unitType.name} ${unitType.action} ${unitType.ritual} ${unitType.move} ${unitType.maxHp}`.toLowerCase();
-        const matchesSearch = query === "" || haystack.includes(query);
+          const haystack = `${displayName} ${unitType.name} ${unitType.action} ${unitType.ritual} ${unitType.move} ${unitType.maxHp}`.toLowerCase();
+          const matchesSearch = query === "" || haystack.includes(query);
 
-        return matchesFilter && matchesSearch;
-      });
+          return matchesFilter && matchesSearch;
+        })
+        .sort((a, b) => {
+          if (a.typeId !== b.typeId) {
+            return a.typeId - b.typeId;
+          }
+
+          return a.pieceId - b.pieceId;
+        });
     }
 
     function getVisibleRuleTypes() {
@@ -1819,6 +1842,8 @@
 
     function renderSummonPanel() {
       summonGrid.innerHTML = "";
+      activePieceCount.textContent = state.activePieces.length;
+      const boardIsFull = state.activePieces.length >= MAX_ACTIVE_PIECES;
       const fragment = document.createDocumentFragment();
 
       unitTypes.forEach(unitType => {
@@ -1829,7 +1854,7 @@
         row.innerHTML = `
           <div class="summon-name" title="${unitType.name}">${unitType.name}</div>
           <div class="summon-count">${activeCount}/${maxCopies}</div>
-          <button class="add-btn" data-add-type-id="${unitType.id}" ${activeCount >= maxCopies ? "disabled" : ""}>Add</button>
+          <button class="add-btn" data-add-type-id="${unitType.id}" ${activeCount >= maxCopies || boardIsFull ? "disabled" : ""}>Add</button>
         `;
         fragment.appendChild(row);
       });
@@ -1933,7 +1958,7 @@
             <div class="stat-pill"><span>Move</span><strong class="move-value">${unitType.move}</strong></div>
             <div class="stat-pill"><span>Max HP</span><strong class="hp-value">${unitType.maxHp}</strong></div>
           </div>
-          <button class="add-btn" data-add-type-id="${unitType.id}" ${activeCount >= maxCopies ? "disabled" : ""}>Add to Board</button>
+          <button class="add-btn" data-add-type-id="${unitType.id}" ${activeCount >= maxCopies || state.activePieces.length >= MAX_ACTIVE_PIECES ? "disabled" : ""}>Add to Board</button>
           <div class="quick-action">${unitType.action}</div>
         `;
 
