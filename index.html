@@ -11,6 +11,9 @@
       --muted: #6c5d4a;
       --blue: #244d78;
       --blue-dark: #17314e;
+      --team-accent: #244d78;
+      --team-accent-dark: #17314e;
+      --team-accent-soft: rgba(36, 77, 120, 0.12);
       --red: #a12b24;
       --green: #467847;
       --purple: #6b3d86;
@@ -82,6 +85,44 @@
       min-width: 0;
     }
 
+    .team-selector {
+      margin-top: 8px;
+      display: inline-grid;
+      grid-template-columns: auto auto auto;
+      gap: 6px;
+      align-items: center;
+      padding: 5px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.45);
+      border: 1px solid rgba(43, 33, 24, 0.22);
+    }
+
+    .team-label {
+      padding: 0 6px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .team-btn {
+      border: 1px solid rgba(43, 33, 24, 0.3);
+      border-radius: 999px;
+      min-height: 30px;
+      padding: 0 12px;
+      font-weight: 900;
+      cursor: pointer;
+      background: linear-gradient(180deg, #fff9eb, #ead7af);
+      box-shadow: 0 2px 0 rgba(0,0,0,0.14);
+    }
+
+    .team-btn.active {
+      color: white;
+      background: linear-gradient(180deg, var(--team-accent), var(--team-accent-dark));
+      border-color: var(--team-accent-dark);
+    }
+
     .crest {
       width: 58px;
       height: 58px;
@@ -121,7 +162,7 @@
       margin: -2px -4px 8px;
       padding: 6px 10px;
       border-radius: 12px;
-      background: linear-gradient(180deg, var(--blue), var(--blue-dark));
+      background: linear-gradient(180deg, var(--team-accent), var(--team-accent-dark));
       color: white;
       font-weight: 700;
       letter-spacing: 0.5px;
@@ -224,6 +265,12 @@
       font-weight: 800;
     }
 
+    .crafting-toggle-row {
+      margin-top: 8px;
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+
     .controls {
       padding: 8px;
       display: grid;
@@ -250,7 +297,7 @@
     }
 
     .filter-btn.active {
-      background: linear-gradient(180deg, #366b9c, #17314e);
+      background: linear-gradient(180deg, var(--team-accent), var(--team-accent-dark));
       color: white;
       border-color: #102741;
     }
@@ -439,8 +486,8 @@
       margin: 0;
       padding: 6px 10px;
       border-radius: 12px;
-      background: rgba(36, 77, 120, 0.12);
-      color: var(--blue-dark);
+      background: var(--team-accent-soft);
+      color: var(--team-accent-dark);
       font-size: 16px;
       font-weight: 900;
       letter-spacing: 0.4px;
@@ -542,7 +589,7 @@
     }
 
     .unit-card.selected {
-      outline: 4px solid rgba(36, 77, 120, 0.45);
+      outline: 4px solid var(--team-accent-soft);
       outline-offset: -4px;
     }
 
@@ -552,15 +599,15 @@
     }
 
     .unit-card.shielded {
-      outline: 4px solid rgba(36, 77, 120, 0.55);
+      outline: 4px solid var(--team-accent-soft);
       outline-offset: -4px;
       background:
-        linear-gradient(135deg, rgba(36, 77, 120, 0.12), rgba(255,255,255,0.08)),
+        linear-gradient(135deg, var(--team-accent-soft), rgba(255,255,255,0.08)),
         rgba(255, 248, 233, 0.92);
     }
 
     .unit-card.selected.shielded {
-      outline: 4px solid rgba(36, 77, 120, 0.85);
+      outline: 4px solid var(--team-accent);
     }
 
     .shield-ribbon {
@@ -866,6 +913,11 @@
         <div>
           <h1>Boardgame Tracker</h1>
           <div class="subtitle">Add only the pieces currently on the board. The King is limited to one copy; other unit types can have up to three copies.</div>
+          <div class="team-selector" aria-label="Team colour selector">
+            <span class="team-label">Team</span>
+            <button class="team-btn" type="button" data-team="blue">Blue</button>
+            <button class="team-btn" type="button" data-team="red">Red</button>
+          </div>
         </div>
       </div>
 
@@ -1142,6 +1194,7 @@
       selectedPieceId: null,
       selectedRuleTypeId: 1,
       filter: "all",
+      team: "blue",
       search: "",
       nextPieceId: 1,
       shopOpen: false,
@@ -1173,6 +1226,7 @@
     const unitsGrid = document.getElementById("unitsGrid");
     const searchInput = document.getElementById("searchInput");
     const filterButtons = Array.from(document.querySelectorAll(".filter-btn"));
+    const teamButtons = Array.from(document.querySelectorAll(".team-btn"));
 
     const detailBadge = document.getElementById("detailBadge");
     const detailName = document.getElementById("detailName");
@@ -1954,6 +2008,18 @@
       unequipButton.disabled = !selectedPiece.hasShield;
     }
 
+    function renderTeam() {
+      const isRedTeam = state.team === "red";
+
+      document.documentElement.style.setProperty("--team-accent", isRedTeam ? "#a12b24" : "#244d78");
+      document.documentElement.style.setProperty("--team-accent-dark", isRedTeam ? "#5b1510" : "#17314e");
+      document.documentElement.style.setProperty("--team-accent-soft", isRedTeam ? "rgba(161, 43, 36, 0.14)" : "rgba(36, 77, 120, 0.12)");
+
+      teamButtons.forEach(button => {
+        button.classList.toggle("active", button.dataset.team === state.team);
+      });
+    }
+
     function renderFilters() {
       filterButtons.forEach(button => {
         button.classList.toggle("active", button.dataset.filter === state.filter);
@@ -1962,6 +2028,7 @@
     }
 
     function render() {
+      renderTeam();
       renderCurrency();
       renderShop();
       renderCrafting();
@@ -2160,6 +2227,14 @@
         if (state.filter === "rules") {
           state.selectedPieceId = null;
         }
+        saveState();
+        render();
+      });
+    });
+
+    teamButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        state.team = button.dataset.team;
         saveState();
         render();
       });
