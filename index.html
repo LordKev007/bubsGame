@@ -73,6 +73,7 @@
     .detail-panel,
     .summon-panel,
     .tracker-panel,
+    .walkthrough-panel,
     .shop-panel {
       border: 2px solid var(--border);
       background: rgba(255, 248, 233, 0.92);
@@ -88,8 +89,15 @@
       min-width: 0;
     }
 
-    .team-selector {
+    .header-tools {
       margin-top: 8px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .team-selector {
       display: inline-grid;
       grid-template-columns: auto auto auto;
       gap: 6px;
@@ -124,6 +132,60 @@
       color: white;
       background: linear-gradient(180deg, var(--team-accent), var(--team-accent-dark));
       border-color: var(--team-accent-dark);
+    }
+
+    .test-mode-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 6px 5px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.45);
+      border: 1px solid rgba(43, 33, 24, 0.22);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .test-mode-label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      white-space: nowrap;
+    }
+
+    .test-mode-switch {
+      position: relative;
+      width: 58px;
+      height: 30px;
+      border-radius: 999px;
+      border: 1px solid rgba(43, 33, 24, 0.24);
+      background: rgba(43, 33, 24, 0.16);
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.16);
+      transition: background 140ms ease;
+    }
+
+    .test-mode-switch::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, #fffdf6, #e7d3aa);
+      border: 1px solid rgba(43, 33, 24, 0.18);
+      box-shadow: 0 2px 3px rgba(0,0,0,0.2);
+      transition: transform 140ms ease;
+    }
+
+    .test-mode-toggle.active .test-mode-switch {
+      background: linear-gradient(180deg, #f2c14e, #a67316);
+    }
+
+    .test-mode-toggle.active .test-mode-switch::after {
+      transform: translateX(28px);
     }
 
     .crest {
@@ -408,13 +470,21 @@
       flex-wrap: wrap;
     }
 
-    .bases-content.hidden {
+    .bases-content.hidden,
+    .panel-content.hidden {
       display: none;
+    }
+
+    .coach-focus-note {
+      margin-left: 6px;
+      color: var(--team-accent-dark);
+      font-size: 12px;
+      font-weight: 900;
     }
 
     .cannon-controls {
       display: grid;
-      grid-template-columns: 1fr auto auto;
+      grid-template-columns: 1fr auto auto auto;
       gap: 8px;
       align-items: center;
     }
@@ -471,6 +541,115 @@
     }
 
     .cannon-action-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .walkthrough-panel {
+      padding: 10px 12px 12px;
+    }
+
+    .walkthrough-content.hidden {
+      display: none;
+    }
+
+    .coach-actions,
+    .coach-controls {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .coach-card {
+      margin-top: 10px;
+      border: 1px solid rgba(43, 33, 24, 0.18);
+      background: rgba(255,255,255,0.58);
+      border-radius: 14px;
+      padding: 12px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .coach-step-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.35px;
+    }
+
+    .coach-step-title {
+      color: var(--team-accent-dark);
+      font-size: 22px;
+      font-weight: 900;
+      line-height: 1.1;
+    }
+
+    .coach-step-text {
+      color: var(--ink);
+      font-size: 15px;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .coach-step-tips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .coach-tip-pill {
+      border: 1px solid rgba(43, 33, 24, 0.16);
+      background: rgba(255,255,255,0.72);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 900;
+      color: var(--ink);
+      line-height: 1.2;
+    }
+
+    .coach-highlight {
+      position: relative;
+      z-index: 3;
+      box-shadow:
+        0 0 0 4px rgba(36, 77, 120, 0.30),
+        0 0 0 8px rgba(36, 77, 120, 0.12),
+        0 12px 28px rgba(0,0,0,0.18) !important;
+      border-radius: 18px;
+      transition: box-shadow 0.18s ease;
+    }
+
+    .coach-highlight.red-focus {
+      box-shadow:
+        0 0 0 4px rgba(161, 43, 36, 0.30),
+        0 0 0 8px rgba(161, 43, 36, 0.12),
+        0 12px 28px rgba(0,0,0,0.18) !important;
+    }
+
+    .coach-btn {
+      border: 1px solid rgba(43, 33, 24, 0.3);
+      background: linear-gradient(180deg, #fff9eb, #ead7af);
+      color: var(--ink);
+      border-radius: 10px;
+      min-height: 34px;
+      cursor: pointer;
+      box-shadow: 0 2px 0 rgba(0,0,0,0.18);
+      font-weight: 900;
+      padding: 0 10px;
+      white-space: nowrap;
+    }
+
+    .coach-btn.primary {
+      background: linear-gradient(180deg, #edf8ed, #c8e0c4);
+    }
+
+    .coach-btn.danger {
+      background: linear-gradient(180deg, #ffe4df, #e6b5ac);
+    }
+
+    .coach-btn:disabled {
       opacity: 0.45;
       cursor: not-allowed;
     }
@@ -2091,7 +2270,8 @@
       .item-grid { grid-template-columns: repeat(3, minmax(112px, 1fr)); }
       .shop-grid { grid-template-columns: repeat(2, minmax(160px, 1fr)); }
       .conversion-grid { grid-template-columns: 1fr; }
-      .bases-grid { grid-template-columns: 1fr; }
+      .bases-grid,
+      .walkthrough-grid { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 480px) {
@@ -2106,22 +2286,29 @@
 </head>
 <body>
   <main class="app">
-    <section class="top-bar" aria-label="Boardgame tracker header">
+    <section class="top-bar" id="gameHeaderPanel" aria-label="Boardgame tracker header">
       <div class="title-card">
         <div class="crest" aria-hidden="true">♛</div>
         <div>
           <h1>Boardgame Tracker</h1>
           <div class="subtitle">Capture the enemy King while protecting your own. Track your pieces, resources, items, and turn order as the battle unfolds.</div>
-          <div class="team-selector" aria-label="Team colour selector">
-            <span class="team-label">Team</span>
-            <button class="team-btn" type="button" data-team="blue">Blue</button>
-            <button class="team-btn" type="button" data-team="red">Red</button>
+          <div class="header-tools">
+            <div class="team-selector" aria-label="Team colour selector">
+              <span class="team-label">Team</span>
+              <button class="team-btn" type="button" data-team="blue">Blue</button>
+              <button class="team-btn" type="button" data-team="red">Red</button>
+            </div>
+            <button class="test-mode-toggle" id="testModeToggle" type="button" aria-pressed="false">
+              <span class="test-mode-label">Test Mode</span>
+              <span class="test-mode-switch" aria-hidden="true"></span>
+            </button>
           </div>
         </div>
       </div>
 
       <section class="currency-panel" aria-label="Currency tracker">
         <div class="panel-heading">Currency</div>
+        <div class="shop-lock-note" id="economyLockNote">Manual economy edits are available during setup.</div>
         <div class="currency-row gold">
           <div class="currency-label">Gold</div>
           <button class="small-btn" data-currency="gold" data-change="-1" aria-label="Decrease gold">−</button>
@@ -2143,12 +2330,42 @@
       </section>
     </section>
 
-    <section class="turn-panel" aria-label="Turn order tracker">
+    <section class="walkthrough-panel" aria-label="Optional coach mode">
       <div class="panel-header">
-        <h2>Turn Order</h2>
-        <div class="panel-note">Shared initiative for both teams</div>
+        <div>
+          <h2>Coach Mode</h2>
+          <div class="panel-note">Optional guided setup and first-round help</div>
+        </div>
+        <button class="collapse-btn" id="toggleWalkthroughPanel" type="button" aria-expanded="false">Show Coach</button>
       </div>
-      <div class="turn-panel-grid">
+      <div class="walkthrough-content hidden" id="walkthroughContent">
+        <div class="coach-actions">
+          <button class="coach-btn primary" id="startCoachSetup" type="button">Start Guided Setup</button>
+          <button class="coach-btn" id="startCoachFirstRound" type="button">Guide First Round</button>
+          <button class="coach-btn danger" id="stopCoach" type="button">Turn Coach Off</button>
+        </div>
+        <div class="coach-card" id="coachCard">
+          <div class="coach-step-label" id="coachStepLabel">Coach is off</div>
+          <div class="coach-step-title" id="coachStepTitle">Optional guided help</div>
+          <div class="coach-step-text" id="coachStepText">Start Guided Setup or Guide First Round to highlight the right panels in order.</div>
+          <div class="coach-step-tips" id="coachStepTips"></div>
+          <div class="coach-controls">
+            <button class="coach-btn" id="coachPrev" type="button">Previous</button>
+            <button class="coach-btn primary" id="coachNext" type="button">Next</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="turn-panel" id="turnOrderPanel" aria-label="Turn order tracker">
+      <div class="panel-header">
+        <div>
+          <h2>Turn Order</h2>
+          <div class="panel-note">Shared initiative for both teams</div>
+        </div>
+        <button class="collapse-btn" id="toggleTurnPanel" type="button" aria-expanded="true">Collapse</button>
+      </div>
+      <div class="turn-panel-grid panel-content" id="turnContent">
         <div class="turn-callout turn-main-callout">
           <div class="turn-round" id="turnRoundLabel">Round 1</div>
           <div class="turn-team blue-team" id="turnTeamLabel">Choose first player</div>
@@ -2225,7 +2442,7 @@
       <div class="summon-grid" id="summonGrid"></div>
     </section>
 
-    <section class="tracker-panel bases-panel" aria-label="Bases tracker">
+    <section class="tracker-panel bases-panel" id="basesPanel" aria-label="Bases tracker">
       <div class="panel-header">
         <div>
           <h2>Bases</h2>
@@ -2241,44 +2458,58 @@
       </div>
     </section>
 
-    <section class="tracker-panel" aria-label="Resource tracker">
+    <section class="tracker-panel" id="resourcesPanel" aria-label="Resource tracker">
       <div class="panel-header">
-        <h2>Resources</h2>
-        <div class="panel-note"><span id="resourceUsed">0</span> / 11 resource slots used</div>
-      </div>
-      <div class="resource-grid" id="resourceGrid"></div>
-    </section>
-
-    <section class="tracker-panel" aria-label="Item tracker">
-      <div class="panel-header">
-        <h2>Items</h2>
-        <div class="panel-note"><span id="itemUsed">0</span> / 11 item slots used</div>
-      </div>
-      <div class="item-grid" id="itemGrid"></div>
-    </section>
-
-    <div class="utility-panels-row">
-      <section class="cannon-panel" aria-label="Cannon tracker">
-        <div class="panel-header">
-          <h2>Cannon</h2>
-          <div class="panel-note">Load using Cannon Ball</div>
+        <div>
+          <h2>Resources</h2>
+          <div class="panel-note"><span id="resourceUsed">0</span> / 11 resource slots used</div>
         </div>
-        <div class="cannon-controls">
+        <button class="collapse-btn" id="toggleResourcesPanel" type="button" aria-expanded="true">Collapse</button>
+      </div>
+      <div class="resource-grid panel-content" id="resourceGrid"></div>
+    </section>
+
+    <section class="tracker-panel" id="itemsPanel" aria-label="Item tracker">
+      <div class="panel-header">
+        <div>
+          <h2>Items</h2>
+          <div class="panel-note"><span id="itemUsed">0</span> / 11 item slots used</div>
+        </div>
+        <button class="collapse-btn" id="toggleItemsPanel" type="button" aria-expanded="true">Collapse</button>
+      </div>
+      <div class="item-grid panel-content" id="itemGrid"></div>
+    </section>
+
+    <div class="utility-panels-row" id="specialSystemsPanel">
+      <section class="cannon-panel" id="cannonPanel" aria-label="Cannon tracker">
+        <div class="panel-header">
+          <div>
+            <h2>Cannon</h2>
+            <div class="panel-note">Load using Cannon Ball</div>
+          </div>
+          <button class="collapse-btn" id="toggleCannonPanel" type="button" aria-expanded="true">Collapse</button>
+        </div>
+        <div class="cannon-controls panel-content" id="cannonContent">
           <div>
             <div class="cannon-status-title">Cannon Status</div>
             <div class="cannon-status-note" id="cannonStatusNote">No Cannon available.</div>
           </div>
           <div class="cannon-pill" id="cannonLoadedStatus">Unloaded</div>
+          <button class="cannon-action-btn secondary" id="placeCannonButton" type="button">Place Cannon</button>
           <button class="cannon-action-btn" id="loadCannonButton" type="button">Load Cannon</button>
           <button class="cannon-action-btn secondary" id="fireCannonButton" type="button">Mark Fired</button>
         </div>
       </section>
 
-      <section class="giving-tiles-panel" aria-label="Giving Tiles tracker">
+      <section class="giving-tiles-panel" id="givingTilesPanel" aria-label="Giving Tiles tracker">
         <div class="panel-header">
-          <h2>Giving Tiles</h2>
-          <div class="panel-note">Special spaces occupied</div>
+          <div>
+            <h2>Giving Tiles</h2>
+            <div class="panel-note">Special spaces occupied</div>
+          </div>
+          <button class="collapse-btn" id="toggleGivingPanel" type="button" aria-expanded="true">Collapse</button>
         </div>
+        <div class="panel-content" id="givingContent">
         <div class="giving-tiles-controls">
           <div>
             <div class="giving-tiles-label">Occupied</div>
@@ -2294,6 +2525,7 @@
             <button class="animation-mode-option" type="button" data-giving-animation="subtle">Subtle</button>
             <button class="animation-mode-option" type="button" data-giving-animation="awesome">Awesome</button>
           </div>
+        </div>
         </div>
       </section>
     </div>
@@ -2445,6 +2677,7 @@
 
     const MAX_BASES = 4;
     const BASE_MAX_HP = 6;
+    const MAX_CANNONS_PER_PLAYER = 1;
 
     const baseSpecializations = [
       {
@@ -2645,16 +2878,31 @@
       selectedRuleTypeId: 1,
       filter: "all",
       team: "blue",
+      testMode: false,
       search: "",
       nextPieceId: 1,
       shopOpen: false,
       craftingOpen: false,
       setupComplete: false,
       summonPanelCollapsed: false,
+      walkthroughPanelCollapsed: true,
+      collapsedPanels: {
+        turn: false,
+        resources: false,
+        items: false,
+        cannon: false,
+        giving: false
+      },
+      coach: {
+        active: false,
+        mode: "setup",
+        stepIndex: 0
+      },
       basesPanelCollapsed: false,
       pendingBaseSpecializations: {},
       givingAnimationMode: "awesome",
       cannonLoaded: false,
+      placedCannons: 0,
       turnOrder: {
         started: false,
         round: 1,
@@ -2687,6 +2935,17 @@
 
     let state = loadState();
 
+    const walkthroughContent = document.getElementById("walkthroughContent");
+    const toggleWalkthroughPanel = document.getElementById("toggleWalkthroughPanel");
+    const startCoachSetup = document.getElementById("startCoachSetup");
+    const startCoachFirstRound = document.getElementById("startCoachFirstRound");
+    const stopCoach = document.getElementById("stopCoach");
+    const coachStepLabel = document.getElementById("coachStepLabel");
+    const coachStepTitle = document.getElementById("coachStepTitle");
+    const coachStepText = document.getElementById("coachStepText");
+    const coachStepTips = document.getElementById("coachStepTips");
+    const coachPrev = document.getElementById("coachPrev");
+    const coachNext = document.getElementById("coachNext");
     const shopPanel = document.getElementById("shopPanel");
     const shopGrid = document.getElementById("shopGrid");
     const craftingPanel = document.getElementById("craftingPanel");
@@ -2694,12 +2953,20 @@
     const toggleShop = null;
     const toggleCrafting = null;
     const shopLockNote = null;
+    const cannonContent = document.getElementById("cannonContent");
+    const toggleCannonPanel = document.getElementById("toggleCannonPanel");
+    const givingContent = document.getElementById("givingContent");
+    const toggleGivingPanel = document.getElementById("toggleGivingPanel");
     const cannonStatusNote = document.getElementById("cannonStatusNote");
     const cannonLoadedStatus = document.getElementById("cannonLoadedStatus");
+    const placeCannonButton = document.getElementById("placeCannonButton");
     const loadCannonButton = document.getElementById("loadCannonButton");
     const fireCannonButton = document.getElementById("fireCannonButton");
+    const economyLockNote = document.getElementById("economyLockNote");
     const givingTilesCount = document.getElementById("givingTilesCount");
     const givingAnimationModeToggle = document.getElementById("givingAnimationModeToggle");
+    const turnContent = document.getElementById("turnContent");
+    const toggleTurnPanel = document.getElementById("toggleTurnPanel");
     const turnRoundLabel = document.getElementById("turnRoundLabel");
     const turnTeamLabel = document.getElementById("turnTeamLabel");
     const turnStepTitle = document.getElementById("turnStepTitle");
@@ -2736,12 +3003,15 @@
     const addBaseButton = document.getElementById("addBaseButton");
     const resourceGrid = document.getElementById("resourceGrid");
     const resourceUsed = document.getElementById("resourceUsed");
+    const toggleResourcesPanel = document.getElementById("toggleResourcesPanel");
     const itemGrid = document.getElementById("itemGrid");
     const itemUsed = document.getElementById("itemUsed");
+    const toggleItemsPanel = document.getElementById("toggleItemsPanel");
     const unitsGrid = document.getElementById("unitsGrid");
     const searchInput = document.getElementById("searchInput");
     const filterButtons = Array.from(document.querySelectorAll(".filter-btn"));
     const teamButtons = Array.from(document.querySelectorAll(".team-btn"));
+    const testModeToggle = document.getElementById("testModeToggle");
 
     const detailBadge = document.getElementById("detailBadge");
     const detailName = document.getElementById("detailName");
@@ -2858,6 +3128,14 @@
             ...(saved.turnOrder || {})
           },
           pendingBaseSpecializations: saved.pendingBaseSpecializations || {},
+          collapsedPanels: {
+            ...defaultState.collapsedPanels,
+            ...(saved.collapsedPanels || {})
+          },
+          coach: {
+            ...defaultState.coach,
+            ...(saved.coach || {})
+          },
           roundLog: Array.isArray(saved.roundLog) ? saved.roundLog : [],
           bases: Array.isArray(saved.bases) && saved.bases.length > 0 ? saved.bases : JSON.parse(JSON.stringify(defaultState.bases)),
           nextBaseId: Number.isInteger(saved.nextBaseId) ? saved.nextBaseId : defaultState.nextBaseId,
@@ -2949,6 +3227,14 @@
       const collectionName = getCollectionNameForTargetType(targetType);
       const maxSlots = getCapacityForTargetType(targetType);
       return Math.max(0, maxSlots - getTotalForCollection(collectionName));
+    }
+
+    function getTotalCannonsOwned() {
+      return (state.items.Cannon || 0) + (state.placedCannons || 0);
+    }
+
+    function canGainCannon(quantity = 1) {
+      return getTotalCannonsOwned() + quantity <= MAX_CANNONS_PER_PLAYER;
     }
 
     function getBaseSpecialization(specializationId) {
@@ -3341,6 +3627,18 @@
       return missingCosts.length > 0 ? `Need ${missingCosts.join(", ")}` : "Summon";
     }
 
+    function addSetupArrowsForBowWarrior() {
+      const arrowsToAdd = 3;
+      const availableItemSpace = getAvailableSpaceForTargetType("item");
+      const actualArrowsAdded = Math.min(arrowsToAdd, availableItemSpace);
+
+      state.items.Arrow = (state.items.Arrow || 0) + actualArrowsAdded;
+    }
+
+    function removeSetupArrowsForBowWarrior() {
+      state.items.Arrow = Math.max(0, (state.items.Arrow || 0) - 3);
+    }
+
     function addPiece(typeId) {
       if (!canAddPieceType(typeId)) {
         return;
@@ -3363,6 +3661,10 @@
 
       state.nextPieceId += 1;
       state.activePieces.push(newPiece);
+
+      if (!state.setupComplete && unitType.id === 8) {
+        addSetupArrowsForBowWarrior();
+      }
       state.selectedPieceId = newPiece.pieceId;
       state.selectedRuleTypeId = unitType.id;
       state.filter = state.filter === "rules" ? "all" : state.filter;
@@ -3383,6 +3685,10 @@
       }
 
       state.activePieces = state.activePieces.filter(item => item.pieceId !== piece.pieceId);
+
+      if (!state.setupComplete && piece.typeId === 8) {
+        removeSetupArrowsForBowWarrior();
+      }
 
       if (state.selectedPieceId === piece.pieceId) {
         state.selectedPieceId = state.activePieces.length > 0 ? state.activePieces[0].pieceId : null;
@@ -3478,7 +3784,15 @@
       render();
     }
 
+    function canManuallyEditEconomy() {
+      return !state.setupComplete || Boolean(state.testMode);
+    }
+
     function changeCurrency(currencyName, amount) {
+      if (!canManuallyEditEconomy()) {
+        return;
+      }
+
       const current = state.currency[currencyName] || 0;
       state.currency[currencyName] = clamp(current + amount, 0, 99);
       saveState();
@@ -3492,6 +3806,14 @@
     }
 
     function changeCounter(collectionName, itemName, amount) {
+      if (!canManuallyEditEconomy()) {
+        return;
+      }
+
+      if (collectionName === "items" && itemName === "Cannon" && amount > 0 && !canGainCannon(amount)) {
+        return;
+      }
+
       const current = state[collectionName][itemName] || 0;
       const maxSlots = collectionName === "resources" ? MAX_RESOURCE_SLOTS : MAX_ITEM_SLOTS;
       const currentTotal = getTotalForCollection(collectionName);
@@ -3510,6 +3832,10 @@
       const spaceAvailable = getAvailableSpaceForTargetType(purchase.targetType);
 
       if (currencyAvailable < purchase.costAmount || spaceAvailable <= 0) {
+        return 0;
+      }
+
+      if (purchase.targetType === "item" && purchase.targetName === "Cannon" && !canGainCannon(purchase.quantity)) {
         return 0;
       }
 
@@ -3542,8 +3868,32 @@
       return isCurrentTeamTurnForStep("shopping") && hasActiveTrader();
     }
 
+    function getAvailableCannonsForPlay() {
+      return (state.placedCannons || 0) + (state.items.Cannon || 0);
+    }
+
+    function hasPlacedCannon() {
+      return (state.placedCannons || 0) > 0;
+    }
+
     function hasCannon() {
-      return (state.items.Cannon || 0) > 0;
+      return getAvailableCannonsForPlay() > 0;
+    }
+
+    function canPlaceCannon() {
+      return (state.items.Cannon || 0) > 0 && (state.placedCannons || 0) < MAX_CANNONS_PER_PLAYER;
+    }
+
+    function placeCannon() {
+      if (!canPlaceCannon()) {
+        return;
+      }
+
+      state.items.Cannon -= 1;
+      state.placedCannons = (state.placedCannons || 0) + 1;
+      logRoundEvent(`Cannon placed on the battlefield. ${state.placedCannons} placed cannon${state.placedCannons === 1 ? "" : "s"} available.`);
+      saveState();
+      render();
     }
 
     function hasCannonBall() {
@@ -3551,7 +3901,7 @@
     }
 
     function canLoadCannon() {
-      return hasCannon() && hasCannonBall() && !state.cannonLoaded;
+      return hasPlacedCannon() && hasCannonBall() && !state.cannonLoaded;
     }
 
     function loadCannon() {
@@ -3902,6 +4252,10 @@
         return false;
       }
 
+      if (recipe.resultName === "Cannon" && !canGainCannon(recipe.resultQuantity)) {
+        return false;
+      }
+
       const hasResources = recipe.costs.every(cost => {
         if (cost.type !== "resource") {
           return false;
@@ -3925,6 +4279,10 @@
 
       if (getAvailableSpaceForTargetType("item") < recipe.resultQuantity) {
         return `Need ${recipe.resultQuantity} open item slot${recipe.resultQuantity === 1 ? "" : "s"}`;
+      }
+
+      if (recipe.resultName === "Cannon" && !canGainCannon(recipe.resultQuantity)) {
+        return "Cannon limit reached: 1 of 1";
       }
 
       return "Ready to craft";
@@ -4032,6 +4390,275 @@
         const haystack = `${unitType.name} ${unitType.action} ${unitType.ritual} ${unitType.move} ${unitType.maxHp}`.toLowerCase();
         return query === "" || haystack.includes(query);
       });
+    }
+
+    const coachModes = {
+      setup: [
+        {
+          label: "Setup",
+          title: "Choose your team",
+          text: "Start by selecting Blue or Red at the top. Each iPad should track one player’s side.",
+          targetId: "gameHeaderPanel",
+          getTips: () => ["Use the same team colour as your pieces.", "Both players should agree on the same first-player result later."]
+        },
+        {
+          label: "Setup",
+          title: "Add your starting pieces",
+          text: "Your King is already on the board. Add 7 more starting pieces from the setup list.",
+          targetId: "summonPanel",
+          getTips: () => {
+            const tips = ["Before setup is finished, only legal starting pieces are shown."];
+            const bowCount = getPiecesForType(8).length;
+            const shopkeeperCount = getPiecesForType(20).length;
+            const strategistCount = getPiecesForType(19).length;
+            const workerCount = getPiecesForType(3).length + getPiecesForType(4).length + getPiecesForType(5).length;
+
+            if (bowCount > 0) {
+              tips.push(`${bowCount} Bow Warrior${bowCount === 1 ? "" : "s"}: setup gives 3 free Arrows each.`);
+            } else {
+              tips.push("Bow Warriors are slow but can threaten from far away.");
+            }
+
+            if (shopkeeperCount > 0) {
+              tips.push("Protect your Shopkeeper. Shopping requires a living Shopkeeper.");
+            }
+
+            if (strategistCount > 0) {
+              tips.push("Strategists are best when you have a strong piece worth giving a second action.");
+            }
+
+            if (workerCount > 0) {
+              tips.push("Workers can build walls later, but each wall costs 3 matching resources.");
+            }
+
+            return tips;
+          }
+        },
+        {
+          label: "Setup",
+          title: "Check your base",
+          text: "Each player starts with one free base. You can rename it now if you want.",
+          targetId: "basesPanel",
+          getTips: () => ["Each base has 6 HP.", "A base can have one specialization, and specializations can be changed later by paying the new cost."]
+        },
+        {
+          label: "Setup",
+          title: "Finish setup",
+          text: "When you have 8 total pieces, including your King, press Finish Setup to unlock the full game flow.",
+          targetSelector: "#finishSetup",
+          fallbackTargetId: "summonPanel",
+          getTips: () => ["After setup, new pieces must be summoned during the Summoning Unit step.", "Summoned Bow Warriors do not receive free setup Arrows."]
+        }
+      ],
+      firstRound: [
+        {
+          label: "Round 1",
+          title: "Choose the first player",
+          text: "Flip for first player, or manually set Red or Blue first so both iPads match.",
+          targetId: "turnOrderPanel",
+          getTips: () => ["Both players must use the same first-player result.", "After each full round, the starting team switches."]
+        },
+        {
+          label: "Round 1",
+          title: "Follow initiative",
+          text: "Use Next and Previous to move through initiative. Each initiative step gives Red and Blue a chance to act if they have that unit.",
+          targetId: "turnOrderPanel",
+          getTips: () => ["The current reference card shows movement, HP, and action details.", "If you have no matching pieces, simply move to the next team or step."]
+        },
+        {
+          label: "Round 1",
+          title: "Use special systems",
+          text: "Giving Tiles, Summoning, Crafting, and Shopping only happen on their turn-order steps.",
+          targetId: "specialSystemsPanel",
+          getTips: () => ["Giving Tiles reward resources every round.", "Shopping requires a living Shopkeeper.", "Crafting and Summoning are handled from the Turn Order step when they appear."]
+        },
+        {
+          label: "Round 1",
+          title: "End of round rewards",
+          text: "At the end of each round, claim 1 free Bronze, then choose Wood, Stone, Bread, or another Bronze.",
+          targetId: "turnOrderPanel",
+          getTips: () => ["Review the round summary before advancing.", "Then continue into the next round with the starting player order switched."]
+        }
+      ]
+    };
+
+    function clearCoachHighlights() {
+      document.querySelectorAll(".coach-highlight, .red-focus").forEach(element => {
+        element.classList.remove("coach-highlight", "red-focus");
+      });
+    }
+
+    function getCoachSteps() {
+      const mode = state.coach && state.coach.mode ? state.coach.mode : "setup";
+      return coachModes[mode] || coachModes.setup;
+    }
+
+    function getCoachCurrentStep() {
+      const steps = getCoachSteps();
+      const index = clamp(state.coach && Number.isInteger(state.coach.stepIndex) ? state.coach.stepIndex : 0, 0, Math.max(steps.length - 1, 0));
+      return steps[index] || null;
+    }
+
+    function getCoachTargetElement(step) {
+      if (!step) {
+        return null;
+      }
+
+      if (step.targetSelector) {
+        const directTarget = document.querySelector(step.targetSelector);
+        if (directTarget) {
+          return directTarget;
+        }
+      }
+
+      if (step.targetId) {
+        return document.getElementById(step.targetId);
+      }
+
+      if (step.fallbackTargetId) {
+        return document.getElementById(step.fallbackTargetId);
+      }
+
+      return null;
+    }
+
+    function getCoachOpenPanels() {
+      if (!state.coach || !state.coach.active) {
+        return null;
+      }
+
+      const step = getCoachCurrentStep();
+      const targetId = step ? (step.targetId || step.fallbackTargetId || "") : "";
+
+      if (targetId === "summonPanel") {
+        return ["summon"];
+      }
+
+      if (targetId === "basesPanel") {
+        return ["bases"];
+      }
+
+      if (targetId === "turnOrderPanel") {
+        return ["turn"];
+      }
+
+      if (targetId === "specialSystemsPanel") {
+        return ["cannon", "giving"];
+      }
+
+      if (targetId === "resourcesPanel") {
+        return ["resources"];
+      }
+
+      if (targetId === "itemsPanel") {
+        return ["items"];
+      }
+
+      return [];
+    }
+
+    function isPanelCollapsed(panelKey) {
+      const coachOpenPanels = getCoachOpenPanels();
+
+      if (coachOpenPanels) {
+        return !coachOpenPanels.includes(panelKey);
+      }
+
+      if (panelKey === "summon") {
+        return Boolean(state.summonPanelCollapsed);
+      }
+
+      if (panelKey === "bases") {
+        return Boolean(state.basesPanelCollapsed);
+      }
+
+      return Boolean(state.collapsedPanels && state.collapsedPanels[panelKey]);
+    }
+
+    function setManualPanelCollapsed(panelKey, collapsed) {
+      if (panelKey === "summon") {
+        state.summonPanelCollapsed = collapsed;
+        return;
+      }
+
+      if (panelKey === "bases") {
+        state.basesPanelCollapsed = collapsed;
+        return;
+      }
+
+      if (!state.collapsedPanels) {
+        state.collapsedPanels = { ...defaultState.collapsedPanels };
+      }
+
+      state.collapsedPanels[panelKey] = collapsed;
+    }
+
+    function updatePanelToggle(button, collapsed) {
+      if (!button) {
+        return;
+      }
+
+      const coachModeActive = Boolean(state.coach && state.coach.active);
+      button.textContent = coachModeActive ? (collapsed ? "Coach Hidden" : "Coach Open") : (collapsed ? "Expand" : "Collapse");
+      button.setAttribute("aria-expanded", String(!collapsed));
+      button.disabled = coachModeActive;
+    }
+
+    function renderCollapsiblePanels() {
+      const turnCollapsed = isPanelCollapsed("turn");
+      const resourcesCollapsed = isPanelCollapsed("resources");
+      const itemsCollapsed = isPanelCollapsed("items");
+      const cannonCollapsed = isPanelCollapsed("cannon");
+      const givingCollapsed = isPanelCollapsed("giving");
+
+      turnContent.classList.toggle("hidden", turnCollapsed);
+      resourceGrid.classList.toggle("hidden", resourcesCollapsed);
+      itemGrid.classList.toggle("hidden", itemsCollapsed);
+      cannonContent.classList.toggle("hidden", cannonCollapsed);
+      givingContent.classList.toggle("hidden", givingCollapsed);
+
+      updatePanelToggle(toggleTurnPanel, turnCollapsed);
+      updatePanelToggle(toggleResourcesPanel, resourcesCollapsed);
+      updatePanelToggle(toggleItemsPanel, itemsCollapsed);
+      updatePanelToggle(toggleCannonPanel, cannonCollapsed);
+      updatePanelToggle(toggleGivingPanel, givingCollapsed);
+    }
+
+    function renderWalkthrough() {
+      walkthroughContent.classList.toggle("hidden", Boolean(state.walkthroughPanelCollapsed));
+      toggleWalkthroughPanel.textContent = state.walkthroughPanelCollapsed ? "Show Coach" : "Hide Coach";
+      toggleWalkthroughPanel.setAttribute("aria-expanded", String(!state.walkthroughPanelCollapsed));
+      clearCoachHighlights();
+
+      if (!state.coach || !state.coach.active) {
+        coachStepLabel.textContent = "Coach is off";
+        coachStepTitle.textContent = "Optional guided help";
+        coachStepText.textContent = "Start Guided Setup or Guide First Round to highlight the right panels in order.";
+        coachStepTips.innerHTML = "";
+        coachPrev.disabled = true;
+        coachNext.disabled = true;
+        return;
+      }
+
+      const steps = getCoachSteps();
+      const step = getCoachCurrentStep();
+      const stepIndex = clamp(state.coach.stepIndex, 0, Math.max(steps.length - 1, 0));
+      const tips = typeof step.getTips === "function" ? step.getTips() : [];
+      const target = getCoachTargetElement(step);
+
+      coachStepLabel.textContent = `${step.label} · Step ${stepIndex + 1} of ${steps.length}`;
+      coachStepTitle.textContent = step.title;
+      coachStepText.textContent = step.text;
+      coachStepTips.innerHTML = tips.map(tip => `<span class="coach-tip-pill">${tip}</span>`).join("");
+      coachPrev.disabled = stepIndex <= 0;
+      coachNext.disabled = stepIndex >= steps.length - 1;
+
+      if (target) {
+        target.classList.add("coach-highlight");
+        if (state.team === "red") {
+          target.classList.add("red-focus");
+        }
+      }
     }
 
     function renderTurnOrder() {
@@ -4522,9 +5149,9 @@
       basesGrid.innerHTML = "";
       baseCount.textContent = state.bases.length;
       addBaseButton.disabled = state.bases.length >= MAX_BASES;
-      basesContent.classList.toggle("hidden", Boolean(state.basesPanelCollapsed));
-      toggleBasesPanel.textContent = state.basesPanelCollapsed ? "Expand" : "Collapse";
-      toggleBasesPanel.setAttribute("aria-expanded", String(!state.basesPanelCollapsed));
+      const basesCollapsed = isPanelCollapsed("bases");
+      basesContent.classList.toggle("hidden", basesCollapsed);
+      updatePanelToggle(toggleBasesPanel, basesCollapsed);
 
       const fragment = document.createDocumentFragment();
 
@@ -4577,31 +5204,47 @@
     }
 
     function renderCannon() {
-      const cannonCount = state.items.Cannon || 0;
+      const cannonInventoryCount = state.items.Cannon || 0;
+      const placedCannonCount = state.placedCannons || 0;
       const cannonBallCount = state.items["Cannon Ball"] || 0;
+      const totalCannonsOwned = getTotalCannonsOwned();
 
       cannonLoadedStatus.textContent = state.cannonLoaded ? "Loaded" : "Unloaded";
       cannonLoadedStatus.classList.toggle("loaded", Boolean(state.cannonLoaded));
 
-      if (cannonCount <= 0) {
-        cannonStatusNote.textContent = "No Cannon available.";
+      if (placedCannonCount <= 0 && cannonInventoryCount <= 0) {
+        cannonStatusNote.textContent = `No Cannon available. Cannon limit: ${totalCannonsOwned}/${MAX_CANNONS_PER_PLAYER}.`;
+      } else if (placedCannonCount <= 0) {
+        cannonStatusNote.textContent = `Cannon in Items: ${cannonInventoryCount}. Place it before loading or firing. Cannon limit: ${totalCannonsOwned}/${MAX_CANNONS_PER_PLAYER}.`;
       } else if (state.cannonLoaded) {
-        cannonStatusNote.textContent = `Ready to fire. Cannon Balls remaining: ${cannonBallCount}.`;
+        cannonStatusNote.textContent = `Placed Cannon: ${placedCannonCount}/${MAX_CANNONS_PER_PLAYER}. Ready to fire. Cannon Balls remaining: ${cannonBallCount}.`;
       } else if (cannonBallCount <= 0) {
-        cannonStatusNote.textContent = "Cannon available, but no Cannon Balls to load.";
+        cannonStatusNote.textContent = `Placed Cannon: ${placedCannonCount}/${MAX_CANNONS_PER_PLAYER}. No Cannon Balls to load.`;
       } else {
-        cannonStatusNote.textContent = `Cannon available. Cannon Balls ready: ${cannonBallCount}.`;
+        cannonStatusNote.textContent = `Placed Cannon: ${placedCannonCount}/${MAX_CANNONS_PER_PLAYER}. Cannon Balls ready: ${cannonBallCount}.`;
       }
 
+      placeCannonButton.disabled = !canPlaceCannon();
       loadCannonButton.disabled = !canLoadCannon();
       fireCannonButton.disabled = !state.cannonLoaded;
     }
 
     function renderCurrency() {
+      const manualEconomyLocked = !canManuallyEditEconomy();
+
       document.getElementById("goldCount").textContent = state.currency.gold;
       document.getElementById("silverCount").textContent = state.currency.silver;
       document.getElementById("bronzeCount").textContent = state.currency.bronze;
       givingTilesCount.textContent = state.givingTiles || 0;
+
+      economyLockNote.textContent = manualEconomyLocked
+        ? "Manual economy edits are locked after setup. Use rewards, shop, crafting, and game actions."
+        : (state.testMode ? "Test Mode is ON: manual economy edits are allowed." : "Manual economy edits are available during setup.");
+
+      document.querySelectorAll("[data-currency]").forEach(button => {
+        button.disabled = manualEconomyLocked;
+        button.title = manualEconomyLocked ? "Manual currency edits are locked after setup." : "Adjust during setup/testing.";
+      });
 
       document.querySelectorAll("[data-giving-animation]").forEach(button => {
         button.classList.toggle("active", button.dataset.givingAnimation === state.givingAnimationMode);
@@ -4780,6 +5423,7 @@
     function renderCounterGrid(gridElement, collectionName, typeNames, usedElement, maxSlots) {
       const totalUsed = getTotalForCollection(collectionName);
       const isFull = totalUsed >= maxSlots;
+      const manualEconomyLocked = !canManuallyEditEconomy();
       usedElement.textContent = totalUsed;
       gridElement.innerHTML = "";
 
@@ -4790,9 +5434,9 @@
         const card = document.createElement("div");
         card.className = `counter-card${count > 0 ? " has-count" : ""}`;
         card.innerHTML = `
-          <button class="counter-btn" data-counter-collection="${collectionName}" data-counter-name="${typeName}" data-counter-change="-1" ${count <= 0 ? "disabled" : ""} aria-label="Remove ${typeName}">−</button>
+          <button class="counter-btn" data-counter-collection="${collectionName}" data-counter-name="${typeName}" data-counter-change="-1" ${count <= 0 || manualEconomyLocked ? "disabled" : ""} title="${manualEconomyLocked ? "Manual edits are locked after setup." : "Remove during setup/testing."}" aria-label="Remove ${typeName}">−</button>
           <div class="counter-name">${getInventoryLabel(typeName, count)}<span class="counter-value">${count}</span></div>
-          <button class="counter-btn" data-counter-collection="${collectionName}" data-counter-name="${typeName}" data-counter-change="1" ${isFull ? "disabled" : ""} aria-label="Add ${typeName}">+</button>
+          <button class="counter-btn" data-counter-collection="${collectionName}" data-counter-name="${typeName}" data-counter-change="1" ${isFull || manualEconomyLocked || (collectionName === "items" && typeName === "Cannon" && !canGainCannon(1)) ? "disabled" : ""} title="${manualEconomyLocked ? "Manual edits are locked after setup." : (collectionName === "items" && typeName === "Cannon" && !canGainCannon(1) ? "Cannon limit reached: 1 of 1." : "Add during setup/testing.")}" aria-label="Add ${typeName}">+</button>
         `;
         fragment.appendChild(card);
       });
@@ -4801,8 +5445,9 @@
     }
 
     function renderSummonPanel() {
-      summonPanel.classList.toggle("collapsed", Boolean(state.summonPanelCollapsed));
-      toggleSummonPanel.textContent = state.summonPanelCollapsed ? "Expand" : "Collapse";
+      const summonCollapsed = isPanelCollapsed("summon");
+      summonPanel.classList.toggle("collapsed", summonCollapsed);
+      updatePanelToggle(toggleSummonPanel, summonCollapsed);
       summonGrid.innerHTML = "";
       activePieceCount.textContent = state.activePieces.length;
       const fragment = document.createDocumentFragment();
@@ -5025,6 +5670,14 @@
       unequipButton.disabled = !selectedPiece.hasShield;
     }
 
+    function renderTestMode() {
+      testModeToggle.classList.toggle("active", Boolean(state.testMode));
+      testModeToggle.setAttribute("aria-pressed", String(Boolean(state.testMode)));
+      testModeToggle.title = state.testMode
+        ? "Test Mode is ON. Manual economy edits are allowed."
+        : "Test Mode is OFF. Manual economy edits lock after setup.";
+    }
+
     function renderTeam() {
       const isRedTeam = state.team === "red";
 
@@ -5046,6 +5699,9 @@
 
     function render() {
       renderTeam();
+      renderTestMode();
+      renderWalkthrough();
+      renderCollapsiblePanels();
       renderCurrency();
       renderTurnOrder();
       renderBases();
@@ -5060,6 +5716,47 @@
       renderDetails();
     }
 
+    toggleWalkthroughPanel.addEventListener("click", () => {
+      state.walkthroughPanelCollapsed = !state.walkthroughPanelCollapsed;
+      saveState();
+      render();
+    });
+
+    startCoachSetup.addEventListener("click", () => {
+      state.coach = { active: true, mode: "setup", stepIndex: 0 };
+      state.walkthroughPanelCollapsed = false;
+      saveState();
+      render();
+    });
+
+    startCoachFirstRound.addEventListener("click", () => {
+      state.coach = { active: true, mode: "firstRound", stepIndex: 0 };
+      state.walkthroughPanelCollapsed = false;
+      saveState();
+      render();
+    });
+
+    stopCoach.addEventListener("click", () => {
+      state.coach = { ...state.coach, active: false };
+      saveState();
+      render();
+    });
+
+    coachPrev.addEventListener("click", () => {
+      const currentIndex = state.coach && Number.isInteger(state.coach.stepIndex) ? state.coach.stepIndex : 0;
+      state.coach.stepIndex = Math.max(0, currentIndex - 1);
+      saveState();
+      render();
+    });
+
+    coachNext.addEventListener("click", () => {
+      const maxIndex = Math.max(getCoachSteps().length - 1, 0);
+      const currentIndex = state.coach && Number.isInteger(state.coach.stepIndex) ? state.coach.stepIndex : 0;
+      state.coach.stepIndex = Math.min(maxIndex, currentIndex + 1);
+      saveState();
+      render();
+    });
+
     document.querySelectorAll("[data-currency]").forEach(button => {
       button.addEventListener("click", () => {
         changeCurrency(button.dataset.currency, Number(button.dataset.change));
@@ -5071,7 +5768,37 @@
     });
 
     toggleBasesPanel.addEventListener("click", () => {
-      state.basesPanelCollapsed = !state.basesPanelCollapsed;
+      setManualPanelCollapsed("bases", !isPanelCollapsed("bases"));
+      saveState();
+      render();
+    });
+
+    toggleTurnPanel.addEventListener("click", () => {
+      setManualPanelCollapsed("turn", !isPanelCollapsed("turn"));
+      saveState();
+      render();
+    });
+
+    toggleResourcesPanel.addEventListener("click", () => {
+      setManualPanelCollapsed("resources", !isPanelCollapsed("resources"));
+      saveState();
+      render();
+    });
+
+    toggleItemsPanel.addEventListener("click", () => {
+      setManualPanelCollapsed("items", !isPanelCollapsed("items"));
+      saveState();
+      render();
+    });
+
+    toggleCannonPanel.addEventListener("click", () => {
+      setManualPanelCollapsed("cannon", !isPanelCollapsed("cannon"));
+      saveState();
+      render();
+    });
+
+    toggleGivingPanel.addEventListener("click", () => {
+      setManualPanelCollapsed("giving", !isPanelCollapsed("giving"));
       saveState();
       render();
     });
@@ -5089,12 +5816,6 @@
         return;
       }
 
-      const specializationSelect = event.target.closest("[data-base-specialize]");
-      if (specializationSelect) {
-        setPendingBaseSpecialization(Number(specializationSelect.dataset.baseSpecialize), specializationSelect.value);
-        return;
-      }
-
       const captureButton = event.target.closest("[data-base-capture]");
       if (captureButton) {
         captureBase(Number(captureButton.dataset.baseCapture));
@@ -5104,11 +5825,23 @@
       const applyButton = event.target.closest("[data-base-apply-specialization]");
       if (applyButton) {
         const baseId = Number(applyButton.dataset.baseApplySpecialization);
-        const select = basesGrid.querySelector(`[data-base-specialize="${baseId}"]`);
+        const select = basesGrid.querySelector("[data-base-specialize='" + baseId + "']");
+
         if (select) {
           specializeBase(baseId, select.value);
         }
       }
+    });
+
+    basesGrid.addEventListener("change", event => {
+      const specializationSelect = event.target.closest("[data-base-specialize]");
+
+      if (!specializationSelect) {
+        return;
+      }
+
+      const baseId = Number(specializationSelect.dataset.baseSpecialize);
+      setPendingBaseSpecialization(baseId, specializationSelect.value);
     });
 
     document.querySelectorAll("[data-giving-tiles-change]").forEach(button => {
@@ -5127,6 +5860,10 @@
       state.givingAnimationMode = button.dataset.givingAnimation;
       saveState();
       render();
+    });
+
+    placeCannonButton.addEventListener("click", () => {
+      placeCannon();
     });
 
     loadCannonButton.addEventListener("click", () => {
@@ -5312,6 +6049,12 @@
       });
     });
 
+    testModeToggle.addEventListener("click", () => {
+      state.testMode = !state.testMode;
+      saveState();
+      render();
+    });
+
     finishSetup.addEventListener("click", () => {
       if (state.activePieces.length !== STARTING_TOTAL_PIECES) {
         return;
@@ -5323,7 +6066,7 @@
     });
 
     toggleSummonPanel.addEventListener("click", () => {
-      state.summonPanelCollapsed = !state.summonPanelCollapsed;
+      setManualPanelCollapsed("summon", !isPanelCollapsed("summon"));
       saveState();
       render();
     });
