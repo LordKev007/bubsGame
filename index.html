@@ -180,6 +180,238 @@
       padding: 10px;
     }
 
+    .bases-panel {
+      padding: 10px 12px 12px;
+    }
+
+    .bases-panel .panel-header {
+      margin-bottom: 10px;
+    }
+
+    .bases-panel .panel-note {
+      margin-top: 2px;
+      text-align: left;
+    }
+
+    .bases-panel .bases-content {
+      margin-top: 4px;
+    }
+
+    .bases-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(260px, 1fr));
+      gap: 10px;
+    }
+
+    .base-card {
+      border: 3px solid rgba(43, 33, 24, 0.18);
+      background: rgba(255,255,255,0.54);
+      border-radius: 14px;
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .base-card.red-owner {
+      border-color: #a12b24;
+      box-shadow: 0 0 0 1px rgba(161, 43, 36, 0.18), 0 8px 18px rgba(161, 43, 36, 0.12);
+    }
+
+    .base-card.blue-owner {
+      border-color: #244d78;
+      box-shadow: 0 0 0 1px rgba(36, 77, 120, 0.18), 0 8px 18px rgba(36, 77, 120, 0.12);
+    }
+
+    .base-card-top {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: start;
+    }
+
+    .base-name {
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--ink);
+      line-height: 1.1;
+    }
+
+    .base-card.red-owner .base-name {
+      color: #a12b24;
+    }
+
+    .base-card.blue-owner .base-name {
+      color: #244d78;
+    }
+
+    .base-owner-pill {
+      border-radius: 999px;
+      padding: 5px 9px;
+      color: white;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+      border: 1px solid rgba(43, 33, 24, 0.22);
+    }
+
+    .base-owner-pill.red-owner {
+      background: linear-gradient(180deg, #a12b24, #5b1510);
+    }
+
+    .base-owner-pill.blue-owner {
+      background: linear-gradient(180deg, #244d78, #17314e);
+    }
+
+    .base-stats {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .base-stat-pill {
+      border: 1px solid rgba(43, 33, 24, 0.18);
+      background: rgba(255,255,255,0.58);
+      border-radius: 10px;
+      padding: 6px 8px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 900;
+      color: var(--muted);
+    }
+
+    .base-stat-pill strong {
+      color: var(--ink);
+      font-size: 15px;
+      text-align: right;
+    }
+
+    .base-controls {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .base-btn,
+    .base-select {
+      border: 1px solid rgba(43, 33, 24, 0.3);
+      background: linear-gradient(180deg, #fff9eb, #ead7af);
+      color: var(--ink);
+      border-radius: 10px;
+      min-height: 34px;
+      cursor: pointer;
+      box-shadow: 0 2px 0 rgba(0,0,0,0.18);
+      font-weight: 900;
+      padding: 0 8px;
+      min-width: 0;
+    }
+
+    .base-btn.primary {
+      background: linear-gradient(180deg, #edf8ed, #c8e0c4);
+    }
+
+    .base-btn.danger {
+      background: linear-gradient(180deg, #ffe1da, #e7a094);
+    }
+
+    .base-btn:disabled,
+    .base-select:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .base-specialization-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .base-specialization-preview {
+      border: 1px solid rgba(43, 33, 24, 0.16);
+      background: rgba(255,255,255,0.46);
+      border-radius: 12px;
+      padding: 8px;
+      display: grid;
+      gap: 7px;
+    }
+
+    .base-preview-row {
+      display: grid;
+      grid-template-columns: 68px 1fr;
+      gap: 8px;
+      align-items: start;
+    }
+
+    .base-preview-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.35px;
+      padding-top: 5px;
+    }
+
+    .base-preview-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      min-width: 0;
+    }
+
+    .base-preview-pill {
+      border: 1px solid rgba(43, 33, 24, 0.18);
+      background: rgba(255,255,255,0.68);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 5px 8px;
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .base-preview-pill.missing {
+      background: rgba(255, 228, 223, 0.82);
+      border-color: rgba(161, 43, 36, 0.34);
+      color: #7a211b;
+    }
+
+    .base-preview-pill.ready {
+      background: rgba(237, 248, 237, 0.92);
+      border-color: rgba(63, 122, 86, 0.32);
+      color: #24583b;
+    }
+
+    .base-requirement-note {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .base-requirement-note.ready {
+      color: #24583b;
+    }
+
+    .base-requirement-note.missing {
+      color: #7a211b;
+    }
+
+    .bases-actions {
+      margin-top: 10px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .bases-content.hidden {
+      display: none;
+    }
+
     .cannon-controls {
       display: grid;
       grid-template-columns: 1fr auto auto;
@@ -1859,6 +2091,7 @@
       .item-grid { grid-template-columns: repeat(3, minmax(112px, 1fr)); }
       .shop-grid { grid-template-columns: repeat(2, minmax(160px, 1fr)); }
       .conversion-grid { grid-template-columns: 1fr; }
+      .bases-grid { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 480px) {
@@ -1990,6 +2223,22 @@
         <button class="finish-setup-btn" id="finishSetup" type="button">Finish Setup</button>
       </div>
       <div class="summon-grid" id="summonGrid"></div>
+    </section>
+
+    <section class="tracker-panel bases-panel" aria-label="Bases tracker">
+      <div class="panel-header">
+        <div>
+          <h2>Bases</h2>
+          <div class="panel-note"><span id="baseCount">0</span> / 4 bases · 6 HP each · one specialization per base</div>
+        </div>
+        <button class="collapse-btn" id="toggleBasesPanel" type="button" aria-expanded="true">Collapse</button>
+      </div>
+      <div class="bases-content" id="basesContent">
+        <div class="bases-grid" id="basesGrid"></div>
+        <div class="bases-actions">
+          <button class="base-btn primary" id="addBaseButton" type="button">Add Base</button>
+        </div>
+      </div>
     </section>
 
     <section class="tracker-panel" aria-label="Resource tracker">
@@ -2145,8 +2394,8 @@
       { kind: "unit", typeId: 8, title: "Warrior (Bow)", instructions: "Each team may move/action all active Bow Warriors." },
       { kind: "unit", typeId: 9, title: "Warrior (Lance & Horse)", instructions: "Each team may move/action all active Lance & Horse Warriors." },
       { kind: "unit", typeId: 10, title: "Mage", instructions: "Each team may move/action all active Mages." },
-      { kind: "unit", typeId: 11, title: "Medic", instructions: "Each team may move/action all active Medics." },
       { kind: "unit", typeId: 12, title: "Priest", instructions: "Each team may move/action all active Priests." },
+      { kind: "unit", typeId: 11, title: "Medic", instructions: "Each team may move/action all active Medics." },
       { kind: "unit", typeId: 13, title: "Necromancer", instructions: "Each team may move/action all active Necromancers." },
       { kind: "unit", typeId: 14, title: "Farmer", instructions: "Each team may move/action all active Farmers." },
       { kind: "unit", typeId: 15, title: "Artillerist", instructions: "Each team may move/action all active Artillerists." },
@@ -2154,11 +2403,11 @@
       { kind: "unit", typeId: 17, title: "Ritual Caster", instructions: "Each team may move/action all active Ritual Casters." },
       { kind: "unit", typeId: 18, title: "Thief", instructions: "Each team may move/action all active Thieves." },
       { kind: "unit", typeId: 19, title: "Strategist", instructions: "Each team may move/action all active Strategists." },
-      { kind: "unit", typeId: 20, title: "Trader", instructions: "Each team may move/action all active Traders." },
+      { kind: "unit", typeId: 20, title: "Shopkeeper", instructions: "Each team may move/action all active Shopkeepers." },
       { kind: "giving", title: "Giving Tile Random Item Pickup", instructions: "Each round, resolve one random resource pickup per Giving Tile occupied." },
       { kind: "summon", title: "Summoning Unit", instructions: "Summon a unit if you have the needed resources, items, and currency." },
       { kind: "crafting", title: "Crafting", instructions: "Craft items if you have the full recipe and enough item space." },
-      { kind: "shopping", title: "Shopping", instructions: "Shopping is available only if that team has an active living Trader." },
+      { kind: "shopping", title: "Shopping", instructions: "Shopping is available only if that team has an active living Shopkeeper." },
       { kind: "roundEnd", title: "End of Round Rewards", instructions: "Collect end-of-round income and review the round summary." }
     ];
 
@@ -2192,6 +2441,70 @@
       "Cannon Ball",
       "Cannon",
       "Artifact"
+    ];
+
+    const MAX_BASES = 4;
+    const BASE_MAX_HP = 6;
+
+    const baseSpecializations = [
+      {
+        id: "none",
+        name: "None",
+        costs: [],
+        requirements: []
+      },
+      {
+        id: "chapel",
+        name: "Chapel",
+        costs: [
+          { type: "resource", name: "Stone", quantity: 5 },
+          { type: "resource", name: "Glass", quantity: 2 },
+          { type: "currency", name: "gold", quantity: 1 }
+        ],
+        requirements: [{ typeId: 12, quantity: 2, label: "2 active Priests" }]
+      },
+      {
+        id: "graveyard",
+        name: "Graveyard",
+        costs: [
+          { type: "resource", name: "Stone", quantity: 5 },
+          { type: "resource", name: "Rope", quantity: 5 },
+          { type: "currency", name: "gold", quantity: 1 }
+        ],
+        requirements: [{ typeId: 13, quantity: 1, label: "1 active Necromancer" }]
+      },
+      {
+        id: "recruitment-center",
+        name: "Recruitment Center",
+        costs: [
+          { type: "resource", name: "Wood", quantity: 5 },
+          { type: "resource", name: "Iron", quantity: 3 },
+          { type: "currency", name: "gold", quantity: 1 }
+        ],
+        requirements: [{ typeId: 19, quantity: 2, label: "2 active Strategists" }]
+      },
+      {
+        id: "hospital",
+        name: "Hospital",
+        costs: [
+          { type: "resource", name: "Glass", quantity: 5 },
+          { type: "resource", name: "Wood", quantity: 2 },
+          { type: "resource", name: "Iron", quantity: 3 },
+          { type: "currency", name: "gold", quantity: 1 }
+        ],
+        requirements: [{ typeId: 11, quantity: 1, label: "1 active Medic" }]
+      },
+      {
+        id: "merchant-district",
+        name: "Merchant District",
+        costs: [
+          { type: "resource", name: "Rope", quantity: 3 },
+          { type: "resource", name: "Wood", quantity: 3 },
+          { type: "resource", name: "Bread", quantity: 2 },
+          { type: "currency", name: "gold", quantity: 1 }
+        ],
+        requirements: [{ typeId: 20, quantity: 3, label: "3 active Shopkeepers" }]
+      }
     ];
 
     const inventoryLabels = {
@@ -2305,9 +2618,9 @@
     const unitTypes = [
       { id: 1, name: "King", move: 1, maxHp: 1, action: "None", ritual: "N/A", category: "leader", ritualCosts: [] },
       { id: 2, name: "Base Builder", move: 2, maxHp: 1, action: "Build Base — Choose a location within 1 tile that has at least 3 adjacent Base Keepers. That tile becomes a Base tile.", ritual: "1 Silver, 2 Bronze, 2 Stone, 2 Rope", category: "worker", ritualCosts: [{ type: "currency", name: "silver", quantity: 1 }, { type: "currency", name: "bronze", quantity: 2 }, { type: "resource", name: "Stone", quantity: 2 }, { type: "resource", name: "Rope", quantity: 2 }] },
-      { id: 3, name: "Wood Worker", move: 2, maxHp: 6, action: "Build Wooden Defence — Place a wooden defence within 1 tile. Cost: 1 Wood.", ritual: "3 Wood, 1 Sulphur", category: "worker", ritualCosts: [{ type: "resource", name: "Wood", quantity: 3 }, { type: "resource", name: "Sulphur", quantity: 1 }] },
-      { id: 4, name: "Stone Worker", move: 2, maxHp: 6, action: "Build Stone Defence — Place a stone defence within 1 tile. Cost: 1 Stone.", ritual: "3 Stone, 2 Sulphur", category: "worker", ritualCosts: [{ type: "resource", name: "Stone", quantity: 3 }, { type: "resource", name: "Sulphur", quantity: 2 }] },
-      { id: 5, name: "Iron Worker", move: 2, maxHp: 6, action: "Build Iron Defence — Place an iron defence within 1 tile. Cost: 1 Iron.", ritual: "3 Iron, 3 Sulphur", category: "worker", ritualCosts: [{ type: "resource", name: "Iron", quantity: 3 }, { type: "resource", name: "Sulphur", quantity: 3 }] },
+      { id: 3, name: "Wood Worker", move: 2, maxHp: 6, action: "Build Wooden Defence — Place a wooden defence within 1 tile. Cost: 3 Wood.", ritual: "3 Wood, 1 Sulphur", category: "worker", ritualCosts: [{ type: "resource", name: "Wood", quantity: 3 }, { type: "resource", name: "Sulphur", quantity: 1 }] },
+      { id: 4, name: "Stone Worker", move: 2, maxHp: 6, action: "Build Stone Defence — Place a stone defence within 1 tile. Cost: 3 Stone.", ritual: "3 Stone, 2 Sulphur", category: "worker", ritualCosts: [{ type: "resource", name: "Stone", quantity: 3 }, { type: "resource", name: "Sulphur", quantity: 2 }] },
+      { id: 5, name: "Iron Worker", move: 2, maxHp: 6, action: "Build Iron Defence — Place an iron defence within 1 tile. Cost: 3 Iron.", ritual: "3 Iron, 3 Sulphur", category: "worker", ritualCosts: [{ type: "resource", name: "Iron", quantity: 3 }, { type: "resource", name: "Sulphur", quantity: 3 }] },
       { id: 6, name: "Warrior (Sword)", move: 3, maxHp: 4, action: "Melee Attack — Range 1, Damage 2.", ritual: "4 Bronze, 1 Stone, 1 Wood", category: "fighter", ritualCosts: [{ type: "currency", name: "bronze", quantity: 4 }, { type: "resource", name: "Stone", quantity: 1 }, { type: "resource", name: "Wood", quantity: 1 }] },
       { id: 7, name: "Warrior (Spear)", move: 2, maxHp: 4, action: "Melee Attack — Range 3, Damage 1.", ritual: "2 Silver, 1 Wood, 1 Stone", category: "fighter", ritualCosts: [{ type: "currency", name: "silver", quantity: 2 }, { type: "resource", name: "Wood", quantity: 1 }, { type: "resource", name: "Stone", quantity: 1 }] },
       { id: 8, name: "Warrior (Bow)", move: 1, maxHp: 2, action: "Ranged Attack — Range 7, Damage 1. Cost: 1 Arrow.", ritual: "1 Silver, 2 Wood, 1 Rope, 1 Sulphur", category: "fighter", ritualCosts: [{ type: "currency", name: "silver", quantity: 1 }, { type: "resource", name: "Wood", quantity: 2 }, { type: "resource", name: "Rope", quantity: 1 }, { type: "resource", name: "Sulphur", quantity: 1 }] },
@@ -2317,15 +2630,15 @@
       { id: 12, name: "Priest", move: 1, maxHp: 6, action: "Heal a damaged unit by 1 HP. Cannot heal a Priest.", ritual: "1 Iron, 6 Leather, 3 Bronze", category: "support", ritualCosts: [{ type: "resource", name: "Iron", quantity: 1 }, { type: "resource", name: "Leather", quantity: 6 }, { type: "currency", name: "bronze", quantity: 3 }] },
       { id: 13, name: "Necromancer", move: 1, maxHp: 1, action: "Heal — Choose an eligible dead ally unit and revive it with full HP.", ritual: "1 Gem, 7 Leather, 1 Silver, 2 Bronze", category: "support", ritualCosts: [{ type: "resource", name: "Gem", quantity: 1 }, { type: "resource", name: "Leather", quantity: 7 }, { type: "currency", name: "silver", quantity: 1 }, { type: "currency", name: "bronze", quantity: 2 }] },
       { id: 14, name: "Farmer", move: 1, maxHp: 6, action: "Gain 1 Bread item card.", ritual: "1 Gold, 6 Leather", category: "support", ritualCosts: [{ type: "currency", name: "gold", quantity: 1 }, { type: "resource", name: "Leather", quantity: 6 }] },
-      { id: 15, name: "Artillerist", move: 2, maxHp: 2, action: "May load and fire a cannon as one action. Must be adjacent to the cannon.", ritual: "3 Sulphur", category: "fighter", ritualCosts: [{ type: "resource", name: "Sulphur", quantity: 3 }] },
+      { id: 15, name: "Artillerist", move: 2, maxHp: 2, action: "May load and fire a cannon as one action. Must be adjacent to the cannon.", ritual: "3 Sulphur", category: "special", ritualCosts: [{ type: "resource", name: "Sulphur", quantity: 3 }] },
       { id: 16, name: "Spy", move: 4, maxHp: 2, action: "Look — If within 5 tiles of the opponent's King, reveal the opponent's hand until the Spy leaves the 5-tile range or the King escapes the range.", ritual: "2 Sulphur, 1 Rope", category: "special", ritualCosts: [{ type: "resource", name: "Sulphur", quantity: 2 }, { type: "resource", name: "Rope", quantity: 1 }] },
-      { id: 17, name: "Ritual Caster", move: 1, maxHp: 1, action: "Summon a unit. Costs still apply.", ritual: "1 Gold, 2 Sulphur, 1 Artifact", category: "special", ritualCosts: [{ type: "currency", name: "gold", quantity: 1 }, { type: "resource", name: "Sulphur", quantity: 2 }, { type: "item", name: "Artifact", quantity: 1 }] },
+      { id: 17, name: "Ritual Caster", move: 1, maxHp: 1, action: "Passive — Grants 1 additional summon during your Summoning Unit phase. Costs still apply.", ritual: "1 Gold, 2 Sulphur, 1 Artifact", category: "special", ritualCosts: [{ type: "currency", name: "gold", quantity: 1 }, { type: "resource", name: "Sulphur", quantity: 2 }, { type: "item", name: "Artifact", quantity: 1 }] },
       { id: 18, name: "Thief", move: 4, maxHp: 1, action: "If within 5 tiles of the opponent's King, steal 1 Bronze from the opponent's hand. May go over the 5 Bronze limit with this effect.", ritual: "2 Bronze, 1 Rope", category: "special", ritualCosts: [{ type: "currency", name: "bronze", quantity: 2 }, { type: "resource", name: "Rope", quantity: 1 }] },
       { id: 19, name: "Strategist", move: 1, maxHp: 1, action: "Delete this unit on any ally unit's turn to grant that ally a second action for the round.", ritual: "3 Sulphur, 1 Iron", category: "special", ritualCosts: [{ type: "resource", name: "Sulphur", quantity: 3 }, { type: "resource", name: "Iron", quantity: 1 }] },
-      { id: 20, name: "Trader", move: 2, maxHp: 3, action: "Passive — Allows the Item Trade feature in the turn order.", ritual: "5 Bronze", category: "support", ritualCosts: [{ type: "currency", name: "bronze", quantity: 5 }] }
+      { id: 20, name: "Shopkeeper", move: 2, maxHp: 3, action: "Passive — Allows the Shop feature during the Shopping step.", ritual: "5 Bronze", category: "special", ritualCosts: [{ type: "currency", name: "bronze", quantity: 5 }] }
     ];
 
-    const STORAGE_KEY = "boardgameTrackerStateV5";
+    const STORAGE_KEY = "boardgameTrackerStateV6";
 
     const defaultState = {
       selectedPieceId: null,
@@ -2338,6 +2651,7 @@
       craftingOpen: false,
       setupComplete: false,
       summonPanelCollapsed: false,
+      basesPanelCollapsed: false,
       givingAnimationMode: "awesome",
       cannonLoaded: false,
       turnOrder: {
@@ -2362,6 +2676,11 @@
       resources: Object.fromEntries(resourceTypes.map(resourceName => [resourceName, 0])),
       items: Object.fromEntries(itemTypes.map(itemName => [itemName, 0])),
       roundLog: [],
+      bases: [
+        { baseId: 1, name: "Red Base", owner: "red", currentHp: BASE_MAX_HP, maxHp: BASE_MAX_HP, specializationId: "none" },
+        { baseId: 2, name: "Blue Base", owner: "blue", currentHp: BASE_MAX_HP, maxHp: BASE_MAX_HP, specializationId: "none" }
+      ],
+      nextBaseId: 3,
       activePieces: []
     };
 
@@ -2409,6 +2728,11 @@
     const setupStatus = document.getElementById("setupStatus");
     const setupStatusText = document.getElementById("setupStatusText");
     const finishSetup = document.getElementById("finishSetup");
+    const basesGrid = document.getElementById("basesGrid");
+    const basesContent = document.getElementById("basesContent");
+    const toggleBasesPanel = document.getElementById("toggleBasesPanel");
+    const baseCount = document.getElementById("baseCount");
+    const addBaseButton = document.getElementById("addBaseButton");
     const resourceGrid = document.getElementById("resourceGrid");
     const resourceUsed = document.getElementById("resourceUsed");
     const itemGrid = document.getElementById("itemGrid");
@@ -2438,6 +2762,7 @@
       freshState.activePieces.push({
         pieceId: freshState.nextPieceId,
         typeId: king.id,
+        copyNumber: 1,
         currentHp: king.maxHp,
         hasShield: false
       });
@@ -2447,6 +2772,61 @@
       freshState.nextPieceId += 1;
 
       return freshState;
+    }
+
+    function assignMissingCopyNumbers(activePieces) {
+      const piecesByType = {};
+
+      activePieces.forEach(piece => {
+        if (!piecesByType[piece.typeId]) {
+          piecesByType[piece.typeId] = [];
+        }
+
+        piecesByType[piece.typeId].push(piece);
+      });
+
+      Object.keys(piecesByType).forEach(typeId => {
+        const usedCopyNumbers = new Set(
+          piecesByType[typeId]
+            .filter(piece => Number.isInteger(piece.copyNumber) && piece.copyNumber > 0)
+            .map(piece => piece.copyNumber)
+        );
+
+        piecesByType[typeId]
+          .sort((a, b) => a.pieceId - b.pieceId)
+          .forEach(piece => {
+            if (Number.isInteger(piece.copyNumber) && piece.copyNumber > 0) {
+              return;
+            }
+
+            let nextCopyNumber = 1;
+
+            while (usedCopyNumbers.has(nextCopyNumber)) {
+              nextCopyNumber += 1;
+            }
+
+            piece.copyNumber = nextCopyNumber;
+            usedCopyNumbers.add(nextCopyNumber);
+          });
+      });
+
+      return activePieces;
+    }
+
+    function getNextCopyNumberForType(typeId) {
+      const usedCopyNumbers = new Set(
+        getPiecesForType(typeId)
+          .map(piece => piece.copyNumber)
+          .filter(copyNumber => Number.isInteger(copyNumber) && copyNumber > 0)
+      );
+
+      let nextCopyNumber = 1;
+
+      while (usedCopyNumbers.has(nextCopyNumber)) {
+        nextCopyNumber += 1;
+      }
+
+      return nextCopyNumber;
     }
 
     function loadState() {
@@ -2477,7 +2857,9 @@
             ...(saved.turnOrder || {})
           },
           roundLog: Array.isArray(saved.roundLog) ? saved.roundLog : [],
-          activePieces: Array.isArray(saved.activePieces) ? saved.activePieces : []
+          bases: Array.isArray(saved.bases) && saved.bases.length > 0 ? saved.bases : JSON.parse(JSON.stringify(defaultState.bases)),
+          nextBaseId: Number.isInteger(saved.nextBaseId) ? saved.nextBaseId : defaultState.nextBaseId,
+          activePieces: Array.isArray(saved.activePieces) ? assignMissingCopyNumbers(saved.activePieces) : []
         };
       } catch (error) {
         return createFreshGameState();
@@ -2530,6 +2912,10 @@
     }
 
     function getCopyNumber(piece) {
+      if (Number.isInteger(piece.copyNumber) && piece.copyNumber > 0) {
+        return piece.copyNumber;
+      }
+
       const matchingPieces = getPiecesForType(piece.typeId).sort((a, b) => a.pieceId - b.pieceId);
       return matchingPieces.findIndex(item => item.pieceId === piece.pieceId) + 1;
     }
@@ -2561,6 +2947,18 @@
       const collectionName = getCollectionNameForTargetType(targetType);
       const maxSlots = getCapacityForTargetType(targetType);
       return Math.max(0, maxSlots - getTotalForCollection(collectionName));
+    }
+
+    function getBaseSpecialization(specializationId) {
+      return baseSpecializations.find(specialization => specialization.id === specializationId) || baseSpecializations[0];
+    }
+
+    function getBase(baseId) {
+      return state.bases.find(base => base.baseId === baseId);
+    }
+
+    function getLivingPieceCountForType(typeId) {
+      return state.activePieces.filter(piece => piece.typeId === typeId && piece.currentHp > 0).length;
     }
 
     function getAvailableAmountForCost(cost) {
@@ -2599,6 +2997,195 @@
           state.items[cost.name] -= cost.quantity;
         }
       });
+    }
+
+    function meetsBaseSpecializationRequirements(specialization) {
+      return specialization.requirements.every(requirement => getLivingPieceCountForType(requirement.typeId) >= requirement.quantity);
+    }
+
+    function getBaseSpecializationStatus(specialization) {
+      if (specialization.id === "none") {
+        return "No specialization selected.";
+      }
+
+      const missingCosts = getMissingCosts(specialization.costs);
+      const missingRequirements = specialization.requirements
+        .filter(requirement => getLivingPieceCountForType(requirement.typeId) < requirement.quantity)
+        .map(requirement => requirement.label);
+
+      if (missingCosts.length === 0 && missingRequirements.length === 0) {
+        return "Ready to specialize.";
+      }
+
+      const parts = [];
+
+      if (missingCosts.length > 0) {
+        parts.push(`Need ${missingCosts.join(", ")}`);
+      }
+
+      if (missingRequirements.length > 0) {
+        parts.push(`Requires ${missingRequirements.join(", ")}`);
+      }
+
+      return parts.join(" · ");
+    }
+
+    function getBaseSpecializationReadiness(specialization) {
+      if (specialization.id === "none") {
+        return "neutral";
+      }
+
+      return canPayCosts(specialization.costs) && meetsBaseSpecializationRequirements(specialization)
+        ? "ready"
+        : "missing";
+    }
+
+    function getCostDisplayName(cost) {
+      if (cost.type === "currency") {
+        return cost.name.charAt(0).toUpperCase() + cost.name.slice(1);
+      }
+
+      return cost.name;
+    }
+
+    function renderBaseSpecializationPreview(specialization) {
+      if (specialization.id === "none") {
+        return `
+          <div class="base-specialization-preview">
+            <div class="base-preview-row">
+              <div class="base-preview-label">Cost</div>
+              <div class="base-preview-pills"><span class="base-preview-pill">No cost</span></div>
+            </div>
+            <div class="base-preview-row">
+              <div class="base-preview-label">Requires</div>
+              <div class="base-preview-pills"><span class="base-preview-pill">No requirement</span></div>
+            </div>
+          </div>
+        `;
+      }
+
+      const costPills = specialization.costs.map(cost => {
+        const available = getAvailableAmountForCost(cost);
+        const isMissing = available < cost.quantity;
+        return `<span class="base-preview-pill${isMissing ? " missing" : " ready"}">${cost.quantity} ${getCostDisplayName(cost)}</span>`;
+      }).join("");
+
+      const requirementPills = specialization.requirements.map(requirement => {
+        const current = getLivingPieceCountForType(requirement.typeId);
+        const isMissing = current < requirement.quantity;
+        return `<span class="base-preview-pill${isMissing ? " missing" : " ready"}">${requirement.label} (${current}/${requirement.quantity})</span>`;
+      }).join("");
+
+      return `
+        <div class="base-specialization-preview">
+          <div class="base-preview-row">
+            <div class="base-preview-label">Cost</div>
+            <div class="base-preview-pills">${costPills || `<span class="base-preview-pill">No cost</span>`}</div>
+          </div>
+          <div class="base-preview-row">
+            <div class="base-preview-label">Requires</div>
+            <div class="base-preview-pills">${requirementPills || `<span class="base-preview-pill">No requirement</span>`}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function addBase() {
+      if (state.bases.length >= MAX_BASES) {
+        return;
+      }
+
+      const owner = state.team || "blue";
+      const defaultName = `${getTeamLabel(owner)} Base ${state.bases.filter(base => base.owner === owner).length + 1}`;
+
+      state.bases.push({
+        baseId: state.nextBaseId,
+        name: defaultName,
+        owner,
+        currentHp: BASE_MAX_HP,
+        maxHp: BASE_MAX_HP,
+        specializationId: "none"
+      });
+
+      state.nextBaseId += 1;
+      logRoundEvent(`${defaultName} was established.`);
+      saveState();
+      render();
+    }
+
+    function changeBaseHp(baseId, amount) {
+      const base = getBase(baseId);
+
+      if (!base) {
+        return;
+      }
+
+      const previousHp = base.currentHp;
+      base.currentHp = clamp(base.currentHp + amount, 0, base.maxHp || BASE_MAX_HP);
+
+      if (base.currentHp !== previousHp) {
+        logRoundEvent(`${base.name} HP changed: ${previousHp} → ${base.currentHp}.`);
+      }
+
+      saveState();
+      render();
+    }
+
+    function renameBase(baseId) {
+      const base = getBase(baseId);
+
+      if (!base) {
+        return;
+      }
+
+      const newName = window.prompt("Base name:", base.name);
+
+      if (!newName || newName.trim() === "") {
+        return;
+      }
+
+      const oldName = base.name;
+      base.name = newName.trim();
+      logRoundEvent(`${oldName} was renamed ${base.name}.`);
+      saveState();
+      render();
+    }
+
+    function captureBase(baseId) {
+      const base = getBase(baseId);
+
+      if (!base) {
+        return;
+      }
+
+      const previousOwner = base.owner;
+      base.owner = previousOwner === "red" ? "blue" : "red";
+      logRoundEvent(`${base.name} was captured by ${getTeamLabel(base.owner)}.`);
+      saveState();
+      render();
+    }
+
+    function specializeBase(baseId, specializationId) {
+      const base = getBase(baseId);
+      const specialization = getBaseSpecialization(specializationId);
+
+      if (!base || !specialization || base.specializationId === specialization.id) {
+        return;
+      }
+
+      if (specialization.id !== "none") {
+        if (!canPayCosts(specialization.costs) || !meetsBaseSpecializationRequirements(specialization)) {
+          window.alert(getBaseSpecializationStatus(specialization));
+          return;
+        }
+
+        payCosts(specialization.costs);
+      }
+
+      base.specializationId = specialization.id;
+      logRoundEvent(`${base.name} specialization changed to ${specialization.name}.`);
+      saveState();
+      render();
     }
 
     function getLivingRitualCasterCount() {
@@ -2752,6 +3339,7 @@
       const newPiece = {
         pieceId: state.nextPieceId,
         typeId: unitType.id,
+        copyNumber: getNextCopyNumberForType(unitType.id),
         currentHp: unitType.maxHp,
         hasShield: false
       };
@@ -2914,7 +3502,7 @@
     function hasActiveTrader() {
       return state.activePieces.some(piece => {
         const unitType = getUnitType(piece.typeId);
-        return unitType.name === "Trader" && piece.currentHp > 0;
+        return unitType.name === "Shopkeeper" && piece.currentHp > 0;
       });
     }
 
@@ -3381,7 +3969,7 @@
         // Medic, Priest, Necromancer, Farmer
         case "support": return "linear-gradient(160deg, #3f7a56, #1f4c35)";
 
-        // Artillerist, Spy, Ritual Caster, Thief, Strategist, Trader
+        // Artillerist, Spy, Ritual Caster, Thief, Strategist, Shopkeeper
         case "special": return "linear-gradient(160deg, #244d78, #132c47)";
 
         default: return "linear-gradient(160deg, #244d78, #122f4e)";
@@ -3604,7 +4192,7 @@
         if (unitType.name === "Necromancer") {
           add("Eligible", "Mage, Medic, Priest, Ritual Caster", true);
         } else if (unitType.name === "Medic") {
-          add("Eligible", "Base Builder, Workers, Warriors, Farmer, Artillerist, Spy, Thief, Trader", true);
+          add("Eligible", "Base Builder, Workers, Warriors, Farmer, Artillerist, Spy, Thief, Shopkeeper", true);
         } else {
           add("Target", "Eligible dead ally", true);
         }
@@ -3648,6 +4236,13 @@
         return data;
       }
 
+      if (unitType.name === "Ritual Caster") {
+        add("Passive", "+1 Summon", false, true);
+        add("When", "Summoning Unit phase", true);
+        add("Note", "Costs still apply", true);
+        return data;
+      }
+
       if (lowerAction.includes("summon a unit")) {
         add("Action", "Summon", false, true);
         add("Cost", "Costs still apply", true);
@@ -3660,9 +4255,15 @@
         return data;
       }
 
+      if (unitType.name === "Shopkeeper") {
+        add("Passive", "Shop Access", false, true);
+        add("When", "Shopping step", true);
+        return data;
+      }
+
       if (lowerAction.includes("passive")) {
-        add("Passive", "Item Trade", false, true);
-        add("Effect", "Allows trade feature", true);
+        add("Passive", "Special Rule", false, true);
+        add("Effect", action.replace("Passive —", "").trim(), true);
         return data;
       }
 
@@ -3711,7 +4312,7 @@
         giving: "Each occupied Giving Tile gives one random resource each round. Gem and Iron are excluded from the random pool.",
         summon: "Summon one unit, plus one extra summon for each living Ritual Caster. Ritual costs still apply.",
         crafting: "Craft items from resources. Recipes require the full cost and enough item space.",
-        shopping: "Shop only during your Shopping step, and only with a living Trader.",
+        shopping: "Shop only during your Shopping step, and only with a living Shopkeeper.",
         roundEnd: "Claim 1 free Bronze, then choose Wood, Stone, Bread, or a second Bronze. Review the round summary."
       };
 
@@ -3841,9 +4442,9 @@
         if (!isYourTurn) {
           note = `Wait for ${getTeamLabel(currentTeam)} to finish their shopping step.`;
         } else if (hasActiveTrader()) {
-          note = "Your Trader is active. Open the Shop to purchase resources/items or convert currency.";
+          note = "Your Shopkeeper is active. Open the Shop to purchase resources/items or convert currency.";
         } else {
-          note = "You do not have an active living Trader, so you cannot shop this turn.";
+          note = "You do not have an active living Shopkeeper, so you cannot shop this turn.";
         }
 
         turnPiecesList.innerHTML = `
@@ -3898,6 +4499,60 @@
       }
 
       turnPiecesList.innerHTML = `<div class="empty-state">${notes[currentStep.kind] || currentStep.instructions}</div>`;
+    }
+
+    function renderBases() {
+      basesGrid.innerHTML = "";
+      baseCount.textContent = state.bases.length;
+      addBaseButton.disabled = state.bases.length >= MAX_BASES;
+      basesContent.classList.toggle("hidden", Boolean(state.basesPanelCollapsed));
+      toggleBasesPanel.textContent = state.basesPanelCollapsed ? "Expand" : "Collapse";
+      toggleBasesPanel.setAttribute("aria-expanded", String(!state.basesPanelCollapsed));
+
+      const fragment = document.createDocumentFragment();
+
+      state.bases.forEach(base => {
+        const specialization = getBaseSpecialization(base.specializationId);
+        const ownerClass = `${base.owner}-owner`;
+        const card = document.createElement("article");
+        card.className = `base-card ${ownerClass}`;
+
+        const optionsHtml = baseSpecializations.map(option => `
+          <option value="${option.id}" ${base.specializationId === option.id ? "selected" : ""}>${option.name}</option>
+        `).join("");
+
+        const selectedStatus = getBaseSpecializationStatus(specialization);
+        const specializationReadiness = getBaseSpecializationReadiness(specialization);
+
+        card.innerHTML = `
+          <div class="base-card-top">
+            <div class="base-name">${base.name}</div>
+            <div class="base-owner-pill ${ownerClass}">${getTeamLabel(base.owner)}</div>
+          </div>
+          <div class="base-stats">
+            <div class="base-stat-pill"><span>HP</span><strong>${base.currentHp}/${base.maxHp || BASE_MAX_HP}</strong></div>
+            <div class="base-stat-pill"><span>Specialization</span><strong>${specialization.name}</strong></div>
+          </div>
+          <div class="base-controls">
+            <button class="base-btn danger" data-base-hp="-1" data-base-id="${base.baseId}">− HP</button>
+            <button class="base-btn primary" data-base-hp="1" data-base-id="${base.baseId}">+ HP</button>
+            <button class="base-btn" data-base-rename="${base.baseId}">Rename</button>
+            <button class="base-btn" data-base-capture="${base.baseId}">Capture</button>
+          </div>
+          <div class="base-specialization-row">
+            <select class="base-select" data-base-specialize="${base.baseId}" aria-label="Specialization for ${base.name}">
+              ${optionsHtml}
+            </select>
+            <button class="base-btn primary" data-base-apply-specialization="${base.baseId}">Apply</button>
+          </div>
+          ${renderBaseSpecializationPreview(specialization)}
+          <div class="base-requirement-note ${specializationReadiness}">${selectedStatus}</div>
+        `;
+
+        fragment.appendChild(card);
+      });
+
+      basesGrid.appendChild(fragment);
     }
 
     function renderCannon() {
@@ -4372,6 +5027,7 @@
       renderTeam();
       renderCurrency();
       renderTurnOrder();
+      renderBases();
       renderCannon();
       renderShop();
       renderCrafting();
@@ -4387,6 +5043,45 @@
       button.addEventListener("click", () => {
         changeCurrency(button.dataset.currency, Number(button.dataset.change));
       });
+    });
+
+    addBaseButton.addEventListener("click", () => {
+      addBase();
+    });
+
+    toggleBasesPanel.addEventListener("click", () => {
+      state.basesPanelCollapsed = !state.basesPanelCollapsed;
+      saveState();
+      render();
+    });
+
+    basesGrid.addEventListener("click", event => {
+      const hpButton = event.target.closest("[data-base-hp]");
+      if (hpButton) {
+        changeBaseHp(Number(hpButton.dataset.baseId), Number(hpButton.dataset.baseHp));
+        return;
+      }
+
+      const renameButton = event.target.closest("[data-base-rename]");
+      if (renameButton) {
+        renameBase(Number(renameButton.dataset.baseRename));
+        return;
+      }
+
+      const captureButton = event.target.closest("[data-base-capture]");
+      if (captureButton) {
+        captureBase(Number(captureButton.dataset.baseCapture));
+        return;
+      }
+
+      const applyButton = event.target.closest("[data-base-apply-specialization]");
+      if (applyButton) {
+        const baseId = Number(applyButton.dataset.baseApplySpecialization);
+        const select = basesGrid.querySelector(`[data-base-specialize="${baseId}"]`);
+        if (select) {
+          specializeBase(baseId, select.value);
+        }
+      }
     });
 
     document.querySelectorAll("[data-giving-tiles-change]").forEach(button => {
