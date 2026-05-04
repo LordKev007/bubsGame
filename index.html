@@ -2652,6 +2652,7 @@
       setupComplete: false,
       summonPanelCollapsed: false,
       basesPanelCollapsed: false,
+      pendingBaseSpecializations: {},
       givingAnimationMode: "awesome",
       cannonLoaded: false,
       turnOrder: {
@@ -2856,6 +2857,7 @@
             ...defaultState.turnOrder,
             ...(saved.turnOrder || {})
           },
+          pendingBaseSpecializations: saved.pendingBaseSpecializations || {},
           roundLog: Array.isArray(saved.roundLog) ? saved.roundLog : [],
           bases: Array.isArray(saved.bases) && saved.bases.length > 0 ? saved.bases : JSON.parse(JSON.stringify(defaultState.bases)),
           nextBaseId: Number.isInteger(saved.nextBaseId) ? saved.nextBaseId : defaultState.nextBaseId,
@@ -3165,6 +3167,16 @@
       render();
     }
 
+    function setPendingBaseSpecialization(baseId, specializationId) {
+      if (!state.pendingBaseSpecializations) {
+        state.pendingBaseSpecializations = {};
+      }
+
+      state.pendingBaseSpecializations[String(baseId)] = specializationId;
+      saveState();
+      render();
+    }
+
     function specializeBase(baseId, specializationId) {
       const base = getBase(baseId);
       const specialization = getBaseSpecialization(specializationId);
@@ -3183,6 +3195,11 @@
       }
 
       base.specializationId = specialization.id;
+
+      if (state.pendingBaseSpecializations) {
+        delete state.pendingBaseSpecializations[String(baseId)];
+      }
+
       logRoundEvent(`${base.name} specialization changed to ${specialization.name}.`);
       saveState();
       render();
@@ -4512,13 +4529,17 @@
       const fragment = document.createDocumentFragment();
 
       state.bases.forEach(base => {
-        const specialization = getBaseSpecialization(base.specializationId);
+        const appliedSpecialization = getBaseSpecialization(base.specializationId);
+        const pendingSpecializationId = state.pendingBaseSpecializations && state.pendingBaseSpecializations[String(base.baseId)]
+          ? state.pendingBaseSpecializations[String(base.baseId)]
+          : base.specializationId;
+        const specialization = getBaseSpecialization(pendingSpecializationId);
         const ownerClass = `${base.owner}-owner`;
         const card = document.createElement("article");
         card.className = `base-card ${ownerClass}`;
 
         const optionsHtml = baseSpecializations.map(option => `
-          <option value="${option.id}" ${base.specializationId === option.id ? "selected" : ""}>${option.name}</option>
+          <option value="${option.id}" ${specialization.id === option.id ? "selected" : ""}>${option.name}</option>
         `).join("");
 
         const selectedStatus = getBaseSpecializationStatus(specialization);
@@ -4531,7 +4552,7 @@
           </div>
           <div class="base-stats">
             <div class="base-stat-pill"><span>HP</span><strong>${base.currentHp}/${base.maxHp || BASE_MAX_HP}</strong></div>
-            <div class="base-stat-pill"><span>Specialization</span><strong>${specialization.name}</strong></div>
+            <div class="base-stat-pill"><span>Specialization</span><strong>${appliedSpecialization.name}</strong></div>
           </div>
           <div class="base-controls">
             <button class="base-btn danger" data-base-hp="-1" data-base-id="${base.baseId}">− HP</button>
@@ -5065,6 +5086,12 @@
       const renameButton = event.target.closest("[data-base-rename]");
       if (renameButton) {
         renameBase(Number(renameButton.dataset.baseRename));
+        return;
+      }
+
+      const specializationSelect = event.target.closest("[data-base-specialize]");
+      if (specializationSelect) {
+        setPendingBaseSpecialization(Number(specializationSelect.dataset.baseSpecialize), specializationSelect.value);
         return;
       }
 
