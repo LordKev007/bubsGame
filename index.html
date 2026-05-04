@@ -65,6 +65,8 @@
 
     .title-card,
     .currency-panel,
+    .giving-tiles-panel,
+    .turn-panel,
     .controls,
     .unit-card,
     .detail-panel,
@@ -156,6 +158,682 @@
     .currency-panel {
       min-width: 330px;
       padding: 10px 12px;
+    }
+
+    .giving-tiles-panel {
+      padding: 10px;
+    }
+
+    .turn-panel {
+      padding: 10px;
+    }
+
+    .turn-panel-grid {
+      display: grid;
+      grid-template-columns: minmax(240px, 1fr) minmax(280px, 2fr);
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .turn-callout {
+      border: 1px solid rgba(43, 33, 24, 0.22);
+      background: rgba(255,255,255,0.56);
+      border-radius: 14px;
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .turn-main-callout {
+      grid-template-rows: auto auto minmax(56px, auto) minmax(48px, 1fr) auto auto;
+      min-height: 292px;
+    }
+
+    .turn-round {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .turn-team {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: fit-content;
+      min-width: 118px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      color: white;
+      font-weight: 900;
+      border: 1px solid rgba(43, 33, 24, 0.3);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.16);
+    }
+
+    .turn-team.red-team {
+      background: linear-gradient(180deg, #a12b24, #5b1510);
+    }
+
+    .turn-team.blue-team {
+      background: linear-gradient(180deg, #244d78, #17314e);
+    }
+
+    .turn-step-title {
+      font-size: 28px;
+      line-height: 1;
+      font-weight: 900;
+      color: var(--team-accent-dark);
+    }
+
+    .turn-step-title.red-team-text {
+      color: #a12b24;
+    }
+
+    .turn-step-title.blue-team-text {
+      color: #244d78;
+    }
+
+    .turn-instructions {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1.25;
+      min-height: 54px;
+      align-self: start;
+    }
+
+    .turn-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      align-self: end;
+    }
+
+    .turn-extra-controls {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .manual-first-player-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .turn-extra-controls.hidden {
+      display: none;
+    }
+
+    .turn-btn {
+      border: 1px solid rgba(43, 33, 24, 0.3);
+      background: linear-gradient(180deg, #fff9eb, #ead7af);
+      color: var(--ink);
+      border-radius: 10px;
+      min-height: 36px;
+      cursor: pointer;
+      box-shadow: 0 2px 0 rgba(0,0,0,0.18);
+      font-weight: 900;
+      padding: 0 10px;
+    }
+
+    .turn-btn.primary {
+      background: linear-gradient(180deg, #edf8ed, #c8e0c4);
+    }
+
+    .turn-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .coin-area {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px;
+      align-items: center;
+      border: 1px solid rgba(43, 33, 24, 0.22);
+      background: rgba(255,255,255,0.52);
+      border-radius: 14px;
+      padding: 10px;
+    }
+
+    .coin {
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      font-weight: 900;
+      color: white;
+      border: 4px solid #d4a845;
+      box-shadow: inset 0 0 0 3px rgba(255,255,255,0.18), 0 4px 10px rgba(0,0,0,0.22);
+      background: linear-gradient(160deg, #244d78, #17314e);
+      transform-style: preserve-3d;
+    }
+
+    .coin.red-team {
+      background: linear-gradient(160deg, #a12b24, #5b1510);
+    }
+
+    .coin.flipping {
+      animation: coinFlip 900ms ease-in-out infinite;
+    }
+
+    @keyframes coinFlip {
+      0% { transform: rotateY(0deg) scale(1); }
+      25% { transform: rotateY(540deg) scale(1.08); }
+      50% { transform: rotateY(1080deg) scale(0.96); }
+      75% { transform: rotateY(1620deg) scale(1.08); }
+      100% { transform: rotateY(2160deg) scale(1); }
+    }
+
+    .coin-note {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.25;
+    }
+
+    .current-pieces-list {
+      display: grid;
+      gap: 6px;
+    }
+
+    .current-piece-row {
+      display: grid;
+      grid-template-columns: auto 1fr auto auto;
+      gap: 8px;
+      align-items: center;
+      border: 1px solid rgba(43, 33, 24, 0.18);
+      background: rgba(255,255,255,0.52);
+      border-radius: 12px;
+      padding: 6px;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .current-piece-row.dead-piece {
+      opacity: 0.55;
+      filter: grayscale(0.55);
+    }
+
+    .current-piece-name {
+      min-width: 0;
+    }
+
+    .current-piece-stat {
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .giving-action-box {
+      display: grid;
+      gap: 10px;
+      border: 1px solid rgba(43, 33, 24, 0.18);
+      background: rgba(255,255,255,0.56);
+      border-radius: 14px;
+      padding: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .giving-action-box::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background: conic-gradient(from 0deg, transparent, rgba(255, 214, 109, 0.28), transparent, rgba(95, 152, 255, 0.25), transparent);
+      animation: givingSwirl 4s linear infinite;
+      opacity: 0.75;
+      pointer-events: none;
+    }
+
+    .giving-action-box > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    @keyframes givingSwirl {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .giving-action-title {
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--team-accent-dark);
+    }
+
+    .giving-action-note {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1.3;
+    }
+
+    .giving-action-button {
+      border: 1px solid rgba(43, 33, 24, 0.32);
+      border-radius: 12px;
+      min-height: 46px;
+      padding: 0 14px;
+      font-weight: 900;
+      font-size: 16px;
+      cursor: pointer;
+      color: white;
+      background: linear-gradient(180deg, #5f98ff, #244d78);
+      box-shadow: 0 3px 0 rgba(0,0,0,0.18), 0 0 18px rgba(95, 152, 255, 0.35);
+      animation: givingPulse 1.35s ease-in-out infinite;
+    }
+
+    .giving-action-button:active {
+      transform: translateY(1px);
+      box-shadow: 0 1px 0 rgba(0,0,0,0.18), 0 0 12px rgba(95, 152, 255, 0.35);
+    }
+
+    .giving-action-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      animation: none;
+      box-shadow: 0 2px 0 rgba(0,0,0,0.18);
+    }
+
+    @keyframes givingPulse {
+      0% { box-shadow: 0 3px 0 rgba(0,0,0,0.18), 0 0 0 rgba(95,152,255,0); }
+      50% { box-shadow: 0 3px 0 rgba(0,0,0,0.18), 0 0 24px rgba(95,152,255,0.7); }
+      100% { box-shadow: 0 3px 0 rgba(0,0,0,0.18), 0 0 0 rgba(95,152,255,0); }
+    }
+
+    .giving-results-overlay {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      background: radial-gradient(circle at center, rgba(64, 111, 196, 0.24), rgba(15, 18, 34, 0.86));
+      z-index: 9999;
+      padding: 20px;
+    }
+
+    .giving-results-overlay.active {
+      display: grid;
+    }
+
+    .giving-results-overlay.subtle-mode {
+      background: rgba(43, 33, 24, 0.34);
+    }
+
+    .giving-results-modal {
+      width: min(760px, 96vw);
+      border-radius: 20px;
+      border: 2px solid rgba(255,255,255,0.22);
+      background: radial-gradient(circle at top, rgba(255,255,255,0.18), rgba(255,255,255,0.05)), linear-gradient(180deg, #1e2740, #101728);
+      color: white;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .subtle-mode .giving-results-modal {
+      width: min(620px, 94vw);
+      border: 2px solid var(--border);
+      background: rgba(255, 248, 233, 0.98);
+      color: var(--ink);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+    }
+
+    .giving-results-modal::before {
+      content: "";
+      position: absolute;
+      inset: -50%;
+      background: conic-gradient(from 0deg, transparent, rgba(255, 214, 109, 0.22), transparent, rgba(95, 152, 255, 0.28), transparent);
+      animation: givingSwirl 3.2s linear infinite;
+      pointer-events: none;
+    }
+
+    .subtle-mode .giving-results-modal::before {
+      display: none;
+    }
+
+    .giving-results-modal > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .giving-results-header {
+      padding: 18px 20px 8px;
+      text-align: center;
+    }
+
+    .giving-results-title {
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      text-shadow: 0 0 14px rgba(255,255,255,0.36);
+    }
+
+    .subtle-mode .giving-results-title {
+      color: var(--team-accent-dark);
+      text-shadow: none;
+      font-size: 24px;
+    }
+
+    .giving-results-subtitle {
+      margin-top: 4px;
+      color: rgba(255,255,255,0.84);
+      font-weight: 800;
+    }
+
+    .subtle-mode .giving-results-subtitle {
+      color: var(--muted);
+    }
+
+    .giving-evolution-area {
+      display: grid;
+      place-items: center;
+      min-height: 140px;
+      padding: 8px 20px 0;
+    }
+
+    .subtle-mode .giving-evolution-area {
+      min-height: 18px;
+      padding: 0;
+    }
+
+    .giving-orb {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #ffffff, #8fc0ff 25%, #5c8cff 50%, #244d78 75%, #17314e 100%);
+      box-shadow: 0 0 18px rgba(143,192,255,0.8), 0 0 42px rgba(143,192,255,0.55), 0 0 80px rgba(143,192,255,0.35);
+      animation: orbCharge 1.05s ease-in-out infinite alternate;
+    }
+
+    .subtle-mode .giving-orb {
+      display: none;
+    }
+
+    @keyframes orbCharge {
+      0% { transform: scale(0.95); filter: brightness(1); }
+      100% { transform: scale(1.12); filter: brightness(1.25); }
+    }
+
+    .giving-results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 12px;
+      padding: 20px;
+    }
+
+    .giving-result-card {
+      opacity: 0;
+      transform: scale(0.65) translateY(18px);
+      border-radius: 16px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.07));
+      border: 1px solid rgba(255,255,255,0.2);
+      padding: 14px 10px;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.22);
+    }
+
+    .subtle-mode .giving-result-card {
+      opacity: 1;
+      transform: none;
+      background: rgba(255,255,255,0.62);
+      border: 1px solid rgba(43, 33, 24, 0.18);
+      color: var(--ink);
+      box-shadow: none;
+    }
+
+    .giving-result-card.reveal {
+      animation: rewardReveal 420ms ease-out forwards;
+    }
+
+    .subtle-mode .giving-result-card.reveal {
+      animation: subtleRewardReveal 180ms ease-out forwards;
+    }
+
+    @keyframes subtleRewardReveal {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes rewardReveal {
+      0% { opacity: 0; transform: scale(0.65) translateY(18px); }
+      60% { opacity: 1; transform: scale(1.08) translateY(-4px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .giving-result-icon {
+      font-size: 34px;
+      line-height: 1;
+    }
+
+    .giving-result-name {
+      margin-top: 8px;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .giving-result-qty {
+      margin-top: 3px;
+      color: rgba(255,255,255,0.82);
+      font-weight: 800;
+    }
+
+    .subtle-mode .giving-result-qty {
+      color: var(--muted);
+    }
+
+    .giving-results-footer {
+      padding: 0 20px 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .giving-close-btn {
+      border: 1px solid rgba(255,255,255,0.16);
+      border-radius: 12px;
+      min-height: 40px;
+      padding: 0 18px;
+      color: white;
+      background: linear-gradient(180deg, #4fa36c, #2f6b46);
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .round-reward-box {
+      display: grid;
+      gap: 10px;
+      border: 1px solid rgba(43, 33, 24, 0.18);
+      background: rgba(255,255,255,0.56);
+      border-radius: 14px;
+      padding: 12px;
+    }
+
+    .round-reward-title {
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--team-accent-dark);
+    }
+
+    .round-reward-note {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1.3;
+    }
+
+    .round-reward-buttons {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(90px, 1fr));
+      gap: 8px;
+    }
+
+    .round-reward-btn {
+      border: 1px solid rgba(43, 33, 24, 0.3);
+      background: linear-gradient(180deg, #fff9eb, #ead7af);
+      color: var(--ink);
+      border-radius: 10px;
+      min-height: 38px;
+      cursor: pointer;
+      box-shadow: 0 2px 0 rgba(0,0,0,0.18);
+      font-weight: 900;
+      padding: 0 10px;
+    }
+
+    .round-reward-btn.primary {
+      background: linear-gradient(180deg, #edf8ed, #c8e0c4);
+    }
+
+    .round-reward-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .round-summary-list {
+      display: grid;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .turn-summary-panel {
+      border: 1px solid rgba(43, 33, 24, 0.18);
+      background: rgba(255,255,255,0.50);
+      border-radius: 14px;
+      padding: 10px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .turn-summary-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+      font-size: 13px;
+      text-transform: uppercase;
+      color: var(--team-accent-dark);
+      letter-spacing: 0.7px;
+      font-weight: 900;
+    }
+
+    .turn-summary-count {
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .round-end-highlight {
+      animation: roundEndGlow 1.4s ease-in-out infinite;
+      border-color: rgba(212, 168, 69, 0.85);
+      background:
+        radial-gradient(circle at top left, rgba(255, 214, 109, 0.18), transparent 45%),
+        rgba(255,255,255,0.62);
+    }
+
+    @keyframes roundEndGlow {
+      0% { box-shadow: 0 0 0 rgba(212, 168, 69, 0); }
+      50% { box-shadow: 0 0 22px rgba(212, 168, 69, 0.45); }
+      100% { box-shadow: 0 0 0 rgba(212, 168, 69, 0); }
+    }
+
+    .round-summary-item {
+      border: 1px solid rgba(43, 33, 24, 0.15);
+      background: rgba(255,255,255,0.48);
+      border-radius: 10px;
+      padding: 6px 8px;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--muted);
+    }
+
+    @media (max-width: 760px) {
+      .round-reward-buttons { grid-template-columns: repeat(2, minmax(90px, 1fr)); }
+    }
+
+    .giving-tiles-controls {
+      display: grid;
+      grid-template-columns: 1fr 48px 48px 48px;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .giving-tiles-label {
+      font-weight: 900;
+      color: var(--team-accent-dark);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .giving-tiles-note {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      margin-top: 6px;
+    }
+
+    .animation-mode-control {
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.45);
+      border: 1px solid rgba(43, 33, 24, 0.18);
+    }
+
+    .animation-mode-heading {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      white-space: nowrap;
+    }
+
+    .animation-mode-toggle {
+      position: relative;
+      display: inline-grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3px;
+      padding: 4px;
+      width: 190px;
+      border-radius: 999px;
+      background: rgba(43, 33, 24, 0.10);
+      border: 1px solid rgba(43, 33, 24, 0.16);
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.08);
+    }
+
+    .animation-mode-option {
+      position: relative;
+      z-index: 1;
+      border: 0;
+      border-radius: 999px;
+      min-height: 30px;
+      padding: 0 10px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: color 130ms ease, background 130ms ease, box-shadow 130ms ease, transform 130ms ease;
+    }
+
+    .animation-mode-option.active {
+      color: white;
+      background: linear-gradient(180deg, var(--team-accent), var(--team-accent-dark));
+      box-shadow: 0 2px 0 rgba(0,0,0,0.18);
+    }
+
+    .animation-mode-option:not(.active):hover {
+      color: var(--ink);
+    }
+
+    .animation-mode-option:active {
+      transform: translateY(1px);
     }
 
     .panel-heading {
@@ -265,6 +943,42 @@
       font-weight: 800;
     }
 
+    .setup-status {
+      margin: 0 0 8px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: var(--team-accent-soft);
+      color: var(--team-accent-dark);
+      border: 1px solid var(--team-accent-soft);
+      font-weight: 900;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .setup-status-text {
+      line-height: 1.2;
+    }
+
+    .finish-setup-btn {
+      border: 1px solid rgba(43, 33, 24, 0.3);
+      background: linear-gradient(180deg, #edf8ed, #c8e0c4);
+      color: var(--ink);
+      border-radius: 10px;
+      min-height: 34px;
+      cursor: pointer;
+      box-shadow: 0 2px 0 rgba(0,0,0,0.18);
+      font-weight: 900;
+      padding: 0 10px;
+      white-space: nowrap;
+    }
+
+    .finish-setup-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
     .crafting-toggle-row {
       margin-top: 8px;
       display: grid;
@@ -328,6 +1042,37 @@
       text-align: right;
     }
 
+    .summon-header-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .collapse-btn {
+      border: 1px solid rgba(43, 33, 24, 0.3);
+      background: linear-gradient(180deg, #fff9eb, #ead7af);
+      color: var(--ink);
+      border-radius: 10px;
+      min-height: 32px;
+      cursor: pointer;
+      box-shadow: 0 2px 0 rgba(0,0,0,0.18);
+      font-weight: 900;
+      padding: 0 10px;
+      white-space: nowrap;
+    }
+
+    .collapse-btn:active {
+      transform: translateY(1px);
+      box-shadow: 0 1px 0 rgba(0,0,0,0.18);
+    }
+
+    .summon-panel.collapsed .setup-status,
+    .summon-panel.collapsed .summon-grid {
+      display: none !important;
+    }
+
     .summon-grid {
       display: grid;
       grid-template-columns: repeat(5, minmax(145px, 1fr));
@@ -336,7 +1081,7 @@
 
     .summon-row {
       display: grid;
-      grid-template-columns: 1fr auto auto;
+      grid-template-columns: minmax(0, 1fr) auto auto;
       gap: 5px;
       align-items: center;
       border: 1px solid rgba(43, 33, 24, 0.22);
@@ -353,6 +1098,25 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+
+    .summon-cost {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.16;
+      white-space: normal;
+    }
+
+    .summon-cost-line {
+      display: block;
+    }
+
+    .summon-cost-heading {
+      display: block;
+      color: var(--ink);
+      font-weight: 900;
     }
 
     .summon-count {
@@ -865,6 +1629,7 @@
     }
 
     @media (max-width: 1100px) {
+      .turn-panel-grid { grid-template-columns: 1fr; }
       body { padding: 8px; }
       .app { min-height: calc(100vh - 16px); }
       .top-bar { grid-template-columns: 1fr; }
@@ -941,10 +1706,54 @@
           <div class="count" id="bronzeCount">0</div>
           <button class="small-btn" data-currency="bronze" data-change="1" aria-label="Increase bronze">+</button>
         </div>
-        <button class="shop-btn" id="toggleShop" type="button">Open Shop</button>
-        <button class="shop-btn" id="toggleCrafting" type="button">Open Crafting</button>
-        <div class="shop-lock-note" id="shopLockNote">Requires an active Trader.</div>
       </section>
+    </section>
+
+    <section class="turn-panel" aria-label="Turn order tracker">
+      <div class="panel-header">
+        <h2>Turn Order</h2>
+        <div class="panel-note">Shared initiative for both teams</div>
+      </div>
+      <div class="turn-panel-grid">
+        <div class="turn-callout turn-main-callout">
+          <div class="turn-round" id="turnRoundLabel">Round 1</div>
+          <div class="turn-team blue-team" id="turnTeamLabel">Choose first player</div>
+          <div class="turn-step-title" id="turnStepTitle">Coin Flip</div>
+          <div class="turn-instructions" id="turnInstructions">Flip the coin to randomly choose who acts first this round.</div>
+          <div class="turn-controls">
+            <button class="turn-btn" id="previousTurn" type="button">Previous</button>
+            <button class="turn-btn primary" id="nextTurn" type="button">Next</button>
+          </div>
+          <div class="turn-extra-controls" id="firstPlayerControls">
+            <button class="turn-btn primary" id="coinFlipButton" type="button">Flip Coin for First Player</button>
+            <div class="manual-first-player-controls" aria-label="Manually set first player">
+              <button class="turn-btn" type="button" data-set-first-team="red">Set Red First</button>
+              <button class="turn-btn" type="button" data-set-first-team="blue">Set Blue First</button>
+            </div>
+            <button class="turn-btn" id="resetTurnOrder" type="button">Reset Turn Order</button>
+          </div>
+        </div>
+        <div class="turn-callout">
+          <div class="coin-area">
+            <div class="coin blue-team" id="coinDisplay">?</div>
+            <div>
+              <div class="turn-round">Coin Flip</div>
+              <div class="coin-note" id="coinNote">The winner acts first for Round 1. After each full round, first-player order switches.</div>
+            </div>
+          </div>
+          <div>
+            <h3 class="section-title" style="margin-top:10px;">Your Matching Pieces / Step Notes</h3>
+            <div class="current-pieces-list" id="turnPiecesList"></div>
+          </div>
+          <div class="turn-summary-panel" id="turnSummaryPanel">
+            <div class="turn-summary-title">
+              <span>Round Summary</span>
+              <span class="turn-summary-count" id="turnSummaryCount">0 events</span>
+            </div>
+            <div class="round-summary-list" id="turnSummaryList"></div>
+          </div>
+        </div>
+      </div>
     </section>
 
     <section class="shop-panel hidden" id="shopPanel" aria-label="Shop">
@@ -963,10 +1772,17 @@
       <div class="crafting-content" id="craftingGrid"></div>
     </section>
 
-    <section class="summon-panel" aria-label="Add pieces to board">
+    <section class="summon-panel" id="summonPanel" aria-label="Add pieces to board">
       <div class="panel-header">
         <h2>Add Pieces to Board</h2>
-        <div class="panel-note"><span id="activePieceCount">0</span> / 15 pieces · King max: 1 · Other units max: 3</div>
+        <div class="summon-header-actions">
+          <div class="panel-note"><span id="activePieceCount">0</span> / 15 pieces · King max: 1 · Other units max: 3</div>
+          <button class="collapse-btn" id="toggleSummonPanel" type="button">Collapse</button>
+        </div>
+      </div>
+      <div class="setup-status" id="setupStatus">
+        <div class="setup-status-text" id="setupStatusText">Setup: choose 7 pieces plus your King.</div>
+        <button class="finish-setup-btn" id="finishSetup" type="button">Finish Setup</button>
       </div>
       <div class="summon-grid" id="summonGrid"></div>
     </section>
@@ -985,6 +1801,29 @@
         <div class="panel-note"><span id="itemUsed">0</span> / 11 item slots used</div>
       </div>
       <div class="item-grid" id="itemGrid"></div>
+    </section>
+
+    <section class="giving-tiles-panel" aria-label="Giving Tiles tracker">
+      <div class="panel-header">
+        <h2>Giving Tiles</h2>
+        <div class="panel-note">Special spaces occupied</div>
+      </div>
+      <div class="giving-tiles-controls">
+        <div>
+          <div class="giving-tiles-label">Occupied</div>
+          <div class="giving-tiles-note">Track from 0 to 5.</div>
+        </div>
+        <button class="small-btn" data-giving-tiles-change="-1" aria-label="Decrease Giving Tiles">−</button>
+        <div class="count" id="givingTilesCount">0</div>
+        <button class="small-btn" data-giving-tiles-change="1" aria-label="Increase Giving Tiles">+</button>
+      </div>
+      <div class="animation-mode-control" aria-label="Giving Tiles animation style">
+        <span class="animation-mode-heading">Reveal Style</span>
+        <div class="animation-mode-toggle" id="givingAnimationModeToggle" role="group" aria-label="Giving Tiles animation style">
+          <button class="animation-mode-option" type="button" data-giving-animation="subtle">Subtle</button>
+          <button class="animation-mode-option" type="button" data-giving-animation="awesome">Awesome</button>
+        </div>
+      </div>
     </section>
 
     <section class="controls" aria-label="Filters and reset controls">
@@ -1043,6 +1882,22 @@
     <div class="footer-note">Tip: In Safari on iPad, use Share → Add to Home Screen to make this feel like a little boardgame app.</div>
   </main>
 
+  <div class="giving-results-overlay" id="givingResultsOverlay">
+    <div class="giving-results-modal">
+      <div class="giving-results-header">
+        <div class="giving-results-title">Giving Tiles Activated!</div>
+        <div class="giving-results-subtitle" id="givingResultsSubtitle">Random resources received</div>
+      </div>
+      <div class="giving-evolution-area">
+        <div class="giving-orb" id="givingOrb"></div>
+      </div>
+      <div class="giving-results-grid" id="givingResultsGrid"></div>
+      <div class="giving-results-footer">
+        <button class="giving-close-btn" id="closeGivingResults" type="button">Awesome</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     // ------------------------------------------------------------
     // Boardgame Tracker
@@ -1054,6 +1909,47 @@
     const MAX_ACTIVE_PIECES = 15;
     const MAX_RESOURCE_SLOTS = 11;
     const MAX_ITEM_SLOTS = 11;
+    const STARTING_TOTAL_PIECES = 8;
+
+    const turnSteps = [
+      { kind: "unit", typeId: 1, title: "King", instructions: "Each team may move/action all active Kings." },
+      { kind: "unit", typeId: 2, title: "Base Builder", instructions: "Each team may move/action all active Base Builders." },
+      { kind: "unit", typeId: 3, title: "Wood Worker", instructions: "Each team may move/action all active Wood Workers." },
+      { kind: "unit", typeId: 4, title: "Stone Worker", instructions: "Each team may move/action all active Stone Workers." },
+      { kind: "unit", typeId: 5, title: "Iron Worker", instructions: "Each team may move/action all active Iron Workers." },
+      { kind: "unit", typeId: 6, title: "Warrior (Sword)", instructions: "Each team may move/action all active Sword Warriors." },
+      { kind: "unit", typeId: 7, title: "Warrior (Spear)", instructions: "Each team may move/action all active Spear Warriors." },
+      { kind: "unit", typeId: 8, title: "Warrior (Bow)", instructions: "Each team may move/action all active Bow Warriors." },
+      { kind: "unit", typeId: 9, title: "Warrior (Lance & Horse)", instructions: "Each team may move/action all active Lance & Horse Warriors." },
+      { kind: "unit", typeId: 10, title: "Mage", instructions: "Each team may move/action all active Mages." },
+      { kind: "unit", typeId: 11, title: "Medic", instructions: "Each team may move/action all active Medics." },
+      { kind: "unit", typeId: 12, title: "Priest", instructions: "Each team may move/action all active Priests." },
+      { kind: "unit", typeId: 13, title: "Necromancer", instructions: "Each team may move/action all active Necromancers." },
+      { kind: "unit", typeId: 14, title: "Farmer", instructions: "Each team may move/action all active Farmers." },
+      { kind: "unit", typeId: 15, title: "Artillerist", instructions: "Each team may move/action all active Artillerists." },
+      { kind: "unit", typeId: 16, title: "Spy", instructions: "Each team may move/action all active Spies." },
+      { kind: "unit", typeId: 17, title: "Ritual Caster", instructions: "Each team may move/action all active Ritual Casters." },
+      { kind: "unit", typeId: 18, title: "Thief", instructions: "Each team may move/action all active Thieves." },
+      { kind: "unit", typeId: 19, title: "Strategist", instructions: "Each team may move/action all active Strategists." },
+      { kind: "unit", typeId: 20, title: "Trader", instructions: "Each team may move/action all active Traders." },
+      { kind: "giving", title: "Giving Tile Random Item Pickup", instructions: "Each round, resolve one random resource pickup per Giving Tile occupied." },
+      { kind: "summon", title: "Summoning Unit", instructions: "Summon a unit if you have the needed resources, items, and currency." },
+      { kind: "crafting", title: "Crafting", instructions: "Craft items if you have the full recipe and enough item space." },
+      { kind: "shopping", title: "Shopping", instructions: "Shopping is available only if that team has an active living Trader." },
+      { kind: "roundEnd", title: "End of Round Rewards", instructions: "Collect end-of-round income and review the round summary." }
+    ];
+
+    const startingSetupTypeIds = [3, 6, 7, 8, 9, 16, 18, 19];
+
+    const givingTileRewardPool = [
+      { name: "Wood", icon: "🪵" },
+      { name: "Stone", icon: "🪨" },
+      { name: "Sulphur", icon: "✨" },
+      { name: "Rope", icon: "🪢" },
+      { name: "Bread", icon: "🍞" },
+      { name: "Leather", icon: "🧤" },
+      { name: "Glass", icon: "🔷" }
+    ];
 
     const resourceTypes = [
       "Gem",
@@ -1167,29 +2063,29 @@
     ];
 
     const unitTypes = [
-      { id: 1, name: "King", move: 1, maxHp: 1, action: "None", ritual: "N/A", category: "leader" },
-      { id: 2, name: "Base Builder", move: 2, maxHp: 1, action: "Build Base — Choose a location within 1 tile that has at least 3 adjacent Base Keepers. That tile becomes a Base tile.", ritual: "—", category: "worker" },
-      { id: 3, name: "Wood Worker", move: 2, maxHp: 6, action: "Build Wooden Defence — Place a wooden defence within 1 tile. Cost: 1 Wood.", ritual: "—", category: "worker" },
-      { id: 4, name: "Stone Worker", move: 2, maxHp: 6, action: "Build Stone Defence — Place a stone defence within 1 tile. Cost: 1 Stone.", ritual: "—", category: "worker" },
-      { id: 5, name: "Iron Worker", move: 2, maxHp: 6, action: "Build Iron Defence — Place an iron defence within 1 tile. Cost: 1 Iron.", ritual: "—", category: "worker" },
-      { id: 6, name: "Warrior (Sword)", move: 3, maxHp: 4, action: "Melee Attack — Range 1, Damage 2.", ritual: "4 Bronze", category: "fighter" },
-      { id: 7, name: "Warrior (Spear)", move: 2, maxHp: 4, action: "Melee Attack — Range 3, Damage 1.", ritual: "2 Bronze, 1 Wood, 1 Stone", category: "fighter" },
-      { id: 8, name: "Warrior (Bow)", move: 1, maxHp: 2, action: "Ranged Attack — Range 7, Damage 1. Cost: 1 Arrow.", ritual: "1 Silver", category: "fighter" },
-      { id: 9, name: "Warrior (Lance & Horse)", move: 4, maxHp: 3, action: "Melee Attack — Range 2, Damage 1.", ritual: "1 Wood, 1 Stone, 1 Rope, 1 Leather", category: "fighter" },
-      { id: 10, name: "Mage", move: 3, maxHp: 1, action: "Magic Attack — Range 7, Damage 1, targets 3 different units. Cost: delete 1 ally unit, not Mage.", ritual: "—", category: "fighter" },
-      { id: 11, name: "Medic", move: 1, maxHp: 1, action: "Heal — Choose an eligible dead ally and revive them with full HP.", ritual: "—", category: "support" },
-      { id: 12, name: "Priest", move: 1, maxHp: 6, action: "Heal a damaged unit by 1 HP. Cannot heal a Priest.", ritual: "—", category: "support" },
-      { id: 13, name: "Necromacer", move: 1, maxHp: 1, action: "Heal — Choose an eligible dead ally unit and revive it with full HP.", ritual: "—", category: "support" },
-      { id: 14, name: "Farmer", move: 1, maxHp: 6, action: "Gain 1 Bread item card.", ritual: "—", category: "support" },
-      { id: 15, name: "Artierist", move: 2, maxHp: 2, action: "May load and fire a cannon as one action. Must be adjacent to the cannon.", ritual: "—", category: "fighter" },
-      { id: 16, name: "Spy", move: 4, maxHp: 2, action: "Look — If within 5 tiles of the opponent's King, reveal the opponent's hand until the Spy leaves the 5-tile range or the King escapes the range.", ritual: "—", category: "special" },
-      { id: 17, name: "Ritual Caster", move: 1, maxHp: 1, action: "Summon a unit. Costs still apply.", ritual: "—", category: "special" },
-      { id: 18, name: "Thief", move: 4, maxHp: 1, action: "If within 5 tiles of the opponent's King, steal 1 Bronze from the opponent's hand. May go over the 5 Bronze limit with this effect.", ritual: "—", category: "special" },
-      { id: 19, name: "Strategist", move: 1, maxHp: 1, action: "Delete this unit on any ally unit's turn to grant that ally a second action for the round.", ritual: "—", category: "special" },
-      { id: 20, name: "Trader", move: 2, maxHp: 3, action: "Passive — Allows the Item Trade feature in the turn order.", ritual: "1 Iron", category: "support" }
+      { id: 1, name: "King", move: 1, maxHp: 1, action: "None", ritual: "N/A", category: "leader", ritualCosts: [] },
+      { id: 2, name: "Base Builder", move: 2, maxHp: 1, action: "Build Base — Choose a location within 1 tile that has at least 3 adjacent Base Keepers. That tile becomes a Base tile.", ritual: "1 Silver, 2 Bronze, 2 Stone, 2 Rope", category: "worker", ritualCosts: [{ type: "currency", name: "silver", quantity: 1 }, { type: "currency", name: "bronze", quantity: 2 }, { type: "resource", name: "Stone", quantity: 2 }, { type: "resource", name: "Rope", quantity: 2 }] },
+      { id: 3, name: "Wood Worker", move: 2, maxHp: 6, action: "Build Wooden Defence — Place a wooden defence within 1 tile. Cost: 1 Wood.", ritual: "3 Wood, 1 Sulphur", category: "worker", ritualCosts: [{ type: "resource", name: "Wood", quantity: 3 }, { type: "resource", name: "Sulphur", quantity: 1 }] },
+      { id: 4, name: "Stone Worker", move: 2, maxHp: 6, action: "Build Stone Defence — Place a stone defence within 1 tile. Cost: 1 Stone.", ritual: "3 Stone, 2 Sulphur", category: "worker", ritualCosts: [{ type: "resource", name: "Stone", quantity: 3 }, { type: "resource", name: "Sulphur", quantity: 2 }] },
+      { id: 5, name: "Iron Worker", move: 2, maxHp: 6, action: "Build Iron Defence — Place an iron defence within 1 tile. Cost: 1 Iron.", ritual: "3 Iron, 3 Sulphur", category: "worker", ritualCosts: [{ type: "resource", name: "Iron", quantity: 3 }, { type: "resource", name: "Sulphur", quantity: 3 }] },
+      { id: 6, name: "Warrior (Sword)", move: 3, maxHp: 4, action: "Melee Attack — Range 1, Damage 2.", ritual: "4 Bronze, 1 Stone, 1 Wood", category: "fighter", ritualCosts: [{ type: "currency", name: "bronze", quantity: 4 }, { type: "resource", name: "Stone", quantity: 1 }, { type: "resource", name: "Wood", quantity: 1 }] },
+      { id: 7, name: "Warrior (Spear)", move: 2, maxHp: 4, action: "Melee Attack — Range 3, Damage 1.", ritual: "2 Silver, 1 Wood, 1 Stone", category: "fighter", ritualCosts: [{ type: "currency", name: "silver", quantity: 2 }, { type: "resource", name: "Wood", quantity: 1 }, { type: "resource", name: "Stone", quantity: 1 }] },
+      { id: 8, name: "Warrior (Bow)", move: 1, maxHp: 2, action: "Ranged Attack — Range 7, Damage 1. Cost: 1 Arrow.", ritual: "1 Silver, 2 Wood, 1 Rope, 1 Sulphur", category: "fighter", ritualCosts: [{ type: "currency", name: "silver", quantity: 1 }, { type: "resource", name: "Wood", quantity: 2 }, { type: "resource", name: "Rope", quantity: 1 }, { type: "resource", name: "Sulphur", quantity: 1 }] },
+      { id: 9, name: "Warrior (Lance & Horse)", move: 4, maxHp: 3, action: "Melee Attack — Range 2, Damage 1.", ritual: "1 Wood, 1 Stone, 1 Rope, 3 Leather", category: "fighter", ritualCosts: [{ type: "resource", name: "Wood", quantity: 1 }, { type: "resource", name: "Stone", quantity: 1 }, { type: "resource", name: "Rope", quantity: 1 }, { type: "resource", name: "Leather", quantity: 3 }] },
+      { id: 10, name: "Mage", move: 3, maxHp: 1, action: "Magic Attack — Range 7, Damage 1, targets 3 different units. Cost: delete 1 ally unit, not Mage.", ritual: "1 Gem, 6 Bronze", category: "fighter", ritualCosts: [{ type: "resource", name: "Gem", quantity: 1 }, { type: "currency", name: "bronze", quantity: 6 }] },
+      { id: 11, name: "Medic", move: 1, maxHp: 1, action: "Heal — Choose an eligible dead ally and revive them with full HP.", ritual: "2 Glass, 1 Sulphur", category: "support", ritualCosts: [{ type: "resource", name: "Glass", quantity: 2 }, { type: "resource", name: "Sulphur", quantity: 1 }] },
+      { id: 12, name: "Priest", move: 1, maxHp: 6, action: "Heal a damaged unit by 1 HP. Cannot heal a Priest.", ritual: "1 Iron, 6 Leather, 3 Bronze", category: "support", ritualCosts: [{ type: "resource", name: "Iron", quantity: 1 }, { type: "resource", name: "Leather", quantity: 6 }, { type: "currency", name: "bronze", quantity: 3 }] },
+      { id: 13, name: "Necromancer", move: 1, maxHp: 1, action: "Heal — Choose an eligible dead ally unit and revive it with full HP.", ritual: "1 Gem, 7 Leather, 1 Silver, 2 Bronze", category: "support", ritualCosts: [{ type: "resource", name: "Gem", quantity: 1 }, { type: "resource", name: "Leather", quantity: 7 }, { type: "currency", name: "silver", quantity: 1 }, { type: "currency", name: "bronze", quantity: 2 }] },
+      { id: 14, name: "Farmer", move: 1, maxHp: 6, action: "Gain 1 Bread item card.", ritual: "1 Gold, 6 Leather", category: "support", ritualCosts: [{ type: "currency", name: "gold", quantity: 1 }, { type: "resource", name: "Leather", quantity: 6 }] },
+      { id: 15, name: "Artillerist", move: 2, maxHp: 2, action: "May load and fire a cannon as one action. Must be adjacent to the cannon.", ritual: "3 Sulphur", category: "fighter", ritualCosts: [{ type: "resource", name: "Sulphur", quantity: 3 }] },
+      { id: 16, name: "Spy", move: 4, maxHp: 2, action: "Look — If within 5 tiles of the opponent's King, reveal the opponent's hand until the Spy leaves the 5-tile range or the King escapes the range.", ritual: "2 Sulphur, 1 Rope", category: "special", ritualCosts: [{ type: "resource", name: "Sulphur", quantity: 2 }, { type: "resource", name: "Rope", quantity: 1 }] },
+      { id: 17, name: "Ritual Caster", move: 1, maxHp: 1, action: "Summon a unit. Costs still apply.", ritual: "1 Gold, 2 Sulphur, 1 Artifact", category: "special", ritualCosts: [{ type: "currency", name: "gold", quantity: 1 }, { type: "resource", name: "Sulphur", quantity: 2 }, { type: "item", name: "Artifact", quantity: 1 }] },
+      { id: 18, name: "Thief", move: 4, maxHp: 1, action: "If within 5 tiles of the opponent's King, steal 1 Bronze from the opponent's hand. May go over the 5 Bronze limit with this effect.", ritual: "2 Bronze, 1 Rope", category: "special", ritualCosts: [{ type: "currency", name: "bronze", quantity: 2 }, { type: "resource", name: "Rope", quantity: 1 }] },
+      { id: 19, name: "Strategist", move: 1, maxHp: 1, action: "Delete this unit on any ally unit's turn to grant that ally a second action for the round.", ritual: "3 Sulphur, 1 Iron", category: "special", ritualCosts: [{ type: "resource", name: "Sulphur", quantity: 3 }, { type: "resource", name: "Iron", quantity: 1 }] },
+      { id: 20, name: "Trader", move: 2, maxHp: 3, action: "Passive — Allows the Item Trade feature in the turn order.", ritual: "5 Bronze", category: "support", ritualCosts: [{ type: "currency", name: "bronze", quantity: 5 }] }
     ];
 
-    const STORAGE_KEY = "boardgameTrackerStateV4";
+    const STORAGE_KEY = "boardgameTrackerStateV5";
 
     const defaultState = {
       selectedPieceId: null,
@@ -1200,13 +2096,30 @@
       nextPieceId: 1,
       shopOpen: false,
       craftingOpen: false,
+      setupComplete: false,
+      summonPanelCollapsed: false,
+      givingAnimationMode: "awesome",
+      turnOrder: {
+        started: false,
+        round: 1,
+        startingTeam: null,
+        firstTeam: null,
+        stepIndex: 0,
+        teamIndex: 0,
+        coinFlipping: false,
+        lastGivingResolvedKey: "",
+        lastRoundRewardKey: "",
+        summonsByTurnKey: {}
+      },
       currency: {
         gold: 0,
         silver: 0,
         bronze: 0
       },
+      givingTiles: 0,
       resources: Object.fromEntries(resourceTypes.map(resourceName => [resourceName, 0])),
       items: Object.fromEntries(itemTypes.map(itemName => [itemName, 0])),
+      roundLog: [],
       activePieces: []
     };
 
@@ -1216,11 +2129,37 @@
     const shopGrid = document.getElementById("shopGrid");
     const craftingPanel = document.getElementById("craftingPanel");
     const craftingGrid = document.getElementById("craftingGrid");
-    const toggleShop = document.getElementById("toggleShop");
-    const toggleCrafting = document.getElementById("toggleCrafting");
-    const shopLockNote = document.getElementById("shopLockNote");
+    const toggleShop = null;
+    const toggleCrafting = null;
+    const shopLockNote = null;
+    const givingTilesCount = document.getElementById("givingTilesCount");
+    const givingAnimationModeToggle = document.getElementById("givingAnimationModeToggle");
+    const turnRoundLabel = document.getElementById("turnRoundLabel");
+    const turnTeamLabel = document.getElementById("turnTeamLabel");
+    const turnStepTitle = document.getElementById("turnStepTitle");
+    const turnInstructions = document.getElementById("turnInstructions");
+    const turnPiecesList = document.getElementById("turnPiecesList");
+    const turnSummaryPanel = document.getElementById("turnSummaryPanel");
+    const turnSummaryCount = document.getElementById("turnSummaryCount");
+    const turnSummaryList = document.getElementById("turnSummaryList");
+    const previousTurn = document.getElementById("previousTurn");
+    const nextTurn = document.getElementById("nextTurn");
+    const firstPlayerControls = document.getElementById("firstPlayerControls");
+    const coinFlipButton = document.getElementById("coinFlipButton");
+    const resetTurnOrder = document.getElementById("resetTurnOrder");
+    const coinDisplay = document.getElementById("coinDisplay");
+    const coinNote = document.getElementById("coinNote");
+    const givingResultsOverlay = document.getElementById("givingResultsOverlay");
+    const givingResultsGrid = document.getElementById("givingResultsGrid");
+    const givingResultsSubtitle = document.getElementById("givingResultsSubtitle");
+    const closeGivingResults = document.getElementById("closeGivingResults");
+    const summonPanel = document.getElementById("summonPanel");
     const summonGrid = document.getElementById("summonGrid");
+    const toggleSummonPanel = document.getElementById("toggleSummonPanel");
     const activePieceCount = document.getElementById("activePieceCount");
+    const setupStatus = document.getElementById("setupStatus");
+    const setupStatusText = document.getElementById("setupStatusText");
+    const finishSetup = document.getElementById("finishSetup");
     const resourceGrid = document.getElementById("resourceGrid");
     const resourceUsed = document.getElementById("resourceUsed");
     const itemGrid = document.getElementById("itemGrid");
@@ -1284,6 +2223,11 @@
             ...defaultState.items,
             ...(saved.items || {})
           },
+          turnOrder: {
+            ...defaultState.turnOrder,
+            ...(saved.turnOrder || {})
+          },
+          roundLog: Array.isArray(saved.roundLog) ? saved.roundLog : [],
           activePieces: Array.isArray(saved.activePieces) ? saved.activePieces : []
         };
       } catch (error) {
@@ -1293,6 +2237,27 @@
 
     function saveState() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function logRoundEvent(message) {
+      if (!state.turnOrder || !state.turnOrder.started) {
+        return;
+      }
+
+      state.roundLog.push({
+        round: state.turnOrder.round,
+        message,
+        time: Date.now()
+      });
+
+      // Keep the saved log compact. The tracker only needs recent history.
+      if (state.roundLog.length > 80) {
+        state.roundLog = state.roundLog.slice(-80);
+      }
+    }
+
+    function getCurrentRoundEvents() {
+      return (state.roundLog || []).filter(event => event.round === state.turnOrder.round);
     }
 
     function clamp(value, min, max) {
@@ -1339,17 +2304,190 @@
       return Math.max(0, maxSlots - getTotalForCollection(collectionName));
     }
 
-    function addPiece(typeId) {
-      if (state.activePieces.length >= MAX_ACTIVE_PIECES) {
-        return;
+    function getAvailableAmountForCost(cost) {
+      if (cost.type === "currency") {
+        return state.currency[cost.name] || 0;
       }
 
+      if (cost.type === "resource") {
+        return state.resources[cost.name] || 0;
+      }
+
+      if (cost.type === "item") {
+        return state.items[cost.name] || 0;
+      }
+
+      return 0;
+    }
+
+    function canPayCosts(costs) {
+      return costs.every(cost => getAvailableAmountForCost(cost) >= cost.quantity);
+    }
+
+    function getMissingCosts(costs) {
+      return costs
+        .filter(cost => getAvailableAmountForCost(cost) < cost.quantity)
+        .map(cost => `${cost.quantity - getAvailableAmountForCost(cost)} more ${cost.name}`);
+    }
+
+    function payCosts(costs) {
+      costs.forEach(cost => {
+        if (cost.type === "currency") {
+          state.currency[cost.name] -= cost.quantity;
+        } else if (cost.type === "resource") {
+          state.resources[cost.name] -= cost.quantity;
+        } else if (cost.type === "item") {
+          state.items[cost.name] -= cost.quantity;
+        }
+      });
+    }
+
+    function getLivingRitualCasterCount() {
+      return state.activePieces.filter(piece => piece.typeId === 17 && piece.currentHp > 0).length;
+    }
+
+    function getAllowedSummonsThisTurn() {
+      return 1 + getLivingRitualCasterCount();
+    }
+
+    function getSummonsUsedThisTurn() {
+      const key = getCurrentTurnKey();
+      const summonsByTurnKey = state.turnOrder.summonsByTurnKey || {};
+      return summonsByTurnKey[key] || 0;
+    }
+
+    function getSummonsRemainingThisTurn() {
+      return Math.max(0, getAllowedSummonsThisTurn() - getSummonsUsedThisTurn());
+    }
+
+    function isYourSummoningTurn() {
+      const currentStep = getCurrentTurnStep();
+      const currentTeam = getCurrentTurnTeam();
+
+      return Boolean(
+        state.setupComplete &&
+        state.turnOrder.started &&
+        currentStep.kind === "summon" &&
+        currentTeam === state.team
+      );
+    }
+
+    function recordSummonUsed() {
+      const key = getCurrentTurnKey();
+
+      if (!state.turnOrder.summonsByTurnKey) {
+        state.turnOrder.summonsByTurnKey = {};
+      }
+
+      state.turnOrder.summonsByTurnKey[key] = getSummonsUsedThisTurn() + 1;
+    }
+
+    function canAddPieceType(typeId) {
       const unitType = getUnitType(typeId);
       const existingCount = getPiecesForType(typeId).length;
       const maxCopies = getMaxCopiesForType(typeId);
 
+      if (state.activePieces.length >= MAX_ACTIVE_PIECES || existingCount >= maxCopies) {
+        return false;
+      }
+
+      if (!state.setupComplete) {
+        return startingSetupTypeIds.includes(unitType.id) && state.activePieces.length < STARTING_TOTAL_PIECES;
+      }
+
+      if (unitType.id === 1) {
+        return false;
+      }
+
+      if (!isYourSummoningTurn() || getSummonsRemainingThisTurn() <= 0) {
+        return false;
+      }
+
+      return canPayCosts(unitType.ritualCosts || []);
+    }
+
+    function getSummonCostHtml(unitType) {
+      if (!state.setupComplete) {
+        return `<span class="summon-cost-line">Setup pick</span><span class="summon-cost-line">No cost</span>`;
+      }
+
+      if (unitType.id === 1) {
+        return `<span class="summon-cost-line">Cannot summon</span>`;
+      }
+
+      const costs = unitType.ritualCosts || [];
+
+      if (costs.length === 0) {
+        return `<span class="summon-cost-line">No cost</span>`;
+      }
+
+      const costLines = costs
+        .map(cost => {
+          const displayName = cost.type === "currency"
+            ? cost.name.charAt(0).toUpperCase() + cost.name.slice(1)
+            : cost.name;
+
+          return `<span class="summon-cost-line">${cost.quantity} ${displayName}</span>`;
+        })
+        .join("");
+
+      return `<span class="summon-cost-heading">Cost:</span>${costLines}`;
+    }
+
+    function getAddPieceStatus(unitType) {
+      const existingCount = getPiecesForType(unitType.id).length;
+      const maxCopies = getMaxCopiesForType(unitType.id);
+
+      if (state.activePieces.length >= MAX_ACTIVE_PIECES) {
+        return "Board full";
+      }
+
       if (existingCount >= maxCopies) {
+        return "Max copies";
+      }
+
+      if (!state.setupComplete) {
+        if (unitType.id === 1) {
+          return "King already added";
+        }
+
+        if (!startingSetupTypeIds.includes(unitType.id)) {
+          return "After setup";
+        }
+
+        if (state.activePieces.length >= STARTING_TOTAL_PIECES) {
+          return "Setup full";
+        }
+
+        return "Setup pick";
+      }
+
+      if (unitType.id === 1) {
+        return "Cannot summon";
+      }
+
+      if (!isYourSummoningTurn()) {
+        return "Only during your Summoning Unit turn";
+      }
+
+      if (getSummonsRemainingThisTurn() <= 0) {
+        return "No summons remaining this turn";
+      }
+
+      const missingCosts = getMissingCosts(unitType.ritualCosts || []);
+      return missingCosts.length > 0 ? `Need ${missingCosts.join(", ")}` : "Summon";
+    }
+
+    function addPiece(typeId) {
+      if (!canAddPieceType(typeId)) {
         return;
+      }
+
+      const unitType = getUnitType(typeId);
+
+      if (state.setupComplete) {
+        payCosts(unitType.ritualCosts || []);
+        recordSummonUsed();
       }
 
       const newPiece = {
@@ -1364,6 +2502,11 @@
       state.selectedPieceId = newPiece.pieceId;
       state.selectedRuleTypeId = unitType.id;
       state.filter = state.filter === "rules" ? "all" : state.filter;
+
+      if (state.setupComplete) {
+        logRoundEvent(`${unitType.name} was summoned. ${getSummonsRemainingThisTurn()} summon${getSummonsRemainingThisTurn() === 1 ? "" : "s"} remaining this turn.`);
+      }
+
       saveState();
       render();
     }
@@ -1401,12 +2544,24 @@
       // shield and leaves HP unchanged.
       if (isTakingDamage && piece.hasShield) {
         piece.hasShield = false;
+        logRoundEvent(`${unitType.name} #${getCopyNumber(piece)} blocked a hit with a shield.`);
         saveState();
         render();
         return;
       }
 
+      const previousHp = piece.currentHp;
       piece.currentHp = clamp(newHp, 0, unitType.maxHp);
+
+      if (piece.currentHp < previousHp) {
+        logRoundEvent(`${unitType.name} #${getCopyNumber(piece)} took a hit: HP ${previousHp} → ${piece.currentHp}.`);
+
+        if (piece.currentHp === 0 && previousHp > 0) {
+          logRoundEvent(`${unitType.name} #${getCopyNumber(piece)} was defeated.`);
+        }
+      } else if (piece.currentHp > previousHp) {
+        logRoundEvent(`${unitType.name} #${getCopyNumber(piece)} recovered: HP ${previousHp} → ${piece.currentHp}.`);
+      }
       saveState();
       render();
     }
@@ -1420,6 +2575,7 @@
 
       piece.hasShield = true;
       state.items.Shield -= 1;
+      logRoundEvent(`${getUnitType(piece.typeId).name} #${getCopyNumber(piece)} equipped a shield.`);
       saveState();
       render();
     }
@@ -1440,6 +2596,7 @@
 
       piece.hasShield = false;
       state.items.Shield += 1;
+      logRoundEvent(`${getUnitType(piece.typeId).name} #${getCopyNumber(piece)} unequipped a shield.`);
       saveState();
       render();
     }
@@ -1460,6 +2617,12 @@
     function changeCurrency(currencyName, amount) {
       const current = state.currency[currencyName] || 0;
       state.currency[currencyName] = clamp(current + amount, 0, 99);
+      saveState();
+      render();
+    }
+
+    function changeGivingTiles(amount) {
+      state.givingTiles = clamp((state.givingTiles || 0) + amount, 0, 5);
       saveState();
       render();
     }
@@ -1496,7 +2659,272 @@
       });
     }
 
+    function isCurrentTeamTurnForStep(stepKind) {
+      const currentStep = getCurrentTurnStep();
+      const currentTeam = getCurrentTurnTeam();
+
+      return Boolean(
+        state.turnOrder.started &&
+        currentStep.kind === stepKind &&
+        currentTeam === state.team
+      );
+    }
+
+    function canUseCraftingNow() {
+      return isCurrentTeamTurnForStep("crafting");
+    }
+
+    function canUseShopNow() {
+      return isCurrentTeamTurnForStep("shopping") && hasActiveTrader();
+    }
+
+    function getTeamOrderForCurrentRound() {
+      const firstTeam = state.turnOrder.firstTeam || state.turnOrder.startingTeam || "red";
+      return firstTeam === "red" ? ["red", "blue"] : ["blue", "red"];
+    }
+
+    function getCurrentTurnTeam() {
+      const order = getTeamOrderForCurrentRound();
+      return order[state.turnOrder.teamIndex] || order[0];
+    }
+
+    function getTeamLabel(team) {
+      return team === "red" ? "Red Team" : "Blue Team";
+    }
+
+    function flipTeam(team) {
+      return team === "red" ? "blue" : "red";
+    }
+
+    function getCurrentTurnStep() {
+      return turnSteps[state.turnOrder.stepIndex] || turnSteps[0];
+    }
+
+    function advanceTurn() {
+      if (!state.turnOrder.started) {
+        return;
+      }
+
+      if (state.turnOrder.teamIndex === 0) {
+        state.turnOrder.teamIndex = 1;
+      } else {
+        state.turnOrder.teamIndex = 0;
+        state.turnOrder.stepIndex += 1;
+
+        if (state.turnOrder.stepIndex >= turnSteps.length) {
+          state.turnOrder.stepIndex = 0;
+          state.turnOrder.round += 1;
+          state.turnOrder.firstTeam = flipTeam(state.turnOrder.firstTeam || state.turnOrder.startingTeam || "red");
+        }
+      }
+
+      saveState();
+      render();
+    }
+
+    function previousTurnStep() {
+      if (!state.turnOrder.started) {
+        return;
+      }
+
+      if (state.turnOrder.teamIndex === 1) {
+        state.turnOrder.teamIndex = 0;
+      } else {
+        state.turnOrder.teamIndex = 1;
+        state.turnOrder.stepIndex -= 1;
+
+        if (state.turnOrder.stepIndex < 0) {
+          state.turnOrder.round = Math.max(1, state.turnOrder.round - 1);
+          state.turnOrder.stepIndex = turnSteps.length - 1;
+          state.turnOrder.firstTeam = flipTeam(state.turnOrder.firstTeam || state.turnOrder.startingTeam || "red");
+        }
+      }
+
+      saveState();
+      render();
+    }
+
+    function resetTurnOrderState() {
+      state.turnOrder = JSON.parse(JSON.stringify(defaultState.turnOrder));
+      saveState();
+      render();
+    }
+
+    function getCurrentTurnKey() {
+      return `${state.turnOrder.round}-${state.turnOrder.stepIndex}-${state.turnOrder.teamIndex}`;
+    }
+
+    function canResolveGivingTiles() {
+      const currentStep = getCurrentTurnStep();
+      const currentTeam = getCurrentTurnTeam();
+
+      if (!state.turnOrder.started || currentStep.kind !== "giving") {
+        return false;
+      }
+
+      if (currentTeam !== state.team) {
+        return false;
+      }
+
+      if ((state.givingTiles || 0) <= 0) {
+        return false;
+      }
+
+      if (getAvailableSpaceForTargetType("resource") <= 0) {
+        return false;
+      }
+
+      return state.turnOrder.lastGivingResolvedKey !== getCurrentTurnKey();
+    }
+
+    function canClaimRoundReward() {
+      const currentStep = getCurrentTurnStep();
+      const currentTeam = getCurrentTurnTeam();
+
+      if (!state.turnOrder.started || currentStep.kind !== "roundEnd") {
+        return false;
+      }
+
+      if (currentTeam !== state.team) {
+        return false;
+      }
+
+      return state.turnOrder.lastRoundRewardKey !== getCurrentTurnKey();
+    }
+
+    function claimRoundReward(choice) {
+      if (!canClaimRoundReward()) {
+        return;
+      }
+
+      state.currency.bronze += 1;
+
+      if (choice === "bronze") {
+        state.currency.bronze += 1;
+        logRoundEvent("End-of-round reward claimed: 1 free Bronze plus bonus Bronze.");
+      } else if (choice === "Wood" || choice === "Stone" || choice === "Bread") {
+        if (getAvailableSpaceForTargetType("resource") <= 0) {
+          window.alert("There is no room in Resources for the bonus resource.");
+          return;
+        }
+
+        state.resources[choice] = (state.resources[choice] || 0) + 1;
+        logRoundEvent(`End-of-round reward claimed: 1 free Bronze plus bonus ${choice}.`);
+      }
+
+      state.turnOrder.lastRoundRewardKey = getCurrentTurnKey();
+      saveState();
+      render();
+    }
+
+    function getRandomGivingTileRewards(count) {
+      const results = [];
+
+      for (let i = 0; i < count; i += 1) {
+        const randomIndex = Math.floor(Math.random() * givingTileRewardPool.length);
+        results.push(givingTileRewardPool[randomIndex]);
+      }
+
+      return results;
+    }
+
+    function resolveGivingTilesReward() {
+      if (!canResolveGivingTiles()) {
+        return;
+      }
+
+      const tileCount = state.givingTiles || 0;
+      const availableSpace = getAvailableSpaceForTargetType("resource");
+      const rewardCount = Math.min(tileCount, availableSpace);
+
+      if (rewardCount <= 0) {
+        window.alert("There is no room in Resources for Giving Tile rewards.");
+        return;
+      }
+
+      const rewards = getRandomGivingTileRewards(rewardCount);
+
+      rewards.forEach(reward => {
+        state.resources[reward.name] = (state.resources[reward.name] || 0) + 1;
+      });
+
+      state.turnOrder.lastGivingResolvedKey = getCurrentTurnKey();
+      logRoundEvent(`Giving Tiles produced: ${rewards.map(reward => reward.name).join(", ")}.`);
+      saveState();
+      render();
+      showGivingTileRewards(rewards, tileCount, rewardCount);
+    }
+
+    function showGivingTileRewards(rewards, tileCount, rewardCount) {
+      const useSubtleMode = state.givingAnimationMode === "subtle";
+
+      givingResultsOverlay.classList.toggle("subtle-mode", useSubtleMode);
+      givingResultsGrid.innerHTML = "";
+      givingResultsSubtitle.textContent = rewardCount < tileCount
+        ? `You occupied ${tileCount} Giving Tiles, but only had room for ${rewardCount} reward${rewardCount === 1 ? "" : "s"}.`
+        : `You occupied ${tileCount} Giving Tile${tileCount === 1 ? "" : "s"} and received ${rewardCount} random resource${rewardCount === 1 ? "" : "s"}.`;
+
+      const fragment = document.createDocumentFragment();
+
+      rewards.forEach((reward, index) => {
+        const card = document.createElement("div");
+        card.className = "giving-result-card";
+        card.innerHTML = `
+          <div class="giving-result-icon">${reward.icon}</div>
+          <div class="giving-result-name">${reward.name}</div>
+          <div class="giving-result-qty">+1</div>
+        `;
+        fragment.appendChild(card);
+
+        window.setTimeout(() => {
+          card.classList.add("reveal");
+        }, useSubtleMode ? 40 + (index * 70) : 350 + (index * 180));
+      });
+
+      givingResultsGrid.appendChild(fragment);
+      givingResultsOverlay.classList.add("active");
+    }
+
+    function closeGivingRewardsOverlay() {
+      givingResultsOverlay.classList.remove("active");
+    }
+
+    function startTurnOrderWithFirstTeam(firstTeam) {
+      state.turnOrder = {
+        ...state.turnOrder,
+        started: true,
+        round: 1,
+        startingTeam: firstTeam,
+        firstTeam,
+        stepIndex: 0,
+        teamIndex: 0,
+        coinFlipping: false,
+        lastGivingResolvedKey: "",
+        lastRoundRewardKey: "",
+        summonsByTurnKey: {}
+      };
+
+      saveState();
+      render();
+    }
+
+    function flipCoinForFirstPlayer() {
+      state.turnOrder.coinFlipping = true;
+      state.turnOrder.started = false;
+      saveState();
+      render();
+
+      window.setTimeout(() => {
+        const winner = Math.random() < 0.5 ? "red" : "blue";
+        startTurnOrderWithFirstTeam(winner);
+      }, 1200);
+    }
+
     function convertCurrency(conversionId) {
+      if (!canUseShopNow()) {
+        return;
+      }
+
       const conversion = currencyConversions.find(item => item.id === conversionId);
 
       if (!conversion) {
@@ -1509,11 +2937,16 @@
 
       state.currency[conversion.fromCurrency] -= conversion.fromAmount;
       state.currency[conversion.toCurrency] += conversion.toAmount;
+      logRoundEvent(`Converted ${conversion.fromAmount} ${conversion.fromCurrency} into ${conversion.toAmount} ${conversion.toCurrency}.`);
       saveState();
       render();
     }
 
     function canCraftRecipe(recipe) {
+      if (!canUseCraftingNow()) {
+        return false;
+      }
+
       const hasResources = recipe.costs.every(cost => {
         if (cost.type !== "resource") {
           return false;
@@ -1554,11 +2987,16 @@
       });
 
       state.items[recipe.resultName] += recipe.resultQuantity;
+      logRoundEvent(`Crafted ${recipe.resultQuantity} ${recipe.resultName}.`);
       saveState();
       render();
     }
 
     function buyFromShop(purchaseId) {
+      if (!canUseShopNow()) {
+        return;
+      }
+
       const purchase = shopPurchases.find(item => item.id === purchaseId);
 
       if (!purchase) {
@@ -1574,6 +3012,7 @@
       const collectionName = getCollectionNameForTargetType(purchase.targetType);
       state.currency[purchase.costCurrency] -= purchase.costAmount;
       state[collectionName][purchase.targetName] += quantityToBuy;
+      logRoundEvent(`Purchased ${quantityToBuy} ${purchase.targetName} for ${purchase.costAmount} ${purchase.costCurrency}.`);
       saveState();
       render();
     }
@@ -1589,10 +3028,10 @@
         // All Warriors and Mage
         case "fighter": return "linear-gradient(160deg, #a12b24, #5b1510)";
 
-        // Medic, Priest, Necromacer, Farmer
+        // Medic, Priest, Necromancer, Farmer
         case "support": return "linear-gradient(160deg, #3f7a56, #1f4c35)";
 
-        // Artierist, Spy, Ritual Caster, Thief, Strategist, Trader
+        // Artillerist, Spy, Ritual Caster, Thief, Strategist, Trader
         case "special": return "linear-gradient(160deg, #244d78, #132c47)";
 
         default: return "linear-gradient(160deg, #244d78, #122f4e)";
@@ -1640,10 +3079,246 @@
       });
     }
 
+    function renderTurnOrder() {
+      const turnOrder = state.turnOrder;
+      const currentStep = getCurrentTurnStep();
+      const currentTeam = getCurrentTurnTeam();
+      const isStarted = Boolean(turnOrder.started);
+      const isFlipping = Boolean(turnOrder.coinFlipping);
+
+      turnRoundLabel.textContent = isStarted ? `Round ${turnOrder.round}` : "Before Round 1";
+      turnTeamLabel.textContent = isStarted ? `${getTeamLabel(currentTeam)} acts now` : "Choose first player";
+      turnTeamLabel.classList.toggle("red-team", isStarted && currentTeam === "red");
+      turnTeamLabel.classList.toggle("blue-team", !isStarted || currentTeam === "blue");
+      turnStepTitle.textContent = isStarted ? currentStep.title : "Coin Flip";
+      turnStepTitle.classList.toggle("red-team-text", isStarted && currentTeam === "red");
+      turnStepTitle.classList.toggle("blue-team-text", isStarted && currentTeam === "blue");
+      turnInstructions.textContent = isStarted
+        ? (currentStep.kind === "roundEnd" ? "End of round! Claim your reward and review what happened before advancing." : currentStep.instructions)
+        : "Flip the coin to randomly choose who acts first. After a full round, the first-player order switches.";
+
+      previousTurn.disabled = !isStarted || isFlipping;
+      nextTurn.disabled = !isStarted || isFlipping;
+      firstPlayerControls.classList.toggle("hidden", isStarted && !isFlipping);
+      coinFlipButton.disabled = isFlipping;
+      coinFlipButton.textContent = isFlipping ? "Flipping..." : "Flip Coin for First Player";
+
+      coinDisplay.classList.toggle("flipping", isFlipping);
+      coinDisplay.classList.toggle("red-team", isStarted && (turnOrder.startingTeam === "red"));
+      coinDisplay.classList.toggle("blue-team", !isStarted || turnOrder.startingTeam === "blue");
+      coinDisplay.textContent = isFlipping ? "?" : (isStarted ? (turnOrder.startingTeam === "red" ? "Red" : "Blue") : "?");
+      coinNote.textContent = isStarted
+        ? `${getTeamLabel(turnOrder.startingTeam)} won the coin flip. Round ${turnOrder.round} order: ${getTeamOrderForCurrentRound().map(getTeamLabel).join(" → ")}.`
+        : "The winner acts first for Round 1. After each full round, first-player order switches.";
+
+      renderTurnPiecesList(currentStep, isStarted);
+      renderPersistentRoundSummary(isStarted, currentStep);
+    }
+
+    function renderPersistentRoundSummary(isStarted, currentStep) {
+      const events = isStarted ? getCurrentRoundEvents() : [];
+      turnSummaryPanel.classList.toggle("round-end-highlight", isStarted && currentStep.kind === "roundEnd");
+      turnSummaryCount.textContent = `${events.length} event${events.length === 1 ? "" : "s"}`;
+
+      if (!isStarted) {
+        turnSummaryList.innerHTML = `<div class="round-summary-item">Start the turn tracker to begin recording round events.</div>`;
+        return;
+      }
+
+      if (events.length === 0) {
+        turnSummaryList.innerHTML = `<div class="round-summary-item">No major events logged yet this round.</div>`;
+        return;
+      }
+
+      turnSummaryList.innerHTML = events
+        .slice(-10)
+        .map(event => `<div class="round-summary-item">${event.message}</div>`)
+        .join("");
+    }
+
+    function renderTurnPiecesList(currentStep, isStarted) {
+      turnPiecesList.innerHTML = "";
+
+      if (!isStarted) {
+        turnPiecesList.innerHTML = `<div class="empty-state">Flip the coin to start the turn tracker.</div>`;
+        return;
+      }
+
+      if (currentStep.kind === "unit") {
+        const matchingPieces = state.activePieces
+          .filter(piece => piece.typeId === currentStep.typeId)
+          .sort((a, b) => a.pieceId - b.pieceId);
+
+        if (matchingPieces.length === 0) {
+          turnPiecesList.innerHTML = `<div class="empty-state">You have no ${currentStep.title} pieces active.</div>`;
+          return;
+        }
+
+        const fragment = document.createDocumentFragment();
+
+        matchingPieces.forEach(piece => {
+          const unitType = getUnitType(piece.typeId);
+          const copyNumber = getCopyNumber(piece);
+          const row = document.createElement("div");
+          row.className = `current-piece-row${piece.currentHp <= 0 ? " dead-piece" : ""}`;
+          row.innerHTML = `
+            <div class="badge" style="background:${getBadgeColour(unitType.category)}">${unitType.id}</div>
+            <div class="current-piece-name">${unitType.name} #${copyNumber}${piece.hasShield ? " · 🛡" : ""}</div>
+            <div class="current-piece-stat">Move ${unitType.move}</div>
+            <div class="current-piece-stat">HP ${piece.currentHp}/${unitType.maxHp}</div>
+          `;
+          fragment.appendChild(row);
+        });
+
+        turnPiecesList.appendChild(fragment);
+        return;
+      }
+
+      if (currentStep.kind === "giving") {
+        const tileCount = state.givingTiles || 0;
+        const canResolve = canResolveGivingTiles();
+        const alreadyResolved = state.turnOrder.lastGivingResolvedKey === getCurrentTurnKey();
+        const currentTeam = getCurrentTurnTeam();
+        const isYourTurn = currentTeam === state.team;
+
+        let noteText = `You occupy ${tileCount} Giving Tile${tileCount === 1 ? "" : "s"}.`;
+
+        if (!isYourTurn) {
+          noteText += ` Wait for ${getTeamLabel(currentTeam)} to finish this step.`;
+        } else if (tileCount <= 0) {
+          noteText += " You have no Giving Tiles occupied right now.";
+        } else if (alreadyResolved) {
+          noteText += " Rewards already claimed for this Giving Tiles step.";
+        } else if (getAvailableSpaceForTargetType("resource") <= 0) {
+          noteText += " Your Resources are full, so there is no room for rewards.";
+        } else {
+          const rewardCount = Math.min(tileCount, getAvailableSpaceForTargetType("resource"));
+          noteText += ` Click below to receive ${rewardCount} random resource${rewardCount === 1 ? "" : "s"}.`;
+        }
+
+        turnPiecesList.innerHTML = `
+          <div class="giving-action-box">
+            <div class="giving-action-title">Giving Tile Random Pickup</div>
+            <div class="giving-action-note">${noteText}</div>
+            <button
+              class="giving-action-button"
+              type="button"
+              data-action="resolve-giving-tiles"
+              ${canResolve ? "" : "disabled"}>
+              ✨ Open Giving Tiles ✨
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      const notes = {
+        summon: state.setupComplete
+          ? (getCurrentTurnTeam() === state.team
+            ? `You may summon ${getSummonsRemainingThisTurn()} more unit${getSummonsRemainingThisTurn() === 1 ? "" : "s"} this turn. Base summon: 1. Living Ritual Casters: ${getLivingRitualCasterCount()}.`
+            : `Wait for ${getTeamLabel(getCurrentTurnTeam())} to finish their summoning step.`)
+          : "Finish setup before ritual summoning begins."
+      };
+
+      if (currentStep.kind === "crafting") {
+        const currentTeam = getCurrentTurnTeam();
+        const isYourTurn = currentTeam === state.team;
+        const canOpen = canUseCraftingNow();
+        const note = isYourTurn
+          ? "Crafting is available now. Open the Crafting panel to craft items from resources."
+          : `Wait for ${getTeamLabel(currentTeam)} to finish their crafting step.`;
+
+        turnPiecesList.innerHTML = `
+          <div class="round-reward-box">
+            <div class="round-reward-title">Crafting Step</div>
+            <div class="round-reward-note">${note}</div>
+            <div class="turn-extra-controls">
+              <button class="turn-btn primary" data-action="toggle-crafting-panel" ${canOpen ? "" : "disabled"}>
+                ${state.craftingOpen ? "Close Crafting" : "Open Crafting"}
+              </button>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      if (currentStep.kind === "shopping") {
+        const currentTeam = getCurrentTurnTeam();
+        const isYourTurn = currentTeam === state.team;
+        const canOpen = canUseShopNow();
+        let note = "Shopping requires an active living Trader.";
+
+        if (!isYourTurn) {
+          note = `Wait for ${getTeamLabel(currentTeam)} to finish their shopping step.`;
+        } else if (hasActiveTrader()) {
+          note = "Your Trader is active. Open the Shop to purchase resources/items or convert currency.";
+        } else {
+          note = "You do not have an active living Trader, so you cannot shop this turn.";
+        }
+
+        turnPiecesList.innerHTML = `
+          <div class="round-reward-box">
+            <div class="round-reward-title">Shopping Step</div>
+            <div class="round-reward-note">${note}</div>
+            <div class="turn-extra-controls">
+              <button class="turn-btn primary" data-action="toggle-shop-panel" ${canOpen ? "" : "disabled"}>
+                ${state.shopOpen ? "Close Shop" : "Open Shop"}
+              </button>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      if (currentStep.kind === "roundEnd") {
+        const canClaim = canClaimRoundReward();
+        const alreadyClaimed = state.turnOrder.lastRoundRewardKey === getCurrentTurnKey();
+        const currentTeam = getCurrentTurnTeam();
+        const isYourTurn = currentTeam === state.team;
+        const events = getCurrentRoundEvents();
+        const summaryHtml = events.length > 0
+          ? events.slice(-8).map(event => `<div class="round-summary-item">${event.message}</div>`).join("")
+          : `<div class="round-summary-item">No major events logged yet this round.</div>`;
+
+        let rewardNote = "Each player receives 1 free Bronze, then chooses Wood, Stone, Bread, or an additional Bronze.";
+
+        if (!isYourTurn) {
+          rewardNote = `Wait for ${getTeamLabel(currentTeam)} to claim their end-of-round reward.`;
+        } else if (alreadyClaimed) {
+          rewardNote = "Reward already claimed for this end-of-round step.";
+        }
+
+        turnPiecesList.innerHTML = `
+          <div class="round-reward-box">
+            <div class="round-reward-title">⭐ End of Round! ⭐</div>
+            <div class="round-reward-note">${rewardNote}</div>
+            <div class="round-reward-buttons">
+              <button class="round-reward-btn" data-round-reward="Wood" ${canClaim ? "" : "disabled"}>+ Bronze & Wood</button>
+              <button class="round-reward-btn" data-round-reward="Stone" ${canClaim ? "" : "disabled"}>+ Bronze & Stone</button>
+              <button class="round-reward-btn" data-round-reward="Bread" ${canClaim ? "" : "disabled"}>+ Bronze & Bread</button>
+              <button class="round-reward-btn primary" data-round-reward="bronze" ${canClaim ? "" : "disabled"}>+ 2 Bronze</button>
+            </div>
+            <div>
+              <h3 class="section-title" style="margin-top:8px;">End-of-Round Summary</h3>
+              <div class="round-summary-list">${summaryHtml}</div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      turnPiecesList.innerHTML = `<div class="empty-state">${notes[currentStep.kind] || currentStep.instructions}</div>`;
+    }
+
     function renderCurrency() {
       document.getElementById("goldCount").textContent = state.currency.gold;
       document.getElementById("silverCount").textContent = state.currency.silver;
       document.getElementById("bronzeCount").textContent = state.currency.bronze;
+      givingTilesCount.textContent = state.givingTiles || 0;
+
+      document.querySelectorAll("[data-giving-animation]").forEach(button => {
+        button.classList.toggle("active", button.dataset.givingAnimation === state.givingAnimationMode);
+      });
     }
 
     function renderCurrencyConversions() {
@@ -1722,8 +3397,11 @@
     }
 
     function renderCrafting() {
+      if (!canUseCraftingNow()) {
+        state.craftingOpen = false;
+      }
+
       craftingPanel.classList.toggle("hidden", !state.craftingOpen);
-      toggleCrafting.textContent = state.craftingOpen ? "Close Crafting" : "Open Crafting";
       craftingGrid.innerHTML = "";
 
       const groupSection = document.createElement("section");
@@ -1758,15 +3436,10 @@
     }
 
     function renderShop() {
-      const traderIsActive = hasActiveTrader();
-
-      if (!traderIsActive) {
+      if (!canUseShopNow()) {
         state.shopOpen = false;
       }
 
-      toggleShop.disabled = !traderIsActive;
-      toggleShop.textContent = state.shopOpen ? "Close Shop" : "Open Shop";
-      shopLockNote.textContent = traderIsActive ? "Trader active — shop available." : "Requires an active Trader.";
       shopPanel.classList.toggle("hidden", !state.shopOpen);
       shopGrid.innerHTML = "";
 
@@ -1841,20 +3514,50 @@
     }
 
     function renderSummonPanel() {
+      summonPanel.classList.toggle("collapsed", Boolean(state.summonPanelCollapsed));
+      toggleSummonPanel.textContent = state.summonPanelCollapsed ? "Expand" : "Collapse";
       summonGrid.innerHTML = "";
       activePieceCount.textContent = state.activePieces.length;
-      const boardIsFull = state.activePieces.length >= MAX_ACTIVE_PIECES;
       const fragment = document.createDocumentFragment();
 
-      unitTypes.forEach(unitType => {
+      setupStatus.style.display = "grid";
+
+      if (!state.setupComplete) {
+        const remainingSetupPicks = Math.max(0, STARTING_TOTAL_PIECES - state.activePieces.length);
+        setupStatusText.textContent = `Setup: choose ${remainingSetupPicks} more starting piece${remainingSetupPicks === 1 ? "" : "s"}, then finish setup.`;
+        finishSetup.style.display = "inline-block";
+        finishSetup.disabled = state.activePieces.length !== STARTING_TOTAL_PIECES;
+      } else {
+        const allowedSummons = getAllowedSummonsThisTurn();
+        const remainingSummons = isYourSummoningTurn() ? getSummonsRemainingThisTurn() : 0;
+        const ritualCasters = getLivingRitualCasterCount();
+
+        setupStatusText.textContent = isYourSummoningTurn()
+          ? `Summoning Unit: ${remainingSummons} of ${allowedSummons} summon${allowedSummons === 1 ? "" : "s"} remaining. Living Ritual Casters: ${ritualCasters}.`
+          : `Summoning is only available during your Summoning Unit turn. Living Ritual Casters: ${ritualCasters}.`;
+
+        finishSetup.style.display = "none";
+        finishSetup.disabled = true;
+      }
+
+      const availableUnitTypes = state.setupComplete
+        ? unitTypes
+        : unitTypes.filter(unitType => startingSetupTypeIds.includes(unitType.id));
+
+      availableUnitTypes.forEach(unitType => {
         const activeCount = getPiecesForType(unitType.id).length;
         const maxCopies = getMaxCopiesForType(unitType.id);
+        const canAdd = canAddPieceType(unitType.id);
+        const buttonText = state.setupComplete ? "Summon" : "Add";
         const row = document.createElement("div");
         row.className = "summon-row";
         row.innerHTML = `
-          <div class="summon-name" title="${unitType.name}">${unitType.name}</div>
+          <div>
+            <div class="summon-name" title="${unitType.name}">${unitType.name}</div>
+            <div class="summon-cost">${getSummonCostHtml(unitType)}</div>
+          </div>
           <div class="summon-count">${activeCount}/${maxCopies}</div>
-          <button class="add-btn" data-add-type-id="${unitType.id}" ${activeCount >= maxCopies || boardIsFull ? "disabled" : ""}>Add</button>
+          <button class="add-btn" data-add-type-id="${unitType.id}" title="${getAddPieceStatus(unitType)}" ${canAdd ? "" : "disabled"}>${buttonText}</button>
         `;
         fragment.appendChild(row);
       });
@@ -1929,7 +3632,9 @@
     }
 
     function renderRuleCards() {
-      const visibleRuleTypes = getVisibleRuleTypes();
+      const visibleRuleTypes = state.setupComplete
+        ? getVisibleRuleTypes()
+        : getVisibleRuleTypes().filter(unitType => startingSetupTypeIds.includes(unitType.id));
 
       if (visibleRuleTypes.length === 0) {
         unitsGrid.innerHTML = `<div class="empty-state">No rules match the current search.</div>`;
@@ -1958,7 +3663,7 @@
             <div class="stat-pill"><span>Move</span><strong class="move-value">${unitType.move}</strong></div>
             <div class="stat-pill"><span>Max HP</span><strong class="hp-value">${unitType.maxHp}</strong></div>
           </div>
-          <button class="add-btn" data-add-type-id="${unitType.id}" ${activeCount >= maxCopies || state.activePieces.length >= MAX_ACTIVE_PIECES ? "disabled" : ""}>Add to Board</button>
+          <button class="add-btn" data-add-type-id="${unitType.id}" title="${getAddPieceStatus(unitType)}" ${canAddPieceType(unitType.id) ? "" : "disabled"}>${state.setupComplete ? "Summon" : "Add to Board"}</button>
           <div class="quick-action">${unitType.action}</div>
         `;
 
@@ -2055,6 +3760,7 @@
     function render() {
       renderTeam();
       renderCurrency();
+      renderTurnOrder();
       renderShop();
       renderCrafting();
       renderSummonPanel();
@@ -2071,24 +3777,25 @@
       });
     });
 
-    toggleShop.addEventListener("click", () => {
-      if (!hasActiveTrader()) {
-        state.shopOpen = false;
-        saveState();
-        render();
+    document.querySelectorAll("[data-giving-tiles-change]").forEach(button => {
+      button.addEventListener("click", () => {
+        changeGivingTiles(Number(button.dataset.givingTilesChange));
+      });
+    });
+
+    givingAnimationModeToggle.addEventListener("click", event => {
+      const button = event.target.closest("[data-giving-animation]");
+
+      if (!button) {
         return;
       }
 
-      state.shopOpen = !state.shopOpen;
+      state.givingAnimationMode = button.dataset.givingAnimation;
       saveState();
       render();
     });
 
-    toggleCrafting.addEventListener("click", () => {
-      state.craftingOpen = !state.craftingOpen;
-      saveState();
-      render();
-    });
+    
 
     shopGrid.addEventListener("click", event => {
       const convertButton = event.target.closest("[data-convert-id]");
@@ -2227,7 +3934,7 @@
       }
 
       if (action === "reset-game") {
-        const confirmed = window.confirm("Reset the whole game? This removes active pieces, resets currency, clears resources, and clears items.");
+        const confirmed = window.confirm("Reset the whole game? This removes active pieces, resets currency, clears resources, clears items, resets turn order, and returns to setup mode.");
 
         if (!confirmed) {
           return;
@@ -2263,6 +3970,91 @@
         saveState();
         render();
       });
+    });
+
+    finishSetup.addEventListener("click", () => {
+      if (state.activePieces.length !== STARTING_TOTAL_PIECES) {
+        return;
+      }
+
+      state.setupComplete = true;
+      saveState();
+      render();
+    });
+
+    toggleSummonPanel.addEventListener("click", () => {
+      state.summonPanelCollapsed = !state.summonPanelCollapsed;
+      saveState();
+      render();
+    });
+
+    coinFlipButton.addEventListener("click", () => {
+      flipCoinForFirstPlayer();
+    });
+
+    document.querySelectorAll("[data-set-first-team]").forEach(button => {
+      button.addEventListener("click", () => {
+        startTurnOrderWithFirstTeam(button.dataset.setFirstTeam);
+      });
+    });
+
+    nextTurn.addEventListener("click", () => {
+      advanceTurn();
+    });
+
+    previousTurn.addEventListener("click", () => {
+      previousTurnStep();
+    });
+
+    resetTurnOrder.addEventListener("click", () => {
+      resetTurnOrderState();
+    });
+
+    turnPiecesList.addEventListener("click", event => {
+      const shopButton = event.target.closest('[data-action="toggle-shop-panel"]');
+
+      if (shopButton) {
+        if (canUseShopNow()) {
+          state.shopOpen = !state.shopOpen;
+          saveState();
+          render();
+        }
+        return;
+      }
+
+      const craftingButton = event.target.closest('[data-action="toggle-crafting-panel"]');
+
+      if (craftingButton) {
+        if (canUseCraftingNow()) {
+          state.craftingOpen = !state.craftingOpen;
+          saveState();
+          render();
+        }
+        return;
+      }
+
+      const givingButton = event.target.closest('[data-action="resolve-giving-tiles"]');
+
+      if (givingButton) {
+        resolveGivingTilesReward();
+        return;
+      }
+
+      const rewardButton = event.target.closest("[data-round-reward]");
+
+      if (rewardButton) {
+        claimRoundReward(rewardButton.dataset.roundReward);
+      }
+    });
+
+    closeGivingResults.addEventListener("click", () => {
+      closeGivingRewardsOverlay();
+    });
+
+    givingResultsOverlay.addEventListener("click", event => {
+      if (event.target === givingResultsOverlay) {
+        closeGivingRewardsOverlay();
+      }
     });
 
     render();
