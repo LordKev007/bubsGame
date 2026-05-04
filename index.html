@@ -66,6 +66,7 @@
     .title-card,
     .currency-panel,
     .giving-tiles-panel,
+    .cannon-panel,
     .turn-panel,
     .controls,
     .unit-card,
@@ -160,8 +161,86 @@
       padding: 10px 12px;
     }
 
+    .utility-panels-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .utility-panels-row > section {
+      min-width: 0;
+    }
+
     .giving-tiles-panel {
       padding: 10px;
+    }
+
+    .cannon-panel {
+      padding: 10px;
+    }
+
+    .cannon-controls {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .cannon-status-title {
+      font-weight: 900;
+      color: var(--team-accent-dark);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .cannon-status-note {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      margin-top: 4px;
+    }
+
+    .cannon-pill {
+      min-width: 94px;
+      min-height: 34px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      border: 1px solid rgba(43, 33, 24, 0.22);
+      background: rgba(255,255,255,0.62);
+      color: var(--muted);
+    }
+
+    .cannon-pill.loaded {
+      background: linear-gradient(180deg, #ffeeb8, #d8a941);
+      color: #39280a;
+      border-color: rgba(120, 82, 12, 0.35);
+      box-shadow: 0 0 16px rgba(216, 169, 65, 0.32);
+    }
+
+    .cannon-action-btn {
+      border: 1px solid rgba(43, 33, 24, 0.3);
+      background: linear-gradient(180deg, #edf8ed, #c8e0c4);
+      color: var(--ink);
+      border-radius: 10px;
+      min-height: 34px;
+      cursor: pointer;
+      box-shadow: 0 2px 0 rgba(0,0,0,0.18);
+      font-weight: 900;
+      padding: 0 10px;
+      white-space: nowrap;
+    }
+
+    .cannon-action-btn.secondary {
+      background: linear-gradient(180deg, #fff9eb, #ead7af);
+    }
+
+    .cannon-action-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
     }
 
     .turn-panel {
@@ -185,8 +264,8 @@
     }
 
     .turn-main-callout {
-      grid-template-rows: auto auto minmax(56px, auto) minmax(48px, 1fr) auto auto;
-      min-height: 292px;
+      grid-template-rows: auto auto minmax(40px, auto) minmax(54px, auto) minmax(128px, 1fr) auto auto;
+      min-height: 392px;
     }
 
     .turn-round {
@@ -241,6 +320,100 @@
       line-height: 1.25;
       min-height: 54px;
       align-self: start;
+    }
+
+    .current-reference-card {
+      border: 1px solid rgba(43, 33, 24, 0.18);
+      background: rgba(255,255,255,0.54);
+      border-radius: 14px;
+      padding: 9px;
+      display: grid;
+      gap: 7px;
+      align-self: stretch;
+    }
+
+    .current-reference-card.empty {
+      opacity: 0.78;
+    }
+
+    .current-reference-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+      color: var(--team-accent-dark);
+      font-weight: 900;
+      line-height: 1.1;
+    }
+
+    .current-reference-stats {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .current-reference-combat {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .current-reference-actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .current-reference-pill {
+      border: 1px solid rgba(43, 33, 24, 0.18);
+      background: rgba(255,255,255,0.58);
+      border-radius: 10px;
+      padding: 5px 7px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 900;
+      color: var(--muted);
+      min-width: 0;
+    }
+
+    .current-reference-pill strong {
+      color: var(--ink);
+      font-size: 16px;
+      line-height: 1;
+      text-align: right;
+      min-width: 0;
+    }
+
+    .current-reference-pill.wide {
+      grid-column: 1 / -1;
+    }
+
+    .current-reference-pill.wide strong {
+      font-size: 13px;
+      line-height: 1.15;
+      white-space: normal;
+    }
+
+    .current-reference-pill.action-primary {
+      background: linear-gradient(180deg, rgba(255, 249, 235, 0.92), rgba(234, 215, 175, 0.76));
+      border-color: rgba(155, 132, 95, 0.42);
+    }
+
+    .current-reference-action {
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1.25;
+    }
+
+    .current-reference-cost {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1.2;
     }
 
     .turn-controls {
@@ -343,7 +516,7 @@
 
     .current-piece-row {
       display: grid;
-      grid-template-columns: auto 1fr auto auto;
+      grid-template-columns: auto 1fr auto auto auto;
       gap: 8px;
       align-items: center;
       border: 1px solid rgba(43, 33, 24, 0.18);
@@ -366,6 +539,30 @@
     .current-piece-stat {
       color: var(--muted);
       white-space: nowrap;
+    }
+
+    .fire-arrow-btn {
+      border: 1px solid rgba(43, 33, 24, 0.3);
+      background: linear-gradient(180deg, #fff1c7, #d9aa45);
+      color: #39280a;
+      border-radius: 10px;
+      min-height: 30px;
+      cursor: pointer;
+      box-shadow: 0 2px 0 rgba(0,0,0,0.18);
+      font-weight: 900;
+      padding: 0 10px;
+      white-space: nowrap;
+    }
+
+    .fire-arrow-btn:active {
+      transform: translateY(1px);
+      box-shadow: 0 1px 0 rgba(0,0,0,0.18);
+    }
+
+    .fire-arrow-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      filter: grayscale(0.35);
     }
 
     .giving-action-box {
@@ -750,6 +947,9 @@
 
     @media (max-width: 760px) {
       .round-reward-buttons { grid-template-columns: repeat(2, minmax(90px, 1fr)); }
+      .current-reference-stats,
+      .current-reference-combat,
+      .current-reference-actions { grid-template-columns: 1fr; }
     }
 
     .giving-tiles-controls {
@@ -1629,6 +1829,7 @@
     }
 
     @media (max-width: 1100px) {
+      .utility-panels-row { grid-template-columns: 1fr; }
       .turn-panel-grid { grid-template-columns: 1fr; }
       body { padding: 8px; }
       .app { min-height: calc(100vh - 16px); }
@@ -1677,7 +1878,7 @@
         <div class="crest" aria-hidden="true">♛</div>
         <div>
           <h1>Boardgame Tracker</h1>
-          <div class="subtitle">Add only the pieces currently on the board. The King is limited to one copy; other unit types can have up to three copies. Maximum 15 pieces total.</div>
+          <div class="subtitle">Capture the enemy King while protecting your own. Track your pieces, resources, items, and turn order as the battle unfolds.</div>
           <div class="team-selector" aria-label="Team colour selector">
             <span class="team-label">Team</span>
             <button class="team-btn" type="button" data-team="blue">Blue</button>
@@ -1720,6 +1921,10 @@
           <div class="turn-team blue-team" id="turnTeamLabel">Choose first player</div>
           <div class="turn-step-title" id="turnStepTitle">Coin Flip</div>
           <div class="turn-instructions" id="turnInstructions">Flip the coin to randomly choose who acts first this round.</div>
+          <div class="current-reference-card empty" id="currentReferenceCard">
+            <div class="current-reference-title" id="currentReferenceTitle">Current Step Reference</div>
+            <div class="current-reference-action" id="currentReferenceAction">Flip the coin to begin.</div>
+          </div>
           <div class="turn-controls">
             <button class="turn-btn" id="previousTurn" type="button">Previous</button>
             <button class="turn-btn primary" id="nextTurn" type="button">Next</button>
@@ -1803,28 +2008,46 @@
       <div class="item-grid" id="itemGrid"></div>
     </section>
 
-    <section class="giving-tiles-panel" aria-label="Giving Tiles tracker">
-      <div class="panel-header">
-        <h2>Giving Tiles</h2>
-        <div class="panel-note">Special spaces occupied</div>
-      </div>
-      <div class="giving-tiles-controls">
-        <div>
-          <div class="giving-tiles-label">Occupied</div>
-          <div class="giving-tiles-note">Track from 0 to 5.</div>
+    <div class="utility-panels-row">
+      <section class="cannon-panel" aria-label="Cannon tracker">
+        <div class="panel-header">
+          <h2>Cannon</h2>
+          <div class="panel-note">Load using Cannon Ball</div>
         </div>
-        <button class="small-btn" data-giving-tiles-change="-1" aria-label="Decrease Giving Tiles">−</button>
-        <div class="count" id="givingTilesCount">0</div>
-        <button class="small-btn" data-giving-tiles-change="1" aria-label="Increase Giving Tiles">+</button>
-      </div>
-      <div class="animation-mode-control" aria-label="Giving Tiles animation style">
-        <span class="animation-mode-heading">Reveal Style</span>
-        <div class="animation-mode-toggle" id="givingAnimationModeToggle" role="group" aria-label="Giving Tiles animation style">
-          <button class="animation-mode-option" type="button" data-giving-animation="subtle">Subtle</button>
-          <button class="animation-mode-option" type="button" data-giving-animation="awesome">Awesome</button>
+        <div class="cannon-controls">
+          <div>
+            <div class="cannon-status-title">Cannon Status</div>
+            <div class="cannon-status-note" id="cannonStatusNote">No Cannon available.</div>
+          </div>
+          <div class="cannon-pill" id="cannonLoadedStatus">Unloaded</div>
+          <button class="cannon-action-btn" id="loadCannonButton" type="button">Load Cannon</button>
+          <button class="cannon-action-btn secondary" id="fireCannonButton" type="button">Mark Fired</button>
         </div>
-      </div>
-    </section>
+      </section>
+
+      <section class="giving-tiles-panel" aria-label="Giving Tiles tracker">
+        <div class="panel-header">
+          <h2>Giving Tiles</h2>
+          <div class="panel-note">Special spaces occupied</div>
+        </div>
+        <div class="giving-tiles-controls">
+          <div>
+            <div class="giving-tiles-label">Occupied</div>
+            <div class="giving-tiles-note">Track from 0 to 5.</div>
+          </div>
+          <button class="small-btn" data-giving-tiles-change="-1" aria-label="Decrease Giving Tiles">−</button>
+          <div class="count" id="givingTilesCount">0</div>
+          <button class="small-btn" data-giving-tiles-change="1" aria-label="Increase Giving Tiles">+</button>
+        </div>
+        <div class="animation-mode-control" aria-label="Giving Tiles animation style">
+          <span class="animation-mode-heading">Reveal Style</span>
+          <div class="animation-mode-toggle" id="givingAnimationModeToggle" role="group" aria-label="Giving Tiles animation style">
+            <button class="animation-mode-option" type="button" data-giving-animation="subtle">Subtle</button>
+            <button class="animation-mode-option" type="button" data-giving-animation="awesome">Awesome</button>
+          </div>
+        </div>
+      </section>
+    </div>
 
     <section class="controls" aria-label="Filters and reset controls">
       <input class="search" id="searchInput" type="search" placeholder="Search active pieces, actions, costs…" autocomplete="off" />
@@ -1952,7 +2175,6 @@
     ];
 
     const resourceTypes = [
-      "Gem",
       "Wood",
       "Stone",
       "Iron",
@@ -1960,7 +2182,8 @@
       "Rope",
       "Bread",
       "Leather",
-      "Glass"
+      "Glass",
+      "Gem"
     ];
 
     const itemTypes = [
@@ -1970,6 +2193,23 @@
       "Cannon",
       "Artifact"
     ];
+
+    const inventoryLabels = {
+      Wood: { singular: "Wood", plural: "Wood" },
+      Stone: { singular: "Stone", plural: "Stone" },
+      Iron: { singular: "Iron", plural: "Iron" },
+      Sulphur: { singular: "Sulphur", plural: "Sulphur" },
+      Rope: { singular: "Rope", plural: "Ropes" },
+      Bread: { singular: "Bread", plural: "Bread" },
+      Leather: { singular: "Leather", plural: "Leather" },
+      Glass: { singular: "Glass", plural: "Glass" },
+      Gem: { singular: "Gem", plural: "Gems" },
+      Arrow: { singular: "Arrow", plural: "Arrows" },
+      Shield: { singular: "Shield", plural: "Shields" },
+      "Cannon Ball": { singular: "Cannon Ball", plural: "Cannon Balls" },
+      Cannon: { singular: "Cannon", plural: "Cannons" },
+      Artifact: { singular: "Artifact", plural: "Artifacts" }
+    };
 
     const craftingRecipes = [
       {
@@ -2099,6 +2339,7 @@
       setupComplete: false,
       summonPanelCollapsed: false,
       givingAnimationMode: "awesome",
+      cannonLoaded: false,
       turnOrder: {
         started: false,
         round: 1,
@@ -2109,7 +2350,8 @@
         coinFlipping: false,
         lastGivingResolvedKey: "",
         lastRoundRewardKey: "",
-        summonsByTurnKey: {}
+        summonsByTurnKey: {},
+        arrowsFiredByTurnKey: {}
       },
       currency: {
         gold: 0,
@@ -2132,12 +2374,19 @@
     const toggleShop = null;
     const toggleCrafting = null;
     const shopLockNote = null;
+    const cannonStatusNote = document.getElementById("cannonStatusNote");
+    const cannonLoadedStatus = document.getElementById("cannonLoadedStatus");
+    const loadCannonButton = document.getElementById("loadCannonButton");
+    const fireCannonButton = document.getElementById("fireCannonButton");
     const givingTilesCount = document.getElementById("givingTilesCount");
     const givingAnimationModeToggle = document.getElementById("givingAnimationModeToggle");
     const turnRoundLabel = document.getElementById("turnRoundLabel");
     const turnTeamLabel = document.getElementById("turnTeamLabel");
     const turnStepTitle = document.getElementById("turnStepTitle");
     const turnInstructions = document.getElementById("turnInstructions");
+    const currentReferenceCard = document.getElementById("currentReferenceCard");
+    const currentReferenceTitle = document.getElementById("currentReferenceTitle");
+    const currentReferenceAction = document.getElementById("currentReferenceAction");
     const turnPiecesList = document.getElementById("turnPiecesList");
     const turnSummaryPanel = document.getElementById("turnSummaryPanel");
     const turnSummaryCount = document.getElementById("turnSummaryCount");
@@ -2288,6 +2537,16 @@
     function getTotalForCollection(collectionName) {
       const source = state[collectionName];
       return Object.keys(source).reduce((total, key) => total + (source[key] || 0), 0);
+    }
+
+    function getInventoryLabel(itemName, amount) {
+      const labelSet = inventoryLabels[itemName];
+
+      if (!labelSet) {
+        return amount === 1 ? itemName.toLowerCase() : `${itemName.toLowerCase()}s`;
+      }
+
+      return amount === 1 ? labelSet.singular : labelSet.plural;
     }
 
     function getCapacityForTargetType(targetType) {
@@ -2678,6 +2937,96 @@
       return isCurrentTeamTurnForStep("shopping") && hasActiveTrader();
     }
 
+    function hasCannon() {
+      return (state.items.Cannon || 0) > 0;
+    }
+
+    function hasCannonBall() {
+      return (state.items["Cannon Ball"] || 0) > 0;
+    }
+
+    function canLoadCannon() {
+      return hasCannon() && hasCannonBall() && !state.cannonLoaded;
+    }
+
+    function loadCannon() {
+      if (!canLoadCannon()) {
+        return;
+      }
+
+      state.items["Cannon Ball"] -= 1;
+      state.cannonLoaded = true;
+      logRoundEvent("Cannon loaded. 1 Cannon Ball used.");
+      saveState();
+      render();
+    }
+
+    function markCannonFired() {
+      if (!state.cannonLoaded) {
+        return;
+      }
+
+      state.cannonLoaded = false;
+      logRoundEvent("Cannon fired and is now unloaded.");
+      saveState();
+      render();
+    }
+
+    function hasBowFiredThisTurn(pieceId) {
+      const key = getCurrentTurnKey();
+      const arrowsFiredByTurnKey = state.turnOrder.arrowsFiredByTurnKey || {};
+      const firedThisTurn = arrowsFiredByTurnKey[key] || [];
+      return firedThisTurn.includes(Number(pieceId));
+    }
+
+    function recordBowFiredThisTurn(pieceId) {
+      const key = getCurrentTurnKey();
+
+      if (!state.turnOrder.arrowsFiredByTurnKey) {
+        state.turnOrder.arrowsFiredByTurnKey = {};
+      }
+
+      if (!state.turnOrder.arrowsFiredByTurnKey[key]) {
+        state.turnOrder.arrowsFiredByTurnKey[key] = [];
+      }
+
+      if (!state.turnOrder.arrowsFiredByTurnKey[key].includes(Number(pieceId))) {
+        state.turnOrder.arrowsFiredByTurnKey[key].push(Number(pieceId));
+      }
+    }
+
+    function canFireArrow(piece) {
+      const currentStep = getCurrentTurnStep();
+      const currentTeam = getCurrentTurnTeam();
+
+      return Boolean(
+        piece &&
+        piece.typeId === 8 &&
+        piece.currentHp > 0 &&
+        state.turnOrder.started &&
+        currentStep.kind === "unit" &&
+        currentStep.typeId === 8 &&
+        currentTeam === state.team &&
+        (state.items.Arrow || 0) > 0 &&
+        !hasBowFiredThisTurn(piece.pieceId)
+      );
+    }
+
+    function fireArrow(pieceId) {
+      const piece = getPiece(pieceId);
+
+      if (!canFireArrow(piece)) {
+        return;
+      }
+
+      const copyNumber = getCopyNumber(piece);
+      state.items.Arrow -= 1;
+      recordBowFiredThisTurn(piece.pieceId);
+      logRoundEvent(`Warrior (Bow) #${copyNumber} fired an arrow. ${state.items.Arrow} arrow${state.items.Arrow === 1 ? "" : "s"} remaining.`);
+      saveState();
+      render();
+    }
+
     function getTeamOrderForCurrentRound() {
       const firstTeam = state.turnOrder.firstTeam || state.turnOrder.startingTeam || "red";
       return firstTeam === "red" ? ["red", "blue"] : ["blue", "red"];
@@ -2901,7 +3250,8 @@
         coinFlipping: false,
         lastGivingResolvedKey: "",
         lastRoundRewardKey: "",
-        summonsByTurnKey: {}
+        summonsByTurnKey: {},
+        arrowsFiredByTurnKey: {}
       };
 
       saveState();
@@ -3111,6 +3461,7 @@
         ? `${getTeamLabel(turnOrder.startingTeam)} won the coin flip. Round ${turnOrder.round} order: ${getTeamOrderForCurrentRound().map(getTeamLabel).join(" → ")}.`
         : "The winner acts first for Round 1. After each full round, first-player order switches.";
 
+      renderCurrentReference(currentStep, isStarted);
       renderTurnPiecesList(currentStep, isStarted);
       renderPersistentRoundSummary(isStarted, currentStep);
     }
@@ -3134,6 +3485,238 @@
         .slice(-10)
         .map(event => `<div class="round-summary-item">${event.message}</div>`)
         .join("");
+    }
+
+    function getActionReferenceData(unitType) {
+      const action = unitType.action || "";
+      const lowerAction = action.toLowerCase();
+      const data = [];
+
+      function add(label, value, wide = false, primary = false) {
+        if (!value) {
+          return;
+        }
+
+        data.push({ label, value, wide, primary });
+      }
+
+      function getNumberAfterLabel(label) {
+        const labelIndex = lowerAction.indexOf(label.toLowerCase());
+
+        if (labelIndex < 0) {
+          return "";
+        }
+
+        const textAfterLabel = action.slice(labelIndex + label.length);
+        let digits = "";
+
+        for (let index = 0; index < textAfterLabel.length; index += 1) {
+          const character = textAfterLabel.charAt(index);
+
+          if (character >= "0" && character <= "9") {
+            digits += character;
+          } else if (digits.length > 0) {
+            break;
+          }
+        }
+
+        return digits;
+      }
+
+      function getTextAfterLabel(label) {
+        const labelIndex = lowerAction.indexOf(label.toLowerCase());
+
+        if (labelIndex < 0) {
+          return "";
+        }
+
+        let textAfterLabel = action.slice(labelIndex + label.length).trim();
+
+        while (textAfterLabel.startsWith(":") || textAfterLabel.startsWith("-") || textAfterLabel.startsWith("—")) {
+          textAfterLabel = textAfterLabel.slice(1).trim();
+        }
+
+        const periodIndex = textAfterLabel.indexOf(".");
+
+        if (periodIndex >= 0) {
+          textAfterLabel = textAfterLabel.slice(0, periodIndex).trim();
+        }
+
+        return textAfterLabel;
+      }
+
+      if (lowerAction.includes("melee attack") || lowerAction.includes("ranged attack") || lowerAction.includes("magic attack")) {
+        if (lowerAction.includes("melee attack")) {
+          add("Attack", "Melee", false, true);
+        } else if (lowerAction.includes("ranged attack")) {
+          add("Attack", "Ranged", false, true);
+        } else {
+          add("Attack", "Magic", false, true);
+        }
+
+        add("Range", getNumberAfterLabel("Range"));
+        add("Damage", getNumberAfterLabel("Damage"));
+        add("Targets", getNumberAfterLabel("Targets") || getNumberAfterLabel("targets"));
+        add("Cost", getTextAfterLabel("Cost"), true);
+        return data;
+      }
+
+      if (lowerAction === "none") {
+        add("Action", "None", false, true);
+        return data;
+      }
+
+      if (lowerAction.includes("build base")) {
+        add("Action", "Build Base", false, true);
+        add("Range", "Within 1 tile");
+        add("Needs", "3 adjacent Base Keepers", true);
+        return data;
+      }
+
+      if (lowerAction.includes("build wooden defence")) {
+        add("Action", "Build", false, true);
+        add("Defence", "Wooden");
+        add("Range", "Within 1 tile");
+        add("Cost", getTextAfterLabel("Cost"));
+        return data;
+      }
+
+      if (lowerAction.includes("build stone defence")) {
+        add("Action", "Build", false, true);
+        add("Defence", "Stone");
+        add("Range", "Within 1 tile");
+        add("Cost", getTextAfterLabel("Cost"));
+        return data;
+      }
+
+      if (lowerAction.includes("build iron defence")) {
+        add("Action", "Build", false, true);
+        add("Defence", "Iron");
+        add("Range", "Within 1 tile");
+        add("Cost", getTextAfterLabel("Cost"));
+        return data;
+      }
+
+      if (lowerAction.includes("revive") || lowerAction.includes("eligible dead")) {
+        add("Action", "Revive", false, true);
+        add("HP", "Full HP");
+
+        if (unitType.name === "Necromancer") {
+          add("Eligible", "Mage, Medic, Priest, Ritual Caster", true);
+        } else if (unitType.name === "Medic") {
+          add("Eligible", "Base Builder, Workers, Warriors, Farmer, Artillerist, Spy, Thief, Trader", true);
+        } else {
+          add("Target", "Eligible dead ally", true);
+        }
+
+        return data;
+      }
+
+      if (lowerAction.includes("heal a damaged unit")) {
+        add("Action", "Heal", false, true);
+        add("Amount", "+1 HP");
+        add("Limit", "Cannot heal Priest", true);
+        return data;
+      }
+
+      if (lowerAction.includes("gain 1 bread")) {
+        add("Action", "Gain", false, true);
+        add("Reward", "1 Bread");
+        return data;
+      }
+
+      if (lowerAction.includes("load and fire a cannon")) {
+        add("Action", "Cannon", false, true);
+        add("Use", "Load & Fire");
+        add("Needs", "Adjacent to cannon", true);
+        return data;
+      }
+
+      if (lowerAction.includes("look")) {
+        add("Action", "Look", false, true);
+        add("Range", "Within 5 tiles");
+        add("Target", "Opponent King", true);
+        add("Effect", "Reveal opponent hand", true);
+        return data;
+      }
+
+      if (lowerAction.includes("steal 1 bronze")) {
+        add("Action", "Steal", false, true);
+        add("Range", "Within 5 tiles");
+        add("Target", "Opponent King", true);
+        add("Reward", "1 Bronze");
+        return data;
+      }
+
+      if (lowerAction.includes("summon a unit")) {
+        add("Action", "Summon", false, true);
+        add("Cost", "Costs still apply", true);
+        return data;
+      }
+
+      if (lowerAction.includes("second action")) {
+        add("Action", "Sacrifice", false, true);
+        add("Effect", "Ally gets second action", true);
+        return data;
+      }
+
+      if (lowerAction.includes("passive")) {
+        add("Passive", "Item Trade", false, true);
+        add("Effect", "Allows trade feature", true);
+        return data;
+      }
+
+      add("Action", action, true, true);
+      return data;
+    }
+
+    function renderCurrentReference(currentStep, isStarted) {
+      currentReferenceCard.classList.toggle("empty", !isStarted || currentStep.kind !== "unit");
+
+      if (!isStarted) {
+        currentReferenceTitle.textContent = "Current Step Reference";
+        currentReferenceAction.textContent = "Flip the coin to begin.";
+        return;
+      }
+
+      if (currentStep.kind === "unit") {
+        const unitType = getUnitType(currentStep.typeId);
+        currentReferenceTitle.innerHTML = `
+          <span>${unitType.name}</span>
+          <span class="copy-label">#${unitType.id}</span>
+        `;
+        const actionReferenceData = getActionReferenceData(unitType);
+        const actionReferenceHtml = actionReferenceData.length > 0
+          ? `<div class="current-reference-actions">
+              ${actionReferenceData.map(item => `<div class="current-reference-pill${item.wide ? " wide" : ""}${item.primary ? " action-primary" : ""}"><span>${item.label}</span><strong>${item.value}</strong></div>`).join("")}
+            </div>`
+          : "";
+
+        const fullActionTextHtml = actionReferenceData.length > 0
+          ? ""
+          : `<div class="current-reference-action">${unitType.action}</div>`;
+
+        currentReferenceAction.innerHTML = `
+          <div class="current-reference-stats">
+            <div class="current-reference-pill"><span>Move</span><strong>${unitType.move}</strong></div>
+            <div class="current-reference-pill"><span>Max HP</span><strong>${unitType.maxHp}</strong></div>
+          </div>
+          ${actionReferenceHtml}
+          ${fullActionTextHtml}
+        `;
+        return;
+      }
+
+      const referenceText = {
+        giving: "Each occupied Giving Tile gives one random resource each round. Gem and Iron are excluded from the random pool.",
+        summon: "Summon one unit, plus one extra summon for each living Ritual Caster. Ritual costs still apply.",
+        crafting: "Craft items from resources. Recipes require the full cost and enough item space.",
+        shopping: "Shop only during your Shopping step, and only with a living Trader.",
+        roundEnd: "Claim 1 free Bronze, then choose Wood, Stone, Bread, or a second Bronze. Review the round summary."
+      };
+
+      currentReferenceTitle.textContent = currentStep.title;
+      currentReferenceAction.textContent = referenceText[currentStep.kind] || currentStep.instructions;
     }
 
     function renderTurnPiecesList(currentStep, isStarted) {
@@ -3161,11 +3744,18 @@
           const copyNumber = getCopyNumber(piece);
           const row = document.createElement("div");
           row.className = `current-piece-row${piece.currentHp <= 0 ? " dead-piece" : ""}`;
+
+          const hasFiredArrow = unitType.id === 8 && hasBowFiredThisTurn(piece.pieceId);
+          const fireButtonHtml = unitType.id === 8
+            ? `<button class="fire-arrow-btn" type="button" data-fire-arrow-piece-id="${piece.pieceId}" ${canFireArrow(piece) ? "" : "disabled"}>${hasFiredArrow ? "Fired" : "🔥 Fire"}</button>`
+            : "";
+
           row.innerHTML = `
             <div class="badge" style="background:${getBadgeColour(unitType.category)}">${unitType.id}</div>
             <div class="current-piece-name">${unitType.name} #${copyNumber}${piece.hasShield ? " · 🛡" : ""}</div>
             <div class="current-piece-stat">Move ${unitType.move}</div>
             <div class="current-piece-stat">HP ${piece.currentHp}/${unitType.maxHp}</div>
+            ${fireButtonHtml}
           `;
           fragment.appendChild(row);
         });
@@ -3308,6 +3898,27 @@
       }
 
       turnPiecesList.innerHTML = `<div class="empty-state">${notes[currentStep.kind] || currentStep.instructions}</div>`;
+    }
+
+    function renderCannon() {
+      const cannonCount = state.items.Cannon || 0;
+      const cannonBallCount = state.items["Cannon Ball"] || 0;
+
+      cannonLoadedStatus.textContent = state.cannonLoaded ? "Loaded" : "Unloaded";
+      cannonLoadedStatus.classList.toggle("loaded", Boolean(state.cannonLoaded));
+
+      if (cannonCount <= 0) {
+        cannonStatusNote.textContent = "No Cannon available.";
+      } else if (state.cannonLoaded) {
+        cannonStatusNote.textContent = `Ready to fire. Cannon Balls remaining: ${cannonBallCount}.`;
+      } else if (cannonBallCount <= 0) {
+        cannonStatusNote.textContent = "Cannon available, but no Cannon Balls to load.";
+      } else {
+        cannonStatusNote.textContent = `Cannon available. Cannon Balls ready: ${cannonBallCount}.`;
+      }
+
+      loadCannonButton.disabled = !canLoadCannon();
+      fireCannonButton.disabled = !state.cannonLoaded;
     }
 
     function renderCurrency() {
@@ -3504,7 +4115,7 @@
         card.className = `counter-card${count > 0 ? " has-count" : ""}`;
         card.innerHTML = `
           <button class="counter-btn" data-counter-collection="${collectionName}" data-counter-name="${typeName}" data-counter-change="-1" ${count <= 0 ? "disabled" : ""} aria-label="Remove ${typeName}">−</button>
-          <div class="counter-name">${typeName}<span class="counter-value">${count}</span></div>
+          <div class="counter-name">${getInventoryLabel(typeName, count)}<span class="counter-value">${count}</span></div>
           <button class="counter-btn" data-counter-collection="${collectionName}" data-counter-name="${typeName}" data-counter-change="1" ${isFull ? "disabled" : ""} aria-label="Add ${typeName}">+</button>
         `;
         fragment.appendChild(card);
@@ -3761,6 +4372,7 @@
       renderTeam();
       renderCurrency();
       renderTurnOrder();
+      renderCannon();
       renderShop();
       renderCrafting();
       renderSummonPanel();
@@ -3795,7 +4407,13 @@
       render();
     });
 
-    
+    loadCannonButton.addEventListener("click", () => {
+      loadCannon();
+    });
+
+    fireCannonButton.addEventListener("click", () => {
+      markCannonFired();
+    });
 
     shopGrid.addEventListener("click", event => {
       const convertButton = event.target.closest("[data-convert-id]");
@@ -4011,6 +4629,13 @@
     });
 
     turnPiecesList.addEventListener("click", event => {
+      const fireArrowButton = event.target.closest("[data-fire-arrow-piece-id]");
+
+      if (fireArrowButton) {
+        fireArrow(Number(fireArrowButton.dataset.fireArrowPieceId));
+        return;
+      }
+
       const shopButton = event.target.closest('[data-action="toggle-shop-panel"]');
 
       if (shopButton) {
