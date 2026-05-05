@@ -2574,6 +2574,7 @@
 
         <div class="detail-buttons">
           <button class="reset-btn" id="healSelected" data-detail-action="restore-selected">Restore Selected HP</button>
+          <button class="reset-btn" id="eatBread" data-detail-action="eat-bread">Eat Bread (+2 HP)</button>
           <button class="reset-btn" id="equipShield" data-detail-action="equip-shield">Equip Shield</button>
           <button class="reset-btn" id="unequipShield" data-detail-action="unequip-shield">Unequip Shield</button>
           <button class="reset-btn danger" id="removeSelected" data-detail-action="remove-selected">Remove Selected</button>
@@ -3780,6 +3781,33 @@
 
       const unitType = getUnitType(piece.typeId);
       piece.currentHp = unitType.maxHp;
+      saveState();
+      render();
+    }
+
+    function canSelectedPieceEatBread(piece) {
+      if (!piece || piece.currentHp <= 0) {
+        return false;
+      }
+
+      const unitType = getUnitType(piece.typeId);
+      return (state.resources.Bread || 0) > 0 && piece.currentHp < unitType.maxHp;
+    }
+
+    function eatBreadWithPiece(pieceId) {
+      const piece = getPiece(pieceId);
+
+      if (!canSelectedPieceEatBread(piece)) {
+        return;
+      }
+
+      const unitType = getUnitType(piece.typeId);
+      const previousHp = piece.currentHp;
+
+      state.resources.Bread -= 1;
+      piece.currentHp = clamp(piece.currentHp + 2, 0, unitType.maxHp);
+
+      logRoundEvent(`${unitType.name} #${getCopyNumber(piece)} ate Bread: HP ${previousHp} → ${piece.currentHp}. 1 Bread used.`);
       saveState();
       render();
     }
@@ -5650,9 +5678,12 @@
     }
 
     function setDetailButtonsEnabled(enabled) {
+      const selectedPiece = getPiece(state.selectedPieceId);
+
       document.getElementById("detailHpMinus").disabled = !enabled;
       document.getElementById("detailHpPlus").disabled = !enabled;
       document.getElementById("healSelected").disabled = !enabled;
+      document.getElementById("eatBread").disabled = !canSelectedPieceEatBread(selectedPiece);
       document.getElementById("removeSelected").disabled = !enabled;
     }
 
@@ -5964,6 +5995,14 @@
         const selectedPiece = getPiece(state.selectedPieceId);
         if (selectedPiece) {
           restorePiece(selectedPiece.pieceId);
+        }
+        return;
+      }
+
+      if (action === "eat-bread") {
+        const selectedPiece = getPiece(state.selectedPieceId);
+        if (selectedPiece) {
+          eatBreadWithPiece(selectedPiece.pieceId);
         }
         return;
       }
