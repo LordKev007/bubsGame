@@ -952,6 +952,8 @@
       white-space: nowrap;
     }
 
+    .generic-action-btn,
+    .farm-btn,
     .fire-arrow-btn {
       border: 1px solid rgba(43, 33, 24, 0.3);
       background: linear-gradient(180deg, #fff1c7, #d9aa45);
@@ -965,11 +967,15 @@
       white-space: nowrap;
     }
 
+    .generic-action-btn:active,
+    .farm-btn:active,
     .fire-arrow-btn:active {
       transform: translateY(1px);
       box-shadow: 0 1px 0 rgba(0,0,0,0.18);
     }
 
+    .generic-action-btn:disabled,
+    .farm-btn:disabled,
     .fire-arrow-btn:disabled {
       opacity: 0.45;
       cursor: not-allowed;
@@ -2855,7 +2861,7 @@
       { id: 3, name: "Wood Worker", move: 2, maxHp: 6, action: "Build Wooden Defence — Place a wooden defence within 1 tile. Cost: 3 Wood.", ritual: "3 Wood, 1 Sulphur", category: "worker", ritualCosts: [{ type: "resource", name: "Wood", quantity: 3 }, { type: "resource", name: "Sulphur", quantity: 1 }] },
       { id: 4, name: "Stone Worker", move: 2, maxHp: 6, action: "Build Stone Defence — Place a stone defence within 1 tile. Cost: 3 Stone.", ritual: "3 Stone, 2 Sulphur", category: "worker", ritualCosts: [{ type: "resource", name: "Stone", quantity: 3 }, { type: "resource", name: "Sulphur", quantity: 2 }] },
       { id: 5, name: "Iron Worker", move: 2, maxHp: 6, action: "Build Iron Defence — Place an iron defence within 1 tile. Cost: 3 Iron.", ritual: "3 Iron, 3 Sulphur", category: "worker", ritualCosts: [{ type: "resource", name: "Iron", quantity: 3 }, { type: "resource", name: "Sulphur", quantity: 3 }] },
-      { id: 6, name: "Warrior (Sword)", move: 3, maxHp: 4, action: "Melee Attack — Range 1, Damage 2.", ritual: "4 Bronze, 1 Stone, 1 Wood", category: "fighter", ritualCosts: [{ type: "currency", name: "bronze", quantity: 4 }, { type: "resource", name: "Stone", quantity: 1 }, { type: "resource", name: "Wood", quantity: 1 }] },
+      { id: 6, name: "Warrior (Sword)", move: 2, maxHp: 4, action: "Melee Attack — Range 1, Damage 2.", ritual: "4 Bronze, 1 Stone, 1 Wood", category: "fighter", ritualCosts: [{ type: "currency", name: "bronze", quantity: 4 }, { type: "resource", name: "Stone", quantity: 1 }, { type: "resource", name: "Wood", quantity: 1 }] },
       { id: 7, name: "Warrior (Spear)", move: 2, maxHp: 4, action: "Melee Attack — Range 3, Damage 1.", ritual: "2 Silver, 1 Wood, 1 Stone", category: "fighter", ritualCosts: [{ type: "currency", name: "silver", quantity: 2 }, { type: "resource", name: "Wood", quantity: 1 }, { type: "resource", name: "Stone", quantity: 1 }] },
       { id: 8, name: "Warrior (Bow)", move: 1, maxHp: 2, action: "Ranged Attack — Range 7, Damage 1. Cost: 1 Arrow.", ritual: "1 Silver, 2 Wood, 1 Rope, 1 Sulphur", category: "fighter", ritualCosts: [{ type: "currency", name: "silver", quantity: 1 }, { type: "resource", name: "Wood", quantity: 2 }, { type: "resource", name: "Rope", quantity: 1 }, { type: "resource", name: "Sulphur", quantity: 1 }] },
       { id: 9, name: "Warrior (Lance & Horse)", move: 4, maxHp: 3, action: "Melee Attack — Range 2, Damage 1.", ritual: "1 Wood, 1 Stone, 1 Rope, 3 Leather", category: "fighter", ritualCosts: [{ type: "resource", name: "Wood", quantity: 1 }, { type: "resource", name: "Stone", quantity: 1 }, { type: "resource", name: "Rope", quantity: 1 }, { type: "resource", name: "Leather", quantity: 3 }] },
@@ -2872,7 +2878,7 @@
       { id: 20, name: "Shopkeeper", move: 2, maxHp: 3, action: "Passive — Allows the Shop feature during the Shopping step.", ritual: "5 Bronze", category: "special", ritualCosts: [{ type: "currency", name: "bronze", quantity: 5 }] }
     ];
 
-    const STORAGE_KEY = "boardgameTrackerStateV6";
+    const STORAGE_KEY = "boardgameTrackerStateV8";
 
     const defaultState = {
       selectedPieceId: null,
@@ -2915,7 +2921,10 @@
         lastGivingResolvedKey: "",
         lastRoundRewardKey: "",
         summonsByTurnKey: {},
-        arrowsFiredByTurnKey: {}
+        arrowsFiredByTurnKey: {},
+        farmersUsedByTurnKey: {},
+        actionsUsedByTurnKey: {},
+        actionsUsedByTurnKey: {}
       },
       currency: {
         gold: 0,
@@ -3834,7 +3843,10 @@
     }
 
     function changeCounter(collectionName, itemName, amount) {
-      if (!canManuallyEditEconomy()) {
+      // During the real game, players cannot manually add Resources or Items.
+      // They can still manually remove them to represent dropping/discarding
+      // something from inventory to free up space.
+      if (amount > 0 && !canManuallyEditEconomy()) {
         return;
       }
 
@@ -4006,6 +4018,173 @@
       state.items.Arrow -= 1;
       recordBowFiredThisTurn(piece.pieceId);
       logRoundEvent(`Warrior (Bow) #${copyNumber} fired an arrow. ${state.items.Arrow} arrow${state.items.Arrow === 1 ? "" : "s"} remaining.`);
+      saveState();
+      render();
+    }
+
+    function hasFarmerFarmedThisTurn(pieceId) {
+      const key = getCurrentTurnKey();
+      const farmersUsedByTurnKey = state.turnOrder.farmersUsedByTurnKey || {};
+      const farmedThisTurn = farmersUsedByTurnKey[key] || [];
+      return farmedThisTurn.includes(Number(pieceId));
+    }
+
+    function recordFarmerFarmedThisTurn(pieceId) {
+      const key = getCurrentTurnKey();
+
+      if (!state.turnOrder.farmersUsedByTurnKey) {
+        state.turnOrder.farmersUsedByTurnKey = {};
+      }
+
+      if (!state.turnOrder.farmersUsedByTurnKey[key]) {
+        state.turnOrder.farmersUsedByTurnKey[key] = [];
+      }
+
+      if (!state.turnOrder.farmersUsedByTurnKey[key].includes(Number(pieceId))) {
+        state.turnOrder.farmersUsedByTurnKey[key].push(Number(pieceId));
+      }
+    }
+
+    function canFarmWithPiece(piece) {
+      const currentStep = getCurrentTurnStep();
+      const currentTeam = getCurrentTurnTeam();
+
+      return Boolean(
+        piece &&
+        piece.typeId === 14 &&
+        piece.currentHp > 0 &&
+        state.turnOrder.started &&
+        currentStep.kind === "unit" &&
+        currentStep.typeId === 14 &&
+        currentTeam === state.team &&
+        getAvailableSpaceForTargetType("resource") > 0 &&
+        !hasFarmerFarmedThisTurn(piece.pieceId)
+      );
+    }
+
+    function farmWithPiece(pieceId) {
+      const piece = getPiece(pieceId);
+
+      if (!canFarmWithPiece(piece)) {
+        return;
+      }
+
+      const copyNumber = getCopyNumber(piece);
+      state.resources.Bread = (state.resources.Bread || 0) + 1;
+      recordFarmerFarmedThisTurn(piece.pieceId);
+      logRoundEvent(`Farmer #${copyNumber} farmed 1 Bread.`);
+      saveState();
+      render();
+    }
+
+    function hasGenericActionBeenUsedThisTurn(pieceId) {
+      const key = getCurrentTurnKey();
+      const actionsUsedByTurnKey = state.turnOrder.actionsUsedByTurnKey || {};
+      const actionsUsedThisTurn = actionsUsedByTurnKey[key] || [];
+      return actionsUsedThisTurn.includes(Number(pieceId));
+    }
+
+    function recordGenericActionUsedThisTurn(pieceId) {
+      const key = getCurrentTurnKey();
+
+      if (!state.turnOrder.actionsUsedByTurnKey) {
+        state.turnOrder.actionsUsedByTurnKey = {};
+      }
+
+      if (!state.turnOrder.actionsUsedByTurnKey[key]) {
+        state.turnOrder.actionsUsedByTurnKey[key] = [];
+      }
+
+      if (!state.turnOrder.actionsUsedByTurnKey[key].includes(Number(pieceId))) {
+        state.turnOrder.actionsUsedByTurnKey[key].push(Number(pieceId));
+      }
+    }
+
+    function getGenericActionLabel(unitType) {
+      if (!unitType || unitType.id === 1) {
+        return "";
+      }
+
+      if ([6, 7, 9, 10].includes(unitType.id)) {
+        return "Attack";
+      }
+
+      if ([2, 3, 4, 5].includes(unitType.id)) {
+        return "Build";
+      }
+
+      if (unitType.id === 11) {
+        return "Revive";
+      }
+
+      if (unitType.id === 13) {
+        return "Bring Back";
+      }
+
+      if (unitType.id === 12) {
+        return "Heal";
+      }
+
+      if (unitType.id === 15) {
+        return "Cannon";
+      }
+
+      if (unitType.id === 16) {
+        return "Look";
+      }
+
+      if (unitType.id === 18) {
+        return "Steal";
+      }
+
+      return "Action";
+    }
+
+    function shouldShowGenericActionButton(unitType) {
+      if (!unitType || unitType.id === 1) {
+        return false;
+      }
+
+      // Bow Warriors and Farmers already have special buttons because those
+      // buttons spend arrows or create Bread. Passive pieces do not get a
+      // generic action tracker.
+      if ([8, 14, 17, 19, 20].includes(unitType.id)) {
+        return false;
+      }
+
+      return !(unitType.action || "").toLowerCase().includes("passive");
+    }
+
+    function canUseGenericAction(piece) {
+      if (!piece || piece.currentHp <= 0) {
+        return false;
+      }
+
+      const unitType = getUnitType(piece.typeId);
+      const currentStep = getCurrentTurnStep();
+      const currentTeam = getCurrentTurnTeam();
+
+      return Boolean(
+        shouldShowGenericActionButton(unitType) &&
+        state.turnOrder.started &&
+        currentStep.kind === "unit" &&
+        currentStep.typeId === unitType.id &&
+        currentTeam === state.team &&
+        !hasGenericActionBeenUsedThisTurn(piece.pieceId)
+      );
+    }
+
+    function useGenericAction(pieceId) {
+      const piece = getPiece(pieceId);
+
+      if (!canUseGenericAction(piece)) {
+        return;
+      }
+
+      const unitType = getUnitType(piece.typeId);
+      const actionLabel = getGenericActionLabel(unitType);
+      recordGenericActionUsedThisTurn(piece.pieceId);
+      logRoundEvent(`${unitType.name} #${getCopyNumber(piece)} used ${actionLabel}.`);
       saveState();
       render();
     }
@@ -4234,7 +4413,9 @@
         lastGivingResolvedKey: "",
         lastRoundRewardKey: "",
         summonsByTurnKey: {},
-        arrowsFiredByTurnKey: {}
+        arrowsFiredByTurnKey: {},
+        farmersUsedByTurnKey: {},
+        actionsUsedByTurnKey: {}
       };
 
       saveState();
@@ -5023,12 +5204,23 @@
             ? `<button class="fire-arrow-btn" type="button" data-fire-arrow-piece-id="${piece.pieceId}" ${canFireArrow(piece) ? "" : "disabled"}>${hasFiredArrow ? "Fired" : "🔥 Fire"}</button>`
             : "";
 
+          const hasFarmed = unitType.id === 14 && hasFarmerFarmedThisTurn(piece.pieceId);
+          const farmButtonHtml = unitType.id === 14
+            ? `<button class="farm-btn" type="button" data-farm-piece-id="${piece.pieceId}" ${canFarmWithPiece(piece) ? "" : "disabled"}>${hasFarmed ? "Farmed" : "🌾 Farm"}</button>`
+            : "";
+
+          const genericActionLabel = getGenericActionLabel(unitType);
+          const hasUsedGenericAction = shouldShowGenericActionButton(unitType) && hasGenericActionBeenUsedThisTurn(piece.pieceId);
+          const genericActionButtonHtml = shouldShowGenericActionButton(unitType)
+            ? `<button class="generic-action-btn" type="button" data-generic-action-piece-id="${piece.pieceId}" ${canUseGenericAction(piece) ? "" : "disabled"}>${hasUsedGenericAction ? "Done" : genericActionLabel}</button>`
+            : "";
+
           row.innerHTML = `
             <div class="badge" style="background:${getBadgeColour(unitType.category)}">${unitType.id}</div>
             <div class="current-piece-name">${unitType.name} #${copyNumber}${piece.hasShield ? " · 🛡" : ""}</div>
             <div class="current-piece-stat">Move ${unitType.move}</div>
             <div class="current-piece-stat">HP ${piece.currentHp}/${unitType.maxHp}</div>
-            ${fireButtonHtml}
+            ${fireButtonHtml}${farmButtonHtml}${genericActionButtonHtml}
           `;
           fragment.appendChild(row);
         });
@@ -5462,9 +5654,9 @@
         const card = document.createElement("div");
         card.className = `counter-card${count > 0 ? " has-count" : ""}`;
         card.innerHTML = `
-          <button class="counter-btn" data-counter-collection="${collectionName}" data-counter-name="${typeName}" data-counter-change="-1" ${count <= 0 || manualEconomyLocked ? "disabled" : ""} title="${manualEconomyLocked ? "Manual edits are locked after setup." : "Remove during setup/testing."}" aria-label="Remove ${typeName}">−</button>
+          <button class="counter-btn" data-counter-collection="${collectionName}" data-counter-name="${typeName}" data-counter-change="-1" ${count <= 0 ? "disabled" : ""} title="Discard/remove 1 ${typeName}." aria-label="Remove ${typeName}">−</button>
           <div class="counter-name">${getInventoryLabel(typeName, count)}<span class="counter-value">${count}</span></div>
-          <button class="counter-btn" data-counter-collection="${collectionName}" data-counter-name="${typeName}" data-counter-change="1" ${isFull || manualEconomyLocked || (collectionName === "items" && typeName === "Cannon" && !canGainCannon(1)) ? "disabled" : ""} title="${manualEconomyLocked ? "Manual edits are locked after setup." : (collectionName === "items" && typeName === "Cannon" && !canGainCannon(1) ? "Cannon limit reached: 1 of 1." : "Add during setup/testing.")}" aria-label="Add ${typeName}">+</button>
+          <button class="counter-btn" data-counter-collection="${collectionName}" data-counter-name="${typeName}" data-counter-change="1" ${isFull || manualEconomyLocked || (collectionName === "items" && typeName === "Cannon" && !canGainCannon(1)) ? "disabled" : ""} title="${manualEconomyLocked ? "Manual adding is locked after setup." : (collectionName === "items" && typeName === "Cannon" && !canGainCannon(1) ? "Cannon limit reached: 1 of 1." : "Add during setup/testing.")}" aria-label="Add ${typeName}">+</button>
         `;
         fragment.appendChild(card);
       });
@@ -6137,6 +6329,20 @@
 
       if (fireArrowButton) {
         fireArrow(Number(fireArrowButton.dataset.fireArrowPieceId));
+        return;
+      }
+
+      const farmButton = event.target.closest("[data-farm-piece-id]");
+
+      if (farmButton) {
+        farmWithPiece(Number(farmButton.dataset.farmPieceId));
+        return;
+      }
+
+      const genericActionButton = event.target.closest("[data-generic-action-piece-id]");
+
+      if (genericActionButton) {
+        useGenericAction(Number(genericActionButton.dataset.genericActionPieceId));
         return;
       }
 
