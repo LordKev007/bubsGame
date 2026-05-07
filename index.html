@@ -484,7 +484,7 @@
 
     .cannon-controls {
       display: grid;
-      grid-template-columns: 1fr auto auto auto;
+      grid-template-columns: 1fr auto auto auto auto auto;
       gap: 8px;
       align-items: center;
     }
@@ -2500,6 +2500,9 @@
             <div class="cannon-status-title">Cannon Status</div>
             <div class="cannon-status-note" id="cannonStatusNote">No Cannon available.</div>
           </div>
+          <div class="cannon-pill" id="cannonHpStatus">HP 0/2</div>
+          <button class="cannon-action-btn secondary" id="cannonHpMinus" type="button">− HP</button>
+          <button class="cannon-action-btn secondary" id="cannonHpPlus" type="button">+ HP</button>
           <div class="cannon-pill" id="cannonLoadedStatus">Unloaded</div>
           <button class="cannon-action-btn secondary" id="placeCannonButton" type="button">Place Cannon</button>
           <button class="cannon-action-btn" id="loadCannonButton" type="button">Load Cannon</button>
@@ -2633,12 +2636,12 @@
       { kind: "unit", typeId: 8, title: "Warrior (Bow)", instructions: "Each team may move/action all active Bow Warriors." },
       { kind: "unit", typeId: 9, title: "Warrior (Lance & Horse)", instructions: "Each team may move/action all active Lance & Horse Warriors." },
       { kind: "unit", typeId: 10, title: "Mage", instructions: "Each team may move/action all active Mages." },
-      { kind: "unit", typeId: 12, title: "Priest", instructions: "Each team may move/action all active Priests." },
-      { kind: "unit", typeId: 11, title: "Medic", instructions: "Each team may move/action all active Medics." },
+      { kind: "unit", typeId: 12, title: "Medic", instructions: "Each team may move/action all active Medics." },
+      { kind: "unit", typeId: 11, title: "Priest", instructions: "Each team may move/action all active Priests." },
       { kind: "unit", typeId: 13, title: "Necromancer", instructions: "Each team may move/action all active Necromancers." },
       { kind: "unit", typeId: 14, title: "Farmer", instructions: "Each team may move/action all active Farmers." },
       { kind: "unit", typeId: 15, title: "Artillerist", instructions: "Each team may move/action all active Artillerists." },
-      { kind: "unit", typeId: 16, title: "Spy", instructions: "Each team may move/action all active Spies." },
+      { kind: "unit", typeId: 16, title: "Mechanist", instructions: "Each team may move/action all active Mechanists." },
       { kind: "unit", typeId: 17, title: "Ritual Caster", instructions: "Each team may move/action all active Ritual Casters." },
       { kind: "unit", typeId: 18, title: "Thief", instructions: "Each team may move/action all active Thieves." },
       { kind: "unit", typeId: 19, title: "Strategist", instructions: "Each team may move/action all active Strategists." },
@@ -2685,6 +2688,7 @@
     const MAX_BASES = 4;
     const BASE_MAX_HP = 6;
     const MAX_CANNONS_PER_PLAYER = 1;
+    const CANNON_MAX_HP = 2;
 
     const baseSpecializations = [
       {
@@ -2701,7 +2705,7 @@
           { type: "resource", name: "Glass", quantity: 2 },
           { type: "currency", name: "gold", quantity: 1 }
         ],
-        requirements: [{ typeId: 12, quantity: 2, label: "2 active Priests" }]
+        requirements: [{ typeId: 12, quantity: 2, label: "2 active Medics" }]
       },
       {
         id: "graveyard",
@@ -2732,7 +2736,7 @@
           { type: "resource", name: "Iron", quantity: 3 },
           { type: "currency", name: "gold", quantity: 1 }
         ],
-        requirements: [{ typeId: 11, quantity: 1, label: "1 active Medic" }]
+        requirements: [{ typeId: 11, quantity: 1, label: "1 active Priest" }]
       },
       {
         id: "merchant-district",
@@ -2866,19 +2870,19 @@
       { id: 8, name: "Warrior (Bow)", move: 1, maxHp: 2, action: "Ranged Attack — Range 7, Damage 1. Cost: 1 Arrow.", ritual: "1 Silver, 2 Wood, 1 Rope, 1 Sulphur", category: "fighter", ritualCosts: [{ type: "currency", name: "silver", quantity: 1 }, { type: "resource", name: "Wood", quantity: 2 }, { type: "resource", name: "Rope", quantity: 1 }, { type: "resource", name: "Sulphur", quantity: 1 }] },
       { id: 9, name: "Warrior (Lance & Horse)", move: 4, maxHp: 3, action: "Melee Attack — Range 2, Damage 1.", ritual: "1 Wood, 1 Stone, 1 Rope, 3 Leather", category: "fighter", ritualCosts: [{ type: "resource", name: "Wood", quantity: 1 }, { type: "resource", name: "Stone", quantity: 1 }, { type: "resource", name: "Rope", quantity: 1 }, { type: "resource", name: "Leather", quantity: 3 }] },
       { id: 10, name: "Mage", move: 3, maxHp: 1, action: "Magic Attack — Range 7, Damage 1, targets 3 different units. Cost: delete 1 ally unit, not Mage.", ritual: "1 Gem, 6 Bronze", category: "fighter", ritualCosts: [{ type: "resource", name: "Gem", quantity: 1 }, { type: "currency", name: "bronze", quantity: 6 }] },
-      { id: 11, name: "Medic", move: 1, maxHp: 1, action: "Heal — Choose an eligible dead ally and revive them with full HP.", ritual: "2 Glass, 1 Sulphur", category: "support", ritualCosts: [{ type: "resource", name: "Glass", quantity: 2 }, { type: "resource", name: "Sulphur", quantity: 1 }] },
-      { id: 12, name: "Priest", move: 1, maxHp: 6, action: "Heal a damaged unit by 1 HP. Cannot heal a Priest.", ritual: "1 Iron, 6 Leather, 3 Bronze", category: "support", ritualCosts: [{ type: "resource", name: "Iron", quantity: 1 }, { type: "resource", name: "Leather", quantity: 6 }, { type: "currency", name: "bronze", quantity: 3 }] },
+      { id: 11, name: "Priest", move: 1, maxHp: 1, action: "Heal — Choose an eligible dead ally and revive them with full HP.", ritual: "2 Glass, 1 Sulphur", category: "support", ritualCosts: [{ type: "resource", name: "Glass", quantity: 2 }, { type: "resource", name: "Sulphur", quantity: 1 }] },
+      { id: 12, name: "Medic", move: 1, maxHp: 6, action: "Heal a damaged unit by 1 HP. Cannot heal a Medic.", ritual: "1 Iron, 6 Leather, 3 Bronze", category: "support", ritualCosts: [{ type: "resource", name: "Iron", quantity: 1 }, { type: "resource", name: "Leather", quantity: 6 }, { type: "currency", name: "bronze", quantity: 3 }] },
       { id: 13, name: "Necromancer", move: 1, maxHp: 1, action: "Heal — Choose an eligible dead ally unit and revive it with full HP.", ritual: "1 Gem, 7 Leather, 1 Silver, 2 Bronze", category: "support", ritualCosts: [{ type: "resource", name: "Gem", quantity: 1 }, { type: "resource", name: "Leather", quantity: 7 }, { type: "currency", name: "silver", quantity: 1 }, { type: "currency", name: "bronze", quantity: 2 }] },
       { id: 14, name: "Farmer", move: 1, maxHp: 6, action: "Gain 1 Bread item card.", ritual: "1 Gold, 6 Leather", category: "support", ritualCosts: [{ type: "currency", name: "gold", quantity: 1 }, { type: "resource", name: "Leather", quantity: 6 }] },
       { id: 15, name: "Artillerist", move: 2, maxHp: 2, action: "May load and fire a cannon as one action. Must be adjacent to the cannon.", ritual: "3 Sulphur", category: "special", ritualCosts: [{ type: "resource", name: "Sulphur", quantity: 3 }] },
-      { id: 16, name: "Spy", move: 4, maxHp: 2, action: "Look — If within 5 tiles of the opponent's King, reveal the opponent's hand until the Spy leaves the 5-tile range or the King escapes the range.", ritual: "2 Sulphur, 1 Rope", category: "special", ritualCosts: [{ type: "resource", name: "Sulphur", quantity: 2 }, { type: "resource", name: "Rope", quantity: 1 }] },
+      { id: 16, name: "Mechanist", move: 4, maxHp: 2, action: "Repair — Repair a built item, such as a wall, base, or cannon.", ritual: "1 Shield, 2 Sulphur", category: "special", ritualCosts: [{ type: "item", name: "Shield", quantity: 1 }, { type: "resource", name: "Sulphur", quantity: 2 }] },
       { id: 17, name: "Ritual Caster", move: 1, maxHp: 1, action: "Passive — Grants 1 additional summon during your Summoning Unit phase. Costs still apply.", ritual: "1 Gold, 2 Sulphur, 1 Artifact", category: "special", ritualCosts: [{ type: "currency", name: "gold", quantity: 1 }, { type: "resource", name: "Sulphur", quantity: 2 }, { type: "item", name: "Artifact", quantity: 1 }] },
       { id: 18, name: "Thief", move: 4, maxHp: 1, action: "If within 5 tiles of the opponent's King, steal 1 Bronze from the opponent's hand. May go over the 5 Bronze limit with this effect.", ritual: "2 Bronze, 1 Rope", category: "special", ritualCosts: [{ type: "currency", name: "bronze", quantity: 2 }, { type: "resource", name: "Rope", quantity: 1 }] },
       { id: 19, name: "Strategist", move: 1, maxHp: 1, action: "Delete this unit on any ally unit's turn to grant that ally a second action for the round.", ritual: "3 Sulphur, 1 Iron", category: "special", ritualCosts: [{ type: "resource", name: "Sulphur", quantity: 3 }, { type: "resource", name: "Iron", quantity: 1 }] },
       { id: 20, name: "Shopkeeper", move: 2, maxHp: 3, action: "Passive — Allows the Shop feature during the Shopping step.", ritual: "5 Bronze", category: "special", ritualCosts: [{ type: "currency", name: "bronze", quantity: 5 }] }
     ];
 
-    const STORAGE_KEY = "boardgameTrackerStateV8";
+    const STORAGE_KEY = "boardgameTrackerStateV9";
 
     const defaultState = {
       selectedPieceId: null,
@@ -2910,6 +2914,7 @@
       givingAnimationMode: "awesome",
       cannonLoaded: false,
       placedCannons: 0,
+      cannonHp: 0,
       turnOrder: {
         started: false,
         round: 1,
@@ -2969,6 +2974,9 @@
     const toggleGivingPanel = document.getElementById("toggleGivingPanel");
     const cannonStatusNote = document.getElementById("cannonStatusNote");
     const cannonLoadedStatus = document.getElementById("cannonLoadedStatus");
+    const cannonHpStatus = document.getElementById("cannonHpStatus");
+    const cannonHpMinus = document.getElementById("cannonHpMinus");
+    const cannonHpPlus = document.getElementById("cannonHpPlus");
     const placeCannonButton = document.getElementById("placeCannonButton");
     const loadCannonButton = document.getElementById("loadCannonButton");
     const fireCannonButton = document.getElementById("fireCannonButton");
@@ -3916,6 +3924,30 @@
       return (state.placedCannons || 0) > 0;
     }
 
+    function hasFunctionalPlacedCannon() {
+      return hasPlacedCannon() && (state.cannonHp || 0) > 0;
+    }
+
+    function changeCannonHp(amount) {
+      if (!hasPlacedCannon()) {
+        return;
+      }
+
+      const previousHp = state.cannonHp || 0;
+      state.cannonHp = clamp(previousHp + amount, 0, CANNON_MAX_HP);
+
+      if (state.cannonHp === 0) {
+        state.cannonLoaded = false;
+      }
+
+      if (state.cannonHp !== previousHp) {
+        logRoundEvent(`Cannon HP changed: ${previousHp} → ${state.cannonHp}.`);
+      }
+
+      saveState();
+      render();
+    }
+
     function hasCannon() {
       return getAvailableCannonsForPlay() > 0;
     }
@@ -3931,7 +3963,8 @@
 
       state.items.Cannon -= 1;
       state.placedCannons = (state.placedCannons || 0) + 1;
-      logRoundEvent(`Cannon placed on the battlefield. ${state.placedCannons} placed cannon${state.placedCannons === 1 ? "" : "s"} available.`);
+      state.cannonHp = CANNON_MAX_HP;
+      logRoundEvent(`Cannon placed on the battlefield with ${CANNON_MAX_HP} HP.`);
       saveState();
       render();
     }
@@ -3941,7 +3974,7 @@
     }
 
     function canLoadCannon() {
-      return hasPlacedCannon() && hasCannonBall() && !state.cannonLoaded;
+      return hasFunctionalPlacedCannon() && hasCannonBall() && !state.cannonLoaded;
     }
 
     function loadCannon() {
@@ -4130,7 +4163,7 @@
       }
 
       if (unitType.id === 16) {
-        return "Look";
+        return "Repair";
       }
 
       if (unitType.id === 18) {
@@ -4550,10 +4583,10 @@
         // All Warriors and Mage
         case "fighter": return "linear-gradient(160deg, #a12b24, #5b1510)";
 
-        // Medic, Priest, Necromancer, Farmer
+        // Priest, Medic, Necromancer, Farmer
         case "support": return "linear-gradient(160deg, #3f7a56, #1f4c35)";
 
-        // Artillerist, Spy, Ritual Caster, Thief, Strategist, Shopkeeper
+        // Artillerist, Mechanist, Ritual Caster, Thief, Strategist, Shopkeeper
         case "special": return "linear-gradient(160deg, #244d78, #132c47)";
 
         default: return "linear-gradient(160deg, #244d78, #122f4e)";
@@ -5042,10 +5075,10 @@
         add("Action", "Revive", false, true);
         add("HP", "Full HP");
 
-        if (unitType.name === "Necromancer") {
-          add("Eligible", "Mage, Medic, Priest, Ritual Caster", true);
-        } else if (unitType.name === "Medic") {
-          add("Eligible", "Base Builder, Workers, Warriors, Farmer, Artillerist, Spy, Thief, Shopkeeper", true);
+        if (unitType.id === 13) {
+          add("Eligible", "Mage, Priest, Medic, Ritual Caster", true);
+        } else if (unitType.id === 11) {
+          add("Eligible", "Base Builder, Workers, Warriors, Farmer, Artillerist, Mechanist, Thief, Shopkeeper", true);
         } else {
           add("Target", "Eligible dead ally", true);
         }
@@ -5056,7 +5089,7 @@
       if (lowerAction.includes("heal a damaged unit")) {
         add("Action", "Heal", false, true);
         add("Amount", "+1 HP");
-        add("Limit", "Cannot heal Priest", true);
+        add("Limit", "Cannot heal Medic", true);
         return data;
       }
 
@@ -5070,6 +5103,12 @@
         add("Action", "Cannon", false, true);
         add("Use", "Load & Fire");
         add("Needs", "Adjacent to cannon", true);
+        return data;
+      }
+
+      if (lowerAction.includes("repair")) {
+        add("Action", "Repair", false, true);
+        add("Targets", "Walls, bases, cannons", true);
         return data;
       }
 
@@ -5428,7 +5467,15 @@
       const placedCannonCount = state.placedCannons || 0;
       const cannonBallCount = state.items["Cannon Ball"] || 0;
       const totalCannonsOwned = getTotalCannonsOwned();
+      const cannonHp = hasPlacedCannon() ? (state.cannonHp || 0) : 0;
 
+      if (!hasPlacedCannon()) {
+        state.cannonHp = 0;
+        state.cannonLoaded = false;
+      }
+
+      cannonHpStatus.textContent = `HP ${cannonHp}/${CANNON_MAX_HP}`;
+      cannonHpStatus.classList.toggle("loaded", hasPlacedCannon() && cannonHp > 0);
       cannonLoadedStatus.textContent = state.cannonLoaded ? "Loaded" : "Unloaded";
       cannonLoadedStatus.classList.toggle("loaded", Boolean(state.cannonLoaded));
 
@@ -5436,14 +5483,18 @@
         cannonStatusNote.textContent = `No Cannon available. Cannon limit: ${totalCannonsOwned}/${MAX_CANNONS_PER_PLAYER}.`;
       } else if (placedCannonCount <= 0) {
         cannonStatusNote.textContent = `Cannon in Items: ${cannonInventoryCount}. Place it before loading or firing. Cannon limit: ${totalCannonsOwned}/${MAX_CANNONS_PER_PLAYER}.`;
+      } else if (cannonHp <= 0) {
+        cannonStatusNote.textContent = `Placed Cannon: ${placedCannonCount}/${MAX_CANNONS_PER_PLAYER}. Cannon is broken at 0/${CANNON_MAX_HP} HP.`;
       } else if (state.cannonLoaded) {
-        cannonStatusNote.textContent = `Placed Cannon: ${placedCannonCount}/${MAX_CANNONS_PER_PLAYER}. Ready to fire. Cannon Balls remaining: ${cannonBallCount}.`;
+        cannonStatusNote.textContent = `Placed Cannon: ${placedCannonCount}/${MAX_CANNONS_PER_PLAYER}. HP ${cannonHp}/${CANNON_MAX_HP}. Ready to fire. Cannon Balls remaining: ${cannonBallCount}.`;
       } else if (cannonBallCount <= 0) {
-        cannonStatusNote.textContent = `Placed Cannon: ${placedCannonCount}/${MAX_CANNONS_PER_PLAYER}. No Cannon Balls to load.`;
+        cannonStatusNote.textContent = `Placed Cannon: ${placedCannonCount}/${MAX_CANNONS_PER_PLAYER}. HP ${cannonHp}/${CANNON_MAX_HP}. No Cannon Balls to load.`;
       } else {
-        cannonStatusNote.textContent = `Placed Cannon: ${placedCannonCount}/${MAX_CANNONS_PER_PLAYER}. Cannon Balls ready: ${cannonBallCount}.`;
+        cannonStatusNote.textContent = `Placed Cannon: ${placedCannonCount}/${MAX_CANNONS_PER_PLAYER}. HP ${cannonHp}/${CANNON_MAX_HP}. Cannon Balls ready: ${cannonBallCount}.`;
       }
 
+      cannonHpMinus.disabled = !hasPlacedCannon() || cannonHp <= 0;
+      cannonHpPlus.disabled = !hasPlacedCannon() || cannonHp >= CANNON_MAX_HP;
       placeCannonButton.disabled = !canPlaceCannon();
       loadCannonButton.disabled = !canLoadCannon();
       fireCannonButton.disabled = !state.cannonLoaded;
@@ -6083,6 +6134,14 @@
       state.givingAnimationMode = button.dataset.givingAnimation;
       saveState();
       render();
+    });
+
+    cannonHpMinus.addEventListener("click", () => {
+      changeCannonHp(-1);
+    });
+
+    cannonHpPlus.addEventListener("click", () => {
+      changeCannonHp(1);
     });
 
     placeCannonButton.addEventListener("click", () => {
