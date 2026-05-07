@@ -927,7 +927,7 @@
 
     .current-piece-row {
       display: grid;
-      grid-template-columns: auto 1fr auto auto auto;
+      grid-template-columns: auto 1fr auto auto auto auto;
       gap: 8px;
       align-items: center;
       border: 1px solid rgba(43, 33, 24, 0.18);
@@ -3196,8 +3196,8 @@
       { id: 12, name: "Medic", move: 1, maxHp: 6, action: "Heal a damaged unit by 1 HP. Cannot heal a Medic.", ritual: "1 Iron, 6 Leather, 3 Bronze", category: "support", ritualCosts: [{ type: "resource", name: "Iron", quantity: 1 }, { type: "resource", name: "Leather", quantity: 6 }, { type: "currency", name: "bronze", quantity: 3 }] },
       { id: 13, name: "Necromancer", move: 1, maxHp: 1, action: "Heal — Choose an eligible dead ally unit and revive it with full HP.", ritual: "1 Gem, 7 Leather, 1 Silver, 2 Bronze", category: "support", ritualCosts: [{ type: "resource", name: "Gem", quantity: 1 }, { type: "resource", name: "Leather", quantity: 7 }, { type: "currency", name: "silver", quantity: 1 }, { type: "currency", name: "bronze", quantity: 2 }] },
       { id: 14, name: "Farmer", move: 1, maxHp: 6, action: "Gain 1 Bread item card.", ritual: "1 Gold, 6 Leather", category: "support", ritualCosts: [{ type: "currency", name: "gold", quantity: 1 }, { type: "resource", name: "Leather", quantity: 6 }] },
-      { id: 15, name: "Artillerist", move: 2, maxHp: 2, action: "May load and fire a cannon as one action. Must be adjacent to the cannon.", ritual: "3 Sulphur", category: "special", ritualCosts: [{ type: "resource", name: "Sulphur", quantity: 3 }] },
-      { id: 16, name: "Mechanist", move: 4, maxHp: 2, action: "Repair — Repair a built item, such as a wall, base, or cannon.", ritual: "1 Shield, 2 Sulphur", category: "special", ritualCosts: [{ type: "item", name: "Shield", quantity: 1 }, { type: "resource", name: "Sulphur", quantity: 2 }] },
+      { id: 15, name: "Artillerist", move: 2, maxHp: 2, action: "May load and fire a cannon as one action. Must be adjacent to the cannon. Push Cannon — Move the cannon 1 tile in any direction to an unoccupied tile. Only one action may be used per turn.", ritual: "3 Sulphur", category: "special", ritualCosts: [{ type: "resource", name: "Sulphur", quantity: 3 }] },
+      { id: 16, name: "Mechanist", move: 4, maxHp: 2, action: "Repair — Repair a built item, such as a wall, base, or cannon. Push Cannon — Move the cannon 1 tile in any direction to an unoccupied tile. Only one action may be used per turn.", ritual: "1 Shield, 2 Sulphur", category: "special", ritualCosts: [{ type: "item", name: "Shield", quantity: 1 }, { type: "resource", name: "Sulphur", quantity: 2 }] },
       { id: 17, name: "Ritual Caster", move: 1, maxHp: 1, action: "Passive — Grants 1 additional summon during your Summoning Unit phase. Costs still apply.", ritual: "1 Gold, 2 Sulphur, 1 Artifact", category: "special", ritualCosts: [{ type: "currency", name: "gold", quantity: 1 }, { type: "resource", name: "Sulphur", quantity: 2 }, { type: "item", name: "Artifact", quantity: 1 }] },
       { id: 18, name: "Thief", move: 4, maxHp: 1, action: "If within 5 tiles of the opponent's King, steal 1 Bronze from the opponent's hand. May go over the 5 Bronze limit with this effect.", ritual: "2 Bronze, 1 Rope", category: "special", ritualCosts: [{ type: "currency", name: "bronze", quantity: 2 }, { type: "resource", name: "Rope", quantity: 1 }] },
       { id: 19, name: "Strategist", move: 1, maxHp: 1, action: "Delete this unit on any ally unit's turn to grant that ally a second action for the round.", ritual: "3 Sulphur, 1 Iron", category: "special", ritualCosts: [{ type: "resource", name: "Sulphur", quantity: 3 }, { type: "resource", name: "Iron", quantity: 1 }] },
@@ -4563,6 +4563,18 @@
       return "Action";
     }
 
+    function getSecondaryGenericActionLabel(unitType) {
+      if (!unitType) {
+        return "";
+      }
+
+      if (unitType.id === 15 || unitType.id === 16) {
+        return "Push Cannon";
+      }
+
+      return "";
+    }
+
     function shouldShowGenericActionButton(unitType) {
       if (!unitType || unitType.id === 1) {
         return false;
@@ -4597,7 +4609,7 @@
       );
     }
 
-    function useGenericAction(pieceId) {
+    function useGenericAction(pieceId, requestedActionLabel = "") {
       const piece = getPiece(pieceId);
 
       if (!canUseGenericAction(piece)) {
@@ -4605,7 +4617,17 @@
       }
 
       const unitType = getUnitType(piece.typeId);
-      const actionLabel = getGenericActionLabel(unitType);
+      const primaryActionLabel = getGenericActionLabel(unitType);
+      const secondaryActionLabel = getSecondaryGenericActionLabel(unitType);
+      const actionLabel = requestedActionLabel || primaryActionLabel;
+
+      // For pieces with two possible actions, both buttons still spend the
+      // same single action for the turn. This keeps Artillerist and Mechanist
+      // from combining Push Cannon with Cannon/Repair.
+      if (actionLabel !== primaryActionLabel && actionLabel !== secondaryActionLabel) {
+        return;
+      }
+
       recordGenericActionUsedThisTurn(piece.pieceId);
       logRoundEvent(`${unitType.name} #${getCopyNumber(piece)} used ${actionLabel}.`);
       saveState();
@@ -5493,12 +5515,16 @@
         add("Action", "Cannon", false, true);
         add("Use", "Load & Fire");
         add("Needs", "Adjacent to cannon", true);
+        add("OR", "Push Cannon", true);
+        add("Push", "1 tile to unoccupied tile", true);
         return data;
       }
 
       if (lowerAction.includes("repair")) {
         add("Action", "Repair", false, true);
         add("Targets", "Walls, bases, cannons", true);
+        add("OR", "Push Cannon", true);
+        add("Push", "1 tile to unoccupied tile", true);
         return data;
       }
 
@@ -5639,9 +5665,13 @@
             : "";
 
           const genericActionLabel = getGenericActionLabel(unitType);
+          const secondaryGenericActionLabel = getSecondaryGenericActionLabel(unitType);
           const hasUsedGenericAction = shouldShowGenericActionButton(unitType) && hasGenericActionBeenUsedThisTurn(piece.pieceId);
           const genericActionButtonHtml = shouldShowGenericActionButton(unitType)
-            ? `<button class="generic-action-btn" type="button" data-generic-action-piece-id="${piece.pieceId}" ${canUseGenericAction(piece) ? "" : "disabled"}>${hasUsedGenericAction ? "Done" : genericActionLabel}</button>`
+            ? `
+              <button class="generic-action-btn" type="button" data-generic-action-piece-id="${piece.pieceId}" data-generic-action-label="${genericActionLabel}" ${canUseGenericAction(piece) ? "" : "disabled"}>${hasUsedGenericAction ? "Done" : genericActionLabel}</button>
+              ${secondaryGenericActionLabel ? `<button class="generic-action-btn" type="button" data-generic-action-piece-id="${piece.pieceId}" data-generic-action-label="${secondaryGenericActionLabel}" ${canUseGenericAction(piece) ? "" : "disabled"}>${hasUsedGenericAction ? "Done" : secondaryGenericActionLabel}</button>` : ""}
+            `
             : "";
 
           row.innerHTML = `
@@ -6793,7 +6823,10 @@
       const genericActionButton = event.target.closest("[data-generic-action-piece-id]");
 
       if (genericActionButton) {
-        useGenericAction(Number(genericActionButton.dataset.genericActionPieceId));
+        useGenericAction(
+          Number(genericActionButton.dataset.genericActionPieceId),
+          genericActionButton.dataset.genericActionLabel
+        );
         return;
       }
 
