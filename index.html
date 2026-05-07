@@ -2288,7 +2288,328 @@
       .shop-grid { grid-template-columns: 1fr; }
       .currency-row { grid-template-columns: 1fr 42px 34px 42px; }
     }
-  </style>
+  
+
+    /* ==========================================================
+       Player-selectable visual themes
+       ----------------------------------------------------------
+       These themes only change the presentation. They do not
+       change gameplay, saved pieces, turn order, or rules.
+       ========================================================== */
+
+    .theme-picker-slot {
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .theme-picker-button {
+      position: static;
+      z-index: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 42px;
+      border: 1px solid rgba(43, 33, 24, 0.22);
+      border-radius: 999px;
+      padding: 5px 12px;
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      cursor: pointer;
+      color: var(--muted);
+      background: rgba(255,255,255,0.45);
+      box-shadow: none;
+      backdrop-filter: none;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    .theme-picker-button:hover {
+      transform: translateY(-1px);
+    }
+
+    .theme-picker-button span {
+      opacity: 0.78;
+      font-weight: 700;
+    }
+
+    body[data-theme="classic"] .theme-picker-button {
+      color: var(--muted);
+      background: rgba(255,255,255,0.45);
+      border-color: rgba(43, 33, 24, 0.22);
+    }
+
+    body[data-theme="scroll"] {
+      color: #2f2114;
+      background:
+        radial-gradient(circle at 16% 12%, rgba(255, 255, 255, 0.32), transparent 22%),
+        radial-gradient(circle at 82% 20%, rgba(120, 72, 24, 0.10), transparent 25%),
+        radial-gradient(circle at 50% 100%, rgba(95, 58, 25, 0.10), transparent 35%),
+        repeating-linear-gradient(
+          0deg,
+          rgba(92, 56, 23, 0.022) 0px,
+          rgba(92, 56, 23, 0.022) 1px,
+          transparent 1px,
+          transparent 5px
+        ),
+        linear-gradient(135deg, #f1dfb8 0%, #d8b77b 48%, #b98749 100%);
+      font-family: Georgia, "Times New Roman", serif;
+    }
+
+    body[data-theme="scroll"] .theme-picker-button {
+      color: #3a2614;
+      background: rgba(255, 243, 210, 0.62);
+      border-color: rgba(92, 56, 23, 0.22);
+      box-shadow: none;
+    }
+
+    body[data-theme="scroll"] header,
+    body[data-theme="scroll"] .hero,
+    body[data-theme="scroll"] .panel,
+    body[data-theme="scroll"] .title-card,
+    body[data-theme="scroll"] .currency-panel,
+    body[data-theme="scroll"] .giving-tiles-panel,
+    body[data-theme="scroll"] .cannon-panel,
+    body[data-theme="scroll"] .turn-panel,
+    body[data-theme="scroll"] .controls,
+    body[data-theme="scroll"] .summon-panel,
+    body[data-theme="scroll"] .tracker-panel,
+    body[data-theme="scroll"] .walkthrough-panel,
+    body[data-theme="scroll"] .shop-panel,
+    body[data-theme="scroll"] .unit-card,
+    body[data-theme="scroll"] .piece-card,
+    body[data-theme="scroll"] .base-card,
+    body[data-theme="scroll"] .resource-card,
+    body[data-theme="scroll"] .item-card,
+    body[data-theme="scroll"] .counter-card,
+    body[data-theme="scroll"] .turn-card,
+    body[data-theme="scroll"] .coach-card,
+    body[data-theme="scroll"] .detail-panel,
+    body[data-theme="scroll"] .selected-card,
+    body[data-theme="scroll"] .utility-panel,
+    body[data-theme="scroll"] .giving-action-box,
+    body[data-theme="scroll"] .round-reward-box,
+    body[data-theme="scroll"] .turn-callout,
+    body[data-theme="scroll"] .current-reference-card,
+    body[data-theme="scroll"] .turn-summary-panel,
+    body[data-theme="scroll"] .conversion-card,
+    body[data-theme="scroll"] .shop-card,
+    body[data-theme="scroll"] .craft-card {
+      color: #2f2114;
+      background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.32), transparent 36%),
+        linear-gradient(180deg, rgba(255, 248, 226, 0.96), rgba(233, 204, 144, 0.92));
+      border-color: rgba(92, 56, 23, 0.34);
+      box-shadow:
+        0 10px 24px rgba(81, 49, 20, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.34);
+    }
+
+    body[data-theme="scroll"] h1,
+    body[data-theme="scroll"] h2,
+    body[data-theme="scroll"] h3,
+    body[data-theme="scroll"] .panel-title,
+    body[data-theme="scroll"] .unit-name,
+    body[data-theme="scroll"] .piece-name,
+    body[data-theme="scroll"] .base-name,
+    body[data-theme="scroll"] .panel-header h2,
+    body[data-theme="scroll"] .turn-step-title,
+    body[data-theme="scroll"] .coach-step-title,
+    body[data-theme="scroll"] .giving-action-title,
+    body[data-theme="scroll"] .round-reward-title {
+      color: #3b2411;
+      font-family: Georgia, "Times New Roman", serif;
+      letter-spacing: 0.02em;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.42);
+    }
+
+    body[data-theme="scroll"] .panel-heading,
+    body[data-theme="scroll"] .shop-group-title {
+      color: #fff7e8;
+      background: linear-gradient(180deg, #8f5522, #5f3513);
+      border: 1px solid rgba(58, 32, 12, 0.48);
+      letter-spacing: 0.05em;
+    }
+
+    body[data-theme="scroll"] .panel-note,
+    body[data-theme="scroll"] .team-label,
+    body[data-theme="scroll"] .test-mode-label,
+    body[data-theme="scroll"] .coach-step-label,
+    body[data-theme="scroll"] .base-preview-label,
+    body[data-theme="scroll"] .coin-note,
+    body[data-theme="scroll"] .turn-instructions,
+    body[data-theme="scroll"] .subtitle,
+    body[data-theme="scroll"] .footer-note,
+    body[data-theme="scroll"] .quick-action,
+    body[data-theme="scroll"] .shop-cost,
+    body[data-theme="scroll"] .craft-cost,
+    body[data-theme="scroll"] .buy-quantity,
+    body[data-theme="scroll"] .craft-status,
+    body[data-theme="scroll"] .conversion-note {
+      color: #6a4a2a;
+    }
+
+    body[data-theme="scroll"] button,
+    body[data-theme="scroll"] select,
+    body[data-theme="scroll"] input {
+      font-family: Georgia, "Times New Roman", serif;
+    }
+
+    body[data-theme="scroll"] button:not(.theme-picker-button),
+    body[data-theme="scroll"] .action-btn,
+    body[data-theme="scroll"] .counter-btn,
+    body[data-theme="scroll"] .generic-action-btn,
+    body[data-theme="scroll"] .farm-btn,
+    body[data-theme="scroll"] .fire-arrow-btn,
+    body[data-theme="scroll"] .coach-btn,
+    body[data-theme="scroll"] .collapse-btn,
+    body[data-theme="scroll"] .cannon-action-btn,
+    body[data-theme="scroll"] .base-btn,
+    body[data-theme="scroll"] .turn-btn,
+    body[data-theme="scroll"] .small-btn,
+    body[data-theme="scroll"] .hp-btn,
+    body[data-theme="scroll"] .reset-btn,
+    body[data-theme="scroll"] .filter-btn,
+    body[data-theme="scroll"] .add-btn,
+    body[data-theme="scroll"] .shop-btn,
+    body[data-theme="scroll"] .buy-btn,
+    body[data-theme="scroll"] .craft-btn,
+    body[data-theme="scroll"] .round-reward-btn {
+      color: #2f2114;
+      background: linear-gradient(180deg, #f5ddb0, #c4873d);
+      border-color: rgba(78, 43, 14, 0.45);
+      box-shadow: 0 2px 0 rgba(60, 34, 12, 0.22);
+    }
+
+    body[data-theme="scroll"] .team-btn.active,
+    body[data-theme="scroll"] .filter-btn.active,
+    body[data-theme="scroll"] .animation-mode-option.active,
+    body[data-theme="scroll"] .turn-team {
+      color: #fff7e8;
+      background: linear-gradient(180deg, #9e6127, #6f3f16);
+      border-color: #5d3312;
+    }
+
+    body[data-theme="scroll"] .pill,
+    body[data-theme="scroll"] .tag,
+    body[data-theme="scroll"] .badge,
+    body[data-theme="scroll"] .stat-pill,
+    body[data-theme="scroll"] .cannon-pill,
+    body[data-theme="scroll"] .base-preview-pill,
+    body[data-theme="scroll"] .coach-tip-pill,
+    body[data-theme="scroll"] .copy-label,
+    body[data-theme="scroll"] .count,
+    body[data-theme="scroll"] .hp-readout,
+    body[data-theme="scroll"] .detail-box,
+    body[data-theme="scroll"] .base-stat-pill,
+    body[data-theme="scroll"] .current-reference-pill,
+    body[data-theme="scroll"] .round-summary-item,
+    body[data-theme="scroll"] .current-piece-row {
+      color: #3a2614;
+      background: rgba(255, 245, 213, 0.82);
+      border-color: rgba(95, 58, 25, 0.28);
+    }
+
+    body[data-theme="scroll"] input,
+    body[data-theme="scroll"] select,
+    body[data-theme="scroll"] textarea,
+    body[data-theme="scroll"] .search,
+    body[data-theme="scroll"] .base-select {
+      color: #2f2114;
+      background: rgba(255, 249, 230, 0.90);
+      border-color: rgba(95, 58, 25, 0.26);
+    }
+
+    body[data-theme="scroll"] .team-selector,
+    body[data-theme="scroll"] .test-mode-toggle,
+    body[data-theme="scroll"] .animation-mode-control,
+    body[data-theme="scroll"] .animation-mode-toggle,
+    body[data-theme="scroll"] .setup-status,
+    body[data-theme="scroll"] .coin-area,
+    body[data-theme="scroll"] .base-specialization-preview {
+      background: rgba(255, 243, 210, 0.62);
+      border-color: rgba(92, 56, 23, 0.22);
+    }
+
+    body[data-theme="arcane"] {
+      color: #eaf2ff;
+      background:
+        radial-gradient(circle at top right, rgba(126, 87, 255, 0.36), transparent 32%),
+        radial-gradient(circle at bottom left, rgba(13, 148, 136, 0.32), transparent 30%),
+        linear-gradient(135deg, #08111f 0%, #101827 52%, #1e103a 100%);
+    }
+
+    body[data-theme="arcane"] .theme-picker-button {
+      color: #f8fbff;
+      background: rgba(46, 27, 93, 0.9);
+      border-color: rgba(168, 139, 250, 0.52);
+      box-shadow: 0 0 16px rgba(125, 92, 255, 0.18);
+    }
+
+    body[data-theme="arcane"] header,
+    body[data-theme="arcane"] .hero,
+    body[data-theme="arcane"] .panel,
+    body[data-theme="arcane"] .tracker-panel,
+    body[data-theme="arcane"] .unit-card,
+    body[data-theme="arcane"] .piece-card,
+    body[data-theme="arcane"] .base-card,
+    body[data-theme="arcane"] .resource-card,
+    body[data-theme="arcane"] .item-card,
+    body[data-theme="arcane"] .counter-card,
+    body[data-theme="arcane"] .turn-card,
+    body[data-theme="arcane"] .coach-card,
+    body[data-theme="arcane"] .detail-panel,
+    body[data-theme="arcane"] .selected-card,
+    body[data-theme="arcane"] .utility-panel {
+      color: #eaf2ff;
+      background:
+        linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(48, 31, 89, 0.86));
+      border-color: rgba(168, 139, 250, 0.28);
+      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35), 0 0 26px rgba(91, 68, 204, 0.14);
+    }
+
+    body[data-theme="arcane"] h1,
+    body[data-theme="arcane"] h2,
+    body[data-theme="arcane"] h3,
+    body[data-theme="arcane"] .panel-title,
+    body[data-theme="arcane"] .unit-name,
+    body[data-theme="arcane"] .piece-name,
+    body[data-theme="arcane"] .base-name {
+      color: #f8fbff;
+      text-shadow: 0 0 16px rgba(168, 139, 250, 0.42);
+    }
+
+    body[data-theme="arcane"] button:not(.theme-picker-button),
+    body[data-theme="arcane"] .action-btn,
+    body[data-theme="arcane"] .counter-btn,
+    body[data-theme="arcane"] .generic-action-btn,
+    body[data-theme="arcane"] .farm-btn,
+    body[data-theme="arcane"] .fire-arrow-btn {
+      color: #f8fbff;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      border-color: rgba(191, 219, 254, 0.32);
+    }
+
+    body[data-theme="arcane"] .pill,
+    body[data-theme="arcane"] .tag,
+    body[data-theme="arcane"] .badge,
+    body[data-theme="arcane"] .stat-pill,
+    body[data-theme="arcane"] .cannon-pill {
+      color: #eaf2ff;
+      background: rgba(30, 41, 59, 0.78);
+      border-color: rgba(168, 139, 250, 0.34);
+    }
+
+    body[data-theme="arcane"] input,
+    body[data-theme="arcane"] select,
+    body[data-theme="arcane"] textarea {
+      color: #f8fbff;
+      background: rgba(15, 23, 42, 0.88);
+      border-color: rgba(168, 139, 250, 0.36);
+    }
+
+</style>
 </head>
 <body>
   <main class="app">
@@ -2612,6 +2933,7 @@
     </div>
   </div>
 
+
   <script>
     // ------------------------------------------------------------
     // Boardgame Tracker
@@ -2890,6 +3212,7 @@
       filter: "all",
       team: "blue",
       testMode: false,
+      selectedTheme: "classic",
       search: "",
       nextPieceId: 1,
       shopOpen: false,
@@ -2928,7 +3251,6 @@
         summonsByTurnKey: {},
         arrowsFiredByTurnKey: {},
         farmersUsedByTurnKey: {},
-        actionsUsedByTurnKey: {},
         actionsUsedByTurnKey: {}
       },
       currency: {
@@ -3162,6 +3484,74 @@
       } catch (error) {
         return createFreshGameState();
       }
+    }
+
+    const THEME_OPTIONS = [
+      { id: "classic", label: "Classic" },
+      { id: "scroll", label: "Olde Scroll" },
+      { id: "arcane", label: "Arcane Night" }
+    ];
+
+
+    function getThemeOption(themeId) {
+      return THEME_OPTIONS.find(theme => theme.id === themeId) || THEME_OPTIONS[0];
+    }
+
+
+    function applySelectedTheme() {
+      const theme = getThemeOption(state.selectedTheme);
+      state.selectedTheme = theme.id;
+      document.body.dataset.theme = theme.id;
+
+      const themeButton = document.getElementById("themePickerButton");
+      if (themeButton) {
+        themeButton.innerHTML = `<span>Theme</span> ${theme.label}`;
+        themeButton.title = `Current theme: ${theme.label}. Click to switch theme.`;
+      }
+    }
+
+    function cycleTheme() {
+      const currentIndex = THEME_OPTIONS.findIndex(theme => theme.id === state.selectedTheme);
+      const nextIndex = currentIndex < 0 ? 0 : (currentIndex + 1) % THEME_OPTIONS.length;
+      state.selectedTheme = THEME_OPTIONS[nextIndex].id;
+      applySelectedTheme();
+      saveState();
+    }
+
+
+    function ensureThemePicker() {
+      let button = document.getElementById("themePickerButton");
+      let slot = document.getElementById("themePickerSlot");
+
+      if (!button) {
+        button = document.createElement("button");
+        button.id = "themePickerButton";
+        button.className = "theme-picker-button";
+        button.type = "button";
+        button.addEventListener("click", cycleTheme);
+      }
+
+      if (!slot) {
+        slot = document.createElement("div");
+        slot.id = "themePickerSlot";
+        slot.className = "theme-picker-slot";
+        slot.appendChild(button);
+      } else if (!slot.contains(button)) {
+        slot.appendChild(button);
+      }
+
+      const headerTools = document.querySelector(".header-tools");
+      const testModeControl = document.getElementById("testModeToggle");
+
+      if (headerTools && slot.parentNode !== headerTools) {
+        if (testModeControl && testModeControl.parentNode === headerTools && testModeControl.nextSibling) {
+          headerTools.insertBefore(slot, testModeControl.nextSibling);
+        } else {
+          headerTools.appendChild(slot);
+        }
+      }
+
+      applySelectedTheme();
     }
 
     function saveState() {
@@ -5972,6 +6362,8 @@
     }
 
     function render() {
+      ensureThemePicker();
+      applySelectedTheme();
       renderTeam();
       renderTestMode();
       renderWalkthrough();
