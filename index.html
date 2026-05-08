@@ -927,7 +927,7 @@
 
     .current-piece-row {
       display: grid;
-      grid-template-columns: auto 1fr auto auto auto auto;
+      grid-template-columns: auto 1fr auto auto auto;
       gap: 8px;
       align-items: center;
       border: 1px solid rgba(43, 33, 24, 0.18);
@@ -2302,6 +2302,7 @@
       align-items: center;
     }
 
+    .rules-button,
     .theme-picker-button {
       position: static;
       z-index: auto;
@@ -2325,15 +2326,18 @@
       white-space: nowrap;
     }
 
+    .rules-button:hover,
     .theme-picker-button:hover {
       transform: translateY(-1px);
     }
 
+    .rules-button span,
     .theme-picker-button span {
       opacity: 0.78;
       font-weight: 700;
     }
 
+    body[data-theme="classic"] .rules-button,
     body[data-theme="classic"] .theme-picker-button {
       color: var(--muted);
       background: rgba(255,255,255,0.45);
@@ -2357,6 +2361,7 @@
       font-family: Georgia, "Times New Roman", serif;
     }
 
+    body[data-theme="scroll"] .rules-button,
     body[data-theme="scroll"] .theme-picker-button {
       color: #3a2614;
       background: rgba(255, 243, 210, 0.62);
@@ -2540,6 +2545,7 @@
         linear-gradient(135deg, #08111f 0%, #101827 52%, #1e103a 100%);
     }
 
+    body[data-theme="arcane"] .rules-button,
     body[data-theme="arcane"] .theme-picker-button {
       color: #f8fbff;
       background: rgba(46, 27, 93, 0.9);
@@ -3196,8 +3202,8 @@
       { id: 12, name: "Medic", move: 1, maxHp: 6, action: "Heal a damaged unit by 1 HP. Cannot heal a Medic.", ritual: "1 Iron, 6 Leather, 3 Bronze", category: "support", ritualCosts: [{ type: "resource", name: "Iron", quantity: 1 }, { type: "resource", name: "Leather", quantity: 6 }, { type: "currency", name: "bronze", quantity: 3 }] },
       { id: 13, name: "Necromancer", move: 1, maxHp: 1, action: "Heal — Choose an eligible dead ally unit and revive it with full HP.", ritual: "1 Gem, 7 Leather, 1 Silver, 2 Bronze", category: "support", ritualCosts: [{ type: "resource", name: "Gem", quantity: 1 }, { type: "resource", name: "Leather", quantity: 7 }, { type: "currency", name: "silver", quantity: 1 }, { type: "currency", name: "bronze", quantity: 2 }] },
       { id: 14, name: "Farmer", move: 1, maxHp: 6, action: "Gain 1 Bread item card.", ritual: "1 Gold, 6 Leather", category: "support", ritualCosts: [{ type: "currency", name: "gold", quantity: 1 }, { type: "resource", name: "Leather", quantity: 6 }] },
-      { id: 15, name: "Artillerist", move: 2, maxHp: 2, action: "May load and fire a cannon as one action. Must be adjacent to the cannon. Push Cannon — Move the cannon 1 tile in any direction to an unoccupied tile. Only one action may be used per turn.", ritual: "3 Sulphur", category: "special", ritualCosts: [{ type: "resource", name: "Sulphur", quantity: 3 }] },
-      { id: 16, name: "Mechanist", move: 4, maxHp: 2, action: "Repair — Repair a built item, such as a wall, base, or cannon. Push Cannon — Move the cannon 1 tile in any direction to an unoccupied tile. Only one action may be used per turn.", ritual: "1 Shield, 2 Sulphur", category: "special", ritualCosts: [{ type: "item", name: "Shield", quantity: 1 }, { type: "resource", name: "Sulphur", quantity: 2 }] },
+      { id: 15, name: "Artillerist", move: 2, maxHp: 2, action: "May load and fire a cannon as one action. Must be adjacent to the cannon. Passive — May push the cannon 1 tile in any direction to an unoccupied tile.", ritual: "3 Sulphur", category: "special", ritualCosts: [{ type: "resource", name: "Sulphur", quantity: 3 }] },
+      { id: 16, name: "Mechanist", move: 4, maxHp: 2, action: "Repair — Repair a built item, such as a wall, base, or cannon. Passive — May push the cannon 1 tile in any direction to an unoccupied tile.", ritual: "1 Shield, 2 Sulphur", category: "special", ritualCosts: [{ type: "item", name: "Shield", quantity: 1 }, { type: "resource", name: "Sulphur", quantity: 2 }] },
       { id: 17, name: "Ritual Caster", move: 1, maxHp: 1, action: "Passive — Grants 1 additional summon during your Summoning Unit phase. Costs still apply.", ritual: "1 Gold, 2 Sulphur, 1 Artifact", category: "special", ritualCosts: [{ type: "currency", name: "gold", quantity: 1 }, { type: "resource", name: "Sulphur", quantity: 2 }, { type: "item", name: "Artifact", quantity: 1 }] },
       { id: 18, name: "Thief", move: 4, maxHp: 1, action: "If within 5 tiles of the opponent's King, steal 1 Bronze from the opponent's hand. May go over the 5 Bronze limit with this effect.", ritual: "2 Bronze, 1 Rope", category: "special", ritualCosts: [{ type: "currency", name: "bronze", quantity: 2 }, { type: "resource", name: "Rope", quantity: 1 }] },
       { id: 19, name: "Strategist", move: 1, maxHp: 1, action: "Delete this unit on any ally unit's turn to grant that ally a second action for the round.", ritual: "3 Sulphur, 1 Iron", category: "special", ritualCosts: [{ type: "resource", name: "Sulphur", quantity: 3 }, { type: "resource", name: "Iron", quantity: 1 }] },
@@ -3519,6 +3525,399 @@
     }
 
 
+    function buildRulesWindowHtml() {
+      // This is a self-contained rulebook page so it can be opened in a new
+      // tab/window without relying on the tracker layout. It uses system fonts
+      // only, so it remains cottage/offline friendly once the page is loaded.
+      return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kings of the Field - Rules</title>
+  <style>
+    :root {
+      --paper: #fff8e9;
+      --ink: #2b2118;
+      --muted: #6c5d4a;
+      --blue: #244d78;
+      --red: #a12b24;
+      --border: #9b845f;
+      --shadow: rgba(48, 31, 12, 0.22);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.55), transparent 30%),
+        linear-gradient(135deg, #e7d3aa, #f8efd9 45%, #d3b982);
+    }
+
+    .rules-page {
+      width: min(980px, 100%);
+      margin: 0 auto;
+      display: grid;
+      gap: 14px;
+    }
+
+    header,
+    section {
+      border: 2px solid var(--border);
+      background: rgba(255, 248, 233, 0.94);
+      box-shadow: 0 6px 18px var(--shadow);
+      border-radius: 18px;
+      padding: 18px;
+    }
+
+    header {
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(36px, 7vw, 68px);
+      line-height: 0.95;
+      color: #24160e;
+      text-shadow: 0 2px 0 rgba(255,255,255,0.55);
+    }
+
+    .subtitle {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    h2 {
+      margin: 0 0 10px;
+      padding-bottom: 6px;
+      color: var(--blue);
+      border-bottom: 1px solid rgba(43, 33, 24, 0.18);
+      font-size: 26px;
+    }
+
+    h3 {
+      margin: 12px 0 6px;
+      color: #3b2411;
+      font-size: 19px;
+    }
+
+    p {
+      margin: 8px 0;
+      line-height: 1.45;
+      font-size: 17px;
+    }
+
+    ul,
+    ol {
+      margin: 8px 0 8px 22px;
+      padding: 0;
+      line-height: 1.45;
+      font-size: 17px;
+    }
+
+    li { margin: 6px 0; }
+
+    .note {
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .callout {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(36, 77, 120, 0.10);
+      border: 1px solid rgba(36, 77, 120, 0.18);
+      color: #17314e;
+      font-weight: 900;
+      line-height: 1.35;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 14px;
+      border: 1px solid rgba(43, 33, 24, 0.18);
+      background: rgba(255,255,255,0.48);
+      margin-top: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 720px;
+    }
+
+    th,
+    td {
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid rgba(43, 33, 24, 0.14);
+      line-height: 1.35;
+      font-size: 16px;
+    }
+
+    th {
+      color: white;
+      background: linear-gradient(180deg, var(--blue), #17314e);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      white-space: nowrap;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 8px;
+    }
+
+    .tag {
+      border: 1px solid rgba(43, 33, 24, 0.18);
+      background: rgba(255,255,255,0.68);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 14px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .two-column {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .mini-card {
+      border: 1px solid rgba(43, 33, 24, 0.18);
+      background: rgba(255,255,255,0.52);
+      border-radius: 14px;
+      padding: 12px;
+    }
+
+    .mini-card h3 { margin-top: 0; }
+
+    @media print {
+      body { background: white; padding: 0; }
+      header, section { box-shadow: none; break-inside: avoid; }
+    }
+
+    @media (max-width: 760px) {
+      body { padding: 10px; }
+      header, section { padding: 14px; }
+      .two-column { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="rules-page">
+    <header>
+      <h1>Kings of the Field</h1>
+      <div class="subtitle">Player Rules</div>
+    </header>
+
+    <section>
+      <h2>Starting the Game</h2>
+      <ol>
+        <li>Both players choose a team: <strong>Red</strong> or <strong>Blue</strong>.</li>
+        <li>Flip a coin to determine who moves first.</li>
+        <li>Each player chooses a <strong>Starting Army</strong> from the allowed starting units. Choosing units this way bypasses their Summoning Cost. This is the only way to bypass Summoning Cost in the game.</li>
+        <li>Each player chooses <strong>7 units</strong>. Each individual type of unit has a limit of <strong>3 copies</strong>.</li>
+        <li>Place your team’s <strong>King</strong> on your Starting Base Tile.</li>
+        <li>Place your Starting Army in any configuration within <strong>2 tiles</strong> of your King.</li>
+      </ol>
+      <h3>Starting Army Choices</h3>
+      <div class="tag-list">
+        <span class="tag">Wood Worker</span>
+        <span class="tag">Warrior (Sword)</span>
+        <span class="tag">Warrior (Spear)</span>
+        <span class="tag">Warrior (Bow)</span>
+        <span class="tag">Warrior (Lance &amp; Horse)</span>
+        <span class="tag">Mechanist</span>
+        <span class="tag">Thief</span>
+        <span class="tag">Strategist</span>
+      </div>
+    </section>
+
+    <section>
+      <h2>Winning</h2>
+      <p>To win the game, you must capture the opponent’s <strong>King</strong> and bring that King to a base tile you own.</p>
+      <ul>
+        <li>Any unit can use its action to <strong>Capture</strong> the opponent’s King if that unit is adjacent to the King.</li>
+        <li>While capturing the King, the capturing unit can move a maximum of <strong>2 tiles per turn</strong>.</li>
+        <li>If the capturing unit’s maximum movement is only 1, it can still only move <strong>1 tile</strong>.</li>
+        <li>When captured, the King must move with the piece that is currently capturing him.</li>
+        <li>Only one of your units may use the Capture action per round.</li>
+      </ul>
+      <div class="callout">You win when the captured enemy King reaches a base tile you own.</div>
+    </section>
+
+    <section>
+      <h2>Summoning</h2>
+      <p>During the <strong>Summoning Unit</strong> phase, you may summon one unit, then summon additional units for each active <strong>Ritual Caster</strong> you own.</p>
+      <ul>
+        <li>The Summoning Cost lists the Resources, Items, and Currencies needed to summon that piece.</li>
+        <li>When a unit is summoned, the player may choose any base tile they own as its starting position.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Bases</h2>
+      <p>Every player starts with one base. The starting base is always two rows from the back rank, in the centre column of the board.</p>
+      <ul>
+        <li>A secondary Base Tile can be created by having the necessary <strong>Base Builder</strong> units surrounding a tile.</li>
+        <li>A secondary Base Tile may only be placed on your starting side of the board. Halfway is designated by the centre Giving Tile.</li>
+        <li>Each base has <strong>6 HP</strong>.</li>
+        <li>If a unit is standing on a base tile, that unit takes the damage instead of the base, unless that unit is a King.</li>
+        <li>Damage does not overflow. If a unit with 1 HP takes 2 damage, the extra point is not transferred to the base.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Base Specialization</h2>
+      <p>Each base can be specialized for a cost. Each specialization adds a passive bonus to the team who controls it.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Specialization</th>
+              <th>Cost</th>
+              <th>Required Active Units</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Chapel</strong></td>
+              <td>5 Stone, 2 Glass, 1 Gold</td>
+              <td>2 active Medics</td>
+            </tr>
+            <tr>
+              <td><strong>Graveyard</strong></td>
+              <td>5 Stone, 5 Rope, 1 Gold</td>
+              <td>1 active Necromancer</td>
+            </tr>
+            <tr>
+              <td><strong>Recruitment Center</strong></td>
+              <td>5 Wood, 3 Iron, 1 Gold</td>
+              <td>2 active Strategists</td>
+            </tr>
+            <tr>
+              <td><strong>Hospital</strong></td>
+              <td>5 Glass, 2 Wood, 3 Iron, 1 Gold</td>
+              <td>1 active Priest</td>
+            </tr>
+            <tr>
+              <td><strong>Merchant District</strong></td>
+              <td>3 Rope, 3 Wood, 2 Bread, 1 Gold</td>
+              <td>3 active Shopkeepers</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Once a base has been specialized, it may be re-specialized if the player can pay the cost and has the required units on the field.</p>
+    </section>
+
+    <section>
+      <h2>Base Capturing</h2>
+      <p>When capturing a base, the capturing player chooses what happens to it:</p>
+      <ul>
+        <li>Destroy the base.</li>
+        <li>Keep the base with its current specialization.</li>
+        <li>Keep the base but remove its specialization.</li>
+        <li>If the base is unspecialized, keep the base as it is.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Defences</h2>
+      <p>Defences, often called walls, are <strong>5-by-1 tile</strong> structures. They protect all adjacent units, friend or foe, from ranged attacks by Warrior (Bow), magic attacks by Mage, and cannon balls.</p>
+      <div class="two-column">
+        <div class="mini-card">
+          <h3>Wall Types</h3>
+          <ul>
+            <li><strong>Wooden Defence:</strong> 3 HP</li>
+            <li><strong>Stone Defence:</strong> 6 HP</li>
+            <li><strong>Iron Wall:</strong> needs a cannon to destroy</li>
+          </ul>
+        </div>
+        <div class="mini-card">
+          <h3>Wall Limits</h3>
+          <p>A player can have up to <strong>3 of each type</strong> of wall on the field at any time.</p>
+          <p>A player cannot create new walls once the limit has been reached. They must wait for a wall to break, or break one of their own walls.</p>
+        </div>
+      </div>
+      <p>Basic attacks damage wooden and stone walls. Iron walls require a cannon to destroy.</p>
+    </section>
+
+    <section>
+      <h2>Cannons</h2>
+      <ul>
+        <li>A player may have <strong>one cannon</strong> on the field at any time.</li>
+        <li>Cannons have <strong>2 HP</strong>.</li>
+        <li>One unit must use its action to spend a Cannon Ball and <strong>load</strong> the cannon before another unit can use its action to fire it.</li>
+        <li>Cannon balls instantly destroy walls when they hit.</li>
+        <li>Cannon balls can be shot over walls if the player wishes.</li>
+        <li>A Cannon Ball deals <strong>2 damage</strong> if used against a unit or another cannon.</li>
+        <li>A player may use a cannon to destroy their own wall.</li>
+        <li>A cannon cannot move unless a <strong>Mechanist</strong> or an <strong>Artillerist</strong> pushes it.</li>
+        <li>Any unit may use its action to <strong>place</strong> a cannon on its turn, even units without action effects.</li>
+      </ul>
+      <h3>Placing a Cannon</h3>
+      <p>When placing a cannon, choose any owned base as its starting location, or place it next to any Mechanist or Artillerist.</p>
+    </section>
+  </main>
+</body>
+</html>`;
+    }
+
+    function openRulesWindow() {
+      const rulesWindow = window.open("", "_blank");
+
+      if (!rulesWindow) {
+        alert("The rules window was blocked. Please allow pop-ups for this page, or try again from the browser menu.");
+        return;
+      }
+
+      rulesWindow.document.open();
+      rulesWindow.document.write(buildRulesWindowHtml());
+      rulesWindow.document.close();
+      rulesWindow.focus();
+    }
+
+    function ensureRulesButton() {
+      let button = document.getElementById("rulesButton");
+
+      if (!button) {
+        button = document.createElement("button");
+        button.id = "rulesButton";
+        button.className = "rules-button";
+        button.type = "button";
+        button.innerHTML = `<span>Rules</span> Open`;
+        button.title = "Open the player rules in a new tab or window.";
+        button.addEventListener("click", openRulesWindow);
+      }
+
+      const headerTools = document.querySelector(".header-tools");
+      const themeSlot = document.getElementById("themePickerSlot");
+
+      if (headerTools && button.parentNode !== headerTools) {
+        if (themeSlot && themeSlot.parentNode === headerTools && themeSlot.nextSibling) {
+          headerTools.insertBefore(button, themeSlot.nextSibling);
+        } else {
+          headerTools.appendChild(button);
+        }
+      }
+    }
+
     function ensureThemePicker() {
       let button = document.getElementById("themePickerButton");
       let slot = document.getElementById("themePickerSlot");
@@ -3552,6 +3951,7 @@
       }
 
       applySelectedTheme();
+      ensureRulesButton();
     }
 
     function saveState() {
@@ -4563,17 +4963,6 @@
       return "Action";
     }
 
-    function getSecondaryGenericActionLabel(unitType) {
-      if (!unitType) {
-        return "";
-      }
-
-      if (unitType.id === 15 || unitType.id === 16) {
-        return "Push Cannon";
-      }
-
-      return "";
-    }
 
     function shouldShowGenericActionButton(unitType) {
       if (!unitType || unitType.id === 1) {
@@ -4585,6 +4974,13 @@
       // generic action tracker.
       if ([8, 14, 17, 19, 20].includes(unitType.id)) {
         return false;
+      }
+
+      // Some pieces include passive reminder text while still having a main
+      // action button. Artillerist still uses Cannon, and Mechanist still
+      // uses Repair; the cannon-push reminder is informational only.
+      if ([15, 16].includes(unitType.id)) {
+        return true;
       }
 
       return !(unitType.action || "").toLowerCase().includes("passive");
@@ -4609,7 +5005,7 @@
       );
     }
 
-    function useGenericAction(pieceId, requestedActionLabel = "") {
+    function useGenericAction(pieceId) {
       const piece = getPiece(pieceId);
 
       if (!canUseGenericAction(piece)) {
@@ -4617,17 +5013,7 @@
       }
 
       const unitType = getUnitType(piece.typeId);
-      const primaryActionLabel = getGenericActionLabel(unitType);
-      const secondaryActionLabel = getSecondaryGenericActionLabel(unitType);
-      const actionLabel = requestedActionLabel || primaryActionLabel;
-
-      // For pieces with two possible actions, both buttons still spend the
-      // same single action for the turn. This keeps Artillerist and Mechanist
-      // from combining Push Cannon with Cannon/Repair.
-      if (actionLabel !== primaryActionLabel && actionLabel !== secondaryActionLabel) {
-        return;
-      }
-
+      const actionLabel = getGenericActionLabel(unitType);
       recordGenericActionUsedThisTurn(piece.pieceId);
       logRoundEvent(`${unitType.name} #${getCopyNumber(piece)} used ${actionLabel}.`);
       saveState();
@@ -5515,16 +5901,16 @@
         add("Action", "Cannon", false, true);
         add("Use", "Load & Fire");
         add("Needs", "Adjacent to cannon", true);
-        add("OR", "Push Cannon", true);
-        add("Push", "1 tile to unoccupied tile", true);
+        add("Passive", "Push cannon 1 tile", true);
+        add("Push", "To unoccupied tile", true);
         return data;
       }
 
       if (lowerAction.includes("repair")) {
         add("Action", "Repair", false, true);
         add("Targets", "Walls, bases, cannons", true);
-        add("OR", "Push Cannon", true);
-        add("Push", "1 tile to unoccupied tile", true);
+        add("Passive", "Push cannon 1 tile", true);
+        add("Push", "To unoccupied tile", true);
         return data;
       }
 
@@ -5665,13 +6051,9 @@
             : "";
 
           const genericActionLabel = getGenericActionLabel(unitType);
-          const secondaryGenericActionLabel = getSecondaryGenericActionLabel(unitType);
           const hasUsedGenericAction = shouldShowGenericActionButton(unitType) && hasGenericActionBeenUsedThisTurn(piece.pieceId);
           const genericActionButtonHtml = shouldShowGenericActionButton(unitType)
-            ? `
-              <button class="generic-action-btn" type="button" data-generic-action-piece-id="${piece.pieceId}" data-generic-action-label="${genericActionLabel}" ${canUseGenericAction(piece) ? "" : "disabled"}>${hasUsedGenericAction ? "Done" : genericActionLabel}</button>
-              ${secondaryGenericActionLabel ? `<button class="generic-action-btn" type="button" data-generic-action-piece-id="${piece.pieceId}" data-generic-action-label="${secondaryGenericActionLabel}" ${canUseGenericAction(piece) ? "" : "disabled"}>${hasUsedGenericAction ? "Done" : secondaryGenericActionLabel}</button>` : ""}
-            `
+            ? `<button class="generic-action-btn" type="button" data-generic-action-piece-id="${piece.pieceId}" ${canUseGenericAction(piece) ? "" : "disabled"}>${hasUsedGenericAction ? "Done" : genericActionLabel}</button>`
             : "";
 
           row.innerHTML = `
@@ -6393,6 +6775,7 @@
 
     function render() {
       ensureThemePicker();
+      ensureRulesButton();
       applySelectedTheme();
       renderTeam();
       renderTestMode();
@@ -6823,10 +7206,7 @@
       const genericActionButton = event.target.closest("[data-generic-action-piece-id]");
 
       if (genericActionButton) {
-        useGenericAction(
-          Number(genericActionButton.dataset.genericActionPieceId),
-          genericActionButton.dataset.genericActionLabel
-        );
+        useGenericAction(Number(genericActionButton.dataset.genericActionPieceId));
         return;
       }
 
