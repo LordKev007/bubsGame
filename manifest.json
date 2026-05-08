@@ -1,0 +1,10 @@
+{
+  "name": "Kings of the Field Tracker",
+  "short_name": "Kings Tracker",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f8efd9",
+  "theme_color": "#244d78",
+  "orientation": "landscape"
+}

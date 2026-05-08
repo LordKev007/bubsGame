@@ -3,6 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <!-- iPad / iPhone Home Screen support.
+       These tags let Safari launch the tracker more like an app when it is
+       added to the Home Screen. The manifest path is relative so it works
+       from GitHub Pages project sites as well as a normal root domain. -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Kings Tracker" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#244d78" />
+  <link rel="manifest" href="./manifest.json" />
   <title>Boardgame Tracker</title>
   <style>
     :root {
@@ -2302,6 +2312,7 @@
       align-items: center;
     }
 
+    .history-button,
     .rules-button,
     .theme-picker-button {
       position: static;
@@ -2326,17 +2337,20 @@
       white-space: nowrap;
     }
 
+    .history-button:hover,
     .rules-button:hover,
     .theme-picker-button:hover {
       transform: translateY(-1px);
     }
 
+    .history-button span,
     .rules-button span,
     .theme-picker-button span {
       opacity: 0.78;
       font-weight: 700;
     }
 
+    body[data-theme="classic"] .history-button,
     body[data-theme="classic"] .rules-button,
     body[data-theme="classic"] .theme-picker-button {
       color: var(--muted);
@@ -2361,6 +2375,7 @@
       font-family: Georgia, "Times New Roman", serif;
     }
 
+    body[data-theme="scroll"] .history-button,
     body[data-theme="scroll"] .rules-button,
     body[data-theme="scroll"] .theme-picker-button {
       color: #3a2614;
@@ -2545,6 +2560,7 @@
         linear-gradient(135deg, #08111f 0%, #101827 52%, #1e103a 100%);
     }
 
+    body[data-theme="arcane"] .history-button,
     body[data-theme="arcane"] .rules-button,
     body[data-theme="arcane"] .theme-picker-button {
       color: #f8fbff;
@@ -3893,6 +3909,221 @@
       rulesWindow.focus();
     }
 
+    function buildRoundNewsWindowHtml() {
+      const escapeHtml = value => String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+      const events = Array.isArray(state.roundLog) ? state.roundLog : [];
+      const groupedByRound = new Map();
+
+      events.forEach(event => {
+        const roundNumber = Number.isInteger(event.round) ? event.round : 0;
+
+        if (!groupedByRound.has(roundNumber)) {
+          groupedByRound.set(roundNumber, []);
+        }
+
+        groupedByRound.get(roundNumber).push(event);
+      });
+
+      const sortedRounds = Array.from(groupedByRound.keys()).sort((a, b) => a - b);
+      const contentHtml = sortedRounds.length > 0
+        ? sortedRounds.map(roundNumber => {
+            const roundEvents = groupedByRound.get(roundNumber) || [];
+            const eventRows = roundEvents.map(event => {
+              const eventTime = event.time
+                ? new Date(event.time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+                : "";
+
+              return `
+                <li>
+                  <span class="event-time">${escapeHtml(eventTime)}</span>
+                  <span class="event-message">${escapeHtml(event.message || "")}</span>
+                </li>
+              `;
+            }).join("");
+
+            return `
+              <section class="round-card">
+                <h2>Round ${roundNumber}</h2>
+                <ol>${eventRows}</ol>
+              </section>
+            `;
+          }).join("")
+        : `<section class="round-card"><h2>No News Yet</h2><p>No round news has been recorded for this game yet.</p></section>`;
+
+      return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kings of the Field - Round News</title>
+  <style>
+    :root {
+      --paper: #fff8e9;
+      --ink: #2b2118;
+      --muted: #6c5d4a;
+      --blue: #244d78;
+      --border: #9b845f;
+      --shadow: rgba(48, 31, 12, 0.22);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.55), transparent 30%),
+        linear-gradient(135deg, #e7d3aa, #f8efd9 45%, #d3b982);
+    }
+
+    .news-page {
+      width: min(980px, 100%);
+      margin: 0 auto;
+      display: grid;
+      gap: 14px;
+    }
+
+    header,
+    .round-card {
+      border: 2px solid var(--border);
+      background: rgba(255, 248, 233, 0.94);
+      box-shadow: 0 6px 18px var(--shadow);
+      border-radius: 18px;
+      padding: 18px;
+    }
+
+    header { text-align: center; }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(36px, 7vw, 68px);
+      line-height: 0.95;
+      color: #24160e;
+      text-shadow: 0 2px 0 rgba(255,255,255,0.55);
+    }
+
+    .subtitle {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    h2 {
+      margin: 0 0 10px;
+      padding-bottom: 6px;
+      color: var(--blue);
+      border-bottom: 1px solid rgba(43, 33, 24, 0.18);
+      font-size: 26px;
+    }
+
+    ol {
+      margin: 0;
+      padding-left: 24px;
+      display: grid;
+      gap: 8px;
+    }
+
+    li {
+      line-height: 1.35;
+      font-size: 17px;
+      padding: 8px 10px;
+      border: 1px solid rgba(43, 33, 24, 0.14);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.52);
+    }
+
+    .event-time {
+      display: inline-block;
+      min-width: 72px;
+      margin-right: 8px;
+      color: var(--muted);
+      font-weight: 900;
+    }
+
+    .event-message {
+      font-weight: 800;
+    }
+
+    p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 17px;
+      font-weight: 800;
+      line-height: 1.4;
+    }
+
+    @media print {
+      body { background: white; padding: 0; }
+      header, .round-card { box-shadow: none; break-inside: avoid; }
+    }
+
+    @media (max-width: 760px) {
+      body { padding: 10px; }
+      header, .round-card { padding: 14px; }
+      .event-time { display: block; margin-bottom: 3px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="news-page">
+    <header>
+      <h1>Kings of the Field</h1>
+      <div class="subtitle">All Round News</div>
+    </header>
+    ${contentHtml}
+  </main>
+</body>
+</html>`;
+    }
+
+    function openRoundNewsWindow() {
+      const newsWindow = window.open("", "_blank");
+
+      if (!newsWindow) {
+        alert("The round news window was blocked. Please allow pop-ups for this page, or try again from the browser menu.");
+        return;
+      }
+
+      newsWindow.document.open();
+      newsWindow.document.write(buildRoundNewsWindowHtml());
+      newsWindow.document.close();
+      newsWindow.focus();
+    }
+
+    function ensureRoundNewsButton() {
+      let button = document.getElementById("roundNewsButton");
+
+      if (!button) {
+        button = document.createElement("button");
+        button.id = "roundNewsButton";
+        button.className = "history-button";
+        button.type = "button";
+        button.innerHTML = `<span>News</span> All Rounds`;
+        button.title = "Open all round news summaries in a new tab or window.";
+        button.addEventListener("click", openRoundNewsWindow);
+      }
+
+      const headerTools = document.querySelector(".header-tools");
+      const rulesButton = document.getElementById("rulesButton");
+
+      if (headerTools && button.parentNode !== headerTools) {
+        if (rulesButton && rulesButton.parentNode === headerTools && rulesButton.nextSibling) {
+          headerTools.insertBefore(button, rulesButton.nextSibling);
+        } else {
+          headerTools.appendChild(button);
+        }
+      }
+    }
+
     function ensureRulesButton() {
       let button = document.getElementById("rulesButton");
 
@@ -3952,6 +4183,7 @@
 
       applySelectedTheme();
       ensureRulesButton();
+      ensureRoundNewsButton();
     }
 
     function saveState() {
@@ -3969,10 +4201,8 @@
         time: Date.now()
       });
 
-      // Keep the saved log compact. The tracker only needs recent history.
-      if (state.roundLog.length > 80) {
-        state.roundLog = state.roundLog.slice(-80);
-      }
+      // Keep the full round-news history for this saved game so players can
+      // review earlier rounds from the All News window.
     }
 
     function getCurrentRoundEvents() {
@@ -4635,7 +4865,21 @@
     }
 
     function changeGivingTiles(amount) {
-      state.givingTiles = clamp((state.givingTiles || 0) + amount, 0, 5);
+      const previousCount = state.givingTiles || 0;
+      const newCount = clamp(previousCount + amount, 0, 5);
+
+      if (newCount === previousCount) {
+        return;
+      }
+
+      state.givingTiles = newCount;
+
+      if (newCount > previousCount) {
+        logRoundEvent(`Gained ${newCount - previousCount} Giving Tile${newCount - previousCount === 1 ? "" : "s"}. Now occupying ${newCount}/5.`);
+      } else {
+        logRoundEvent(`Lost ${previousCount - newCount} Giving Tile${previousCount - newCount === 1 ? "" : "s"}. Now occupying ${newCount}/5.`);
+      }
+
       saveState();
       render();
     }
@@ -6823,6 +7067,7 @@
     function render() {
       ensureThemePicker();
       ensureRulesButton();
+      ensureRoundNewsButton();
       applySelectedTheme();
       renderTeam();
       renderTestMode();
