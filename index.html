@@ -4986,6 +4986,51 @@
       return !(unitType.action || "").toLowerCase().includes("passive");
     }
 
+    function getWorkerBuildResource(unitType) {
+      if (!unitType) {
+        return "";
+      }
+
+      if (unitType.id === 3) {
+        return "Wood";
+      }
+
+      if (unitType.id === 4) {
+        return "Stone";
+      }
+
+      if (unitType.id === 5) {
+        return "Iron";
+      }
+
+      return "";
+    }
+
+    function canPayWorkerBuildCost(unitType) {
+      const resourceName = getWorkerBuildResource(unitType);
+
+      if (!resourceName) {
+        return true;
+      }
+
+      return (state.resources[resourceName] || 0) >= 3;
+    }
+
+    function payWorkerBuildCost(unitType) {
+      const resourceName = getWorkerBuildResource(unitType);
+
+      if (!resourceName) {
+        return "";
+      }
+
+      if ((state.resources[resourceName] || 0) < 3) {
+        return "";
+      }
+
+      state.resources[resourceName] -= 3;
+      return ` Spent 3 ${resourceName}.`;
+    }
+
     function canUseGenericAction(piece) {
       if (!piece || piece.currentHp <= 0) {
         return false;
@@ -5001,6 +5046,7 @@
         currentStep.kind === "unit" &&
         currentStep.typeId === unitType.id &&
         currentTeam === state.team &&
+        canPayWorkerBuildCost(unitType) &&
         !hasGenericActionBeenUsedThisTurn(piece.pieceId)
       );
     }
@@ -5014,8 +5060,9 @@
 
       const unitType = getUnitType(piece.typeId);
       const actionLabel = getGenericActionLabel(unitType);
+      const costNote = payWorkerBuildCost(unitType);
       recordGenericActionUsedThisTurn(piece.pieceId);
-      logRoundEvent(`${unitType.name} #${getCopyNumber(piece)} used ${actionLabel}.`);
+      logRoundEvent(`${unitType.name} #${getCopyNumber(piece)} used ${actionLabel}.${costNote}`);
       saveState();
       render();
     }
