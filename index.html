@@ -3134,7 +3134,7 @@
       {
         id: "craft-arrows",
         resultName: "Arrow",
-        resultQuantity: 3,
+        resultQuantity: 5,
         costs: [
           { type: "resource", name: "Wood", quantity: 1 },
           { type: "resource", name: "Stone", quantity: 1 },
@@ -3180,11 +3180,10 @@
       { id: "silver-four-wood", costCurrency: "silver", costAmount: 1, targetType: "resource", targetName: "Wood", quantity: 4 },
       { id: "silver-four-stone", costCurrency: "silver", costAmount: 1, targetType: "resource", targetName: "Stone", quantity: 4 },
       { id: "silver-rope", costCurrency: "silver", costAmount: 1, targetType: "resource", targetName: "Rope", quantity: 1 },
-      { id: "silver-arrow", costCurrency: "silver", costAmount: 1, targetType: "item", targetName: "Arrow", quantity: 1 },
+      { id: "bronze-arrow", costCurrency: "bronze", costAmount: 1, targetType: "item", targetName: "Arrow", quantity: 1 },
       { id: "silver-glass", costCurrency: "silver", costAmount: 1, targetType: "resource", targetName: "Glass", quantity: 1 },
 
       { id: "two-silver-sulphur", costCurrency: "silver", costAmount: 2, targetType: "resource", targetName: "Sulphur", quantity: 2 },
-      { id: "two-silver-arrows", costCurrency: "silver", costAmount: 2, targetType: "item", targetName: "Arrow", quantity: 3 },
       { id: "two-silver-shield", costCurrency: "silver", costAmount: 2, targetType: "item", targetName: "Shield", quantity: 1 },
       { id: "two-silver-iron", costCurrency: "silver", costAmount: 2, targetType: "resource", targetName: "Iron", quantity: 1 },
       { id: "two-silver-glass", costCurrency: "silver", costAmount: 2, targetType: "resource", targetName: "Glass", quantity: 4 },
@@ -3204,7 +3203,7 @@
     ];
 
     const unitTypes = [
-      { id: 1, name: "King", move: 1, maxHp: 1, action: "None", ritual: "N/A", category: "leader", ritualCosts: [] },
+      { id: 1, name: "King", move: 3, maxHp: 6, action: "Passive — Empower: Any friendly piece that starts its turn within 3 tiles of the King gains +1 movement for that turn.", ritual: "Cannot be summoned", category: "royal", ritualCosts: [] },
       { id: 2, name: "Base Builder", move: 2, maxHp: 1, action: "Build Base — Choose a location within 1 tile that has at least 3 adjacent Base Keepers. That tile becomes a Base tile.", ritual: "1 Silver, 2 Bronze, 2 Stone, 2 Rope", category: "worker", ritualCosts: [{ type: "currency", name: "silver", quantity: 1 }, { type: "currency", name: "bronze", quantity: 2 }, { type: "resource", name: "Stone", quantity: 2 }, { type: "resource", name: "Rope", quantity: 2 }] },
       { id: 3, name: "Wood Worker", move: 2, maxHp: 6, action: "Build Wooden Defence — Place a wooden defence within 1 tile. Cost: 3 Wood.", ritual: "3 Wood, 1 Sulphur", category: "worker", ritualCosts: [{ type: "resource", name: "Wood", quantity: 3 }, { type: "resource", name: "Sulphur", quantity: 1 }] },
       { id: 4, name: "Stone Worker", move: 2, maxHp: 6, action: "Build Stone Defence — Place a stone defence within 1 tile. Cost: 3 Stone.", ritual: "3 Stone, 2 Sulphur", category: "worker", ritualCosts: [{ type: "resource", name: "Stone", quantity: 3 }, { type: "resource", name: "Sulphur", quantity: 2 }] },
@@ -4275,6 +4274,48 @@
       return unitTypes.find(unit => unit.id === Number(typeId)) || unitTypes[0];
     }
 
+    function isKingType(unitTypeOrTypeId) {
+      const typeId = typeof unitTypeOrTypeId === "object" && unitTypeOrTypeId !== null
+        ? unitTypeOrTypeId.id
+        : unitTypeOrTypeId;
+
+      return Number(typeId) === 1;
+    }
+
+    function getMaxHpDisplay(unitType) {
+      return isKingType(unitType) ? "∞" : String(unitType.maxHp);
+    }
+
+    function getPieceHpDisplay(piece) {
+      if (!piece) {
+        return "";
+      }
+
+      const unitType = getUnitType(piece.typeId);
+
+      return isKingType(unitType) ? "∞ / ∞" : `${piece.currentHp} / ${unitType.maxHp}`;
+    }
+
+    function getPieceHpLabel(piece) {
+      if (!piece) {
+        return "";
+      }
+
+      return isKingType(piece.typeId) ? "HP ∞ / ∞" : `HP ${getPieceHpDisplay(piece)}`;
+    }
+
+    function isPieceAlive(piece) {
+      if (!piece) {
+        return false;
+      }
+
+      return isKingType(piece.typeId) || piece.currentHp > 0;
+    }
+
+    function isPieceDefeated(piece) {
+      return !isPieceAlive(piece);
+    }
+
     function getPiece(pieceId) {
       return state.activePieces.find(piece => piece.pieceId === Number(pieceId)) || null;
     }
@@ -4342,7 +4383,7 @@
     }
 
     function getLivingPieceCountForType(typeId) {
-      return state.activePieces.filter(piece => piece.typeId === typeId && piece.currentHp > 0).length;
+      return state.activePieces.filter(piece => piece.typeId === typeId && isPieceAlive(piece)).length;
     }
 
     function getAvailableAmountForCost(cost) {
@@ -4803,6 +4844,12 @@
       }
 
       const unitType = getUnitType(piece.typeId);
+
+      // The King is a capture-only piece. He cannot be damaged, healed, or
+      // defeated by HP changes, so HP controls intentionally do nothing.
+      if (isKingType(unitType)) {
+        return;
+      }
       const isTakingDamage = newHp < piece.currentHp;
 
       // A shield absorbs one hit of any strength. Since the current HP control
@@ -4875,6 +4922,11 @@
       }
 
       const unitType = getUnitType(piece.typeId);
+
+      if (isKingType(unitType)) {
+        return;
+      }
+
       piece.currentHp = unitType.maxHp;
       saveState();
       render();
@@ -4886,6 +4938,11 @@
       }
 
       const unitType = getUnitType(piece.typeId);
+
+      if (isKingType(unitType)) {
+        return false;
+      }
+
       return (state.resources.Bread || 0) > 0 && piece.currentHp < unitType.maxHp;
     }
 
@@ -5755,10 +5812,10 @@
 
           const matchesFilter =
             state.filter === "all" ||
-            (state.filter === "alive" && piece.currentHp > 0) ||
-            (state.filter === "defeated" && piece.currentHp <= 0);
+            (state.filter === "alive" && isPieceAlive(piece)) ||
+            (state.filter === "defeated" && isPieceDefeated(piece));
 
-          const haystack = `${displayName} ${unitType.name} ${unitType.action} ${unitType.ritual} ${unitType.move} ${unitType.maxHp}`.toLowerCase();
+          const haystack = `${displayName} ${unitType.name} ${unitType.action} ${unitType.ritual} ${unitType.move} ${getMaxHpDisplay(unitType)}`.toLowerCase();
           const matchesSearch = query === "" || haystack.includes(query);
 
           return matchesFilter && matchesSearch;
@@ -5776,7 +5833,7 @@
       const query = state.search.trim().toLowerCase();
 
       return unitTypes.filter(unitType => {
-        const haystack = `${unitType.name} ${unitType.action} ${unitType.ritual} ${unitType.move} ${unitType.maxHp}`.toLowerCase();
+        const haystack = `${unitType.name} ${unitType.action} ${unitType.ritual} ${unitType.move} ${getMaxHpDisplay(unitType)}`.toLowerCase();
         return query === "" || haystack.includes(query);
       });
     }
@@ -6304,6 +6361,14 @@
         return data;
       }
 
+      if (lowerAction.includes("empower")) {
+        add("Passive", "Empower", false, true);
+        add("Range", "Within 3 tiles", true);
+        add("Bonus", "+1 movement", true);
+        add("When", "Start of piece's turn", true);
+        return data;
+      }
+
       if (lowerAction.includes("passive")) {
         add("Passive", "Special Rule", false, true);
         add("Effect", action.replace("Passive —", "").trim(), true);
@@ -6343,7 +6408,7 @@
         currentReferenceAction.innerHTML = `
           <div class="current-reference-stats">
             <div class="current-reference-pill"><span>Move</span><strong>${unitType.move}</strong></div>
-            <div class="current-reference-pill"><span>Max HP</span><strong>${unitType.maxHp}</strong></div>
+            <div class="current-reference-pill"><span>Max HP</span><strong>${getMaxHpDisplay(unitType)}</strong></div>
           </div>
           ${actionReferenceHtml}
           ${fullActionTextHtml}
@@ -6387,7 +6452,7 @@
           const unitType = getUnitType(piece.typeId);
           const copyNumber = getCopyNumber(piece);
           const row = document.createElement("div");
-          row.className = `current-piece-row${piece.currentHp <= 0 ? " dead-piece" : ""}`;
+          row.className = `current-piece-row${isPieceDefeated(piece) ? " dead-piece" : ""}`;
 
           const hasFiredArrow = unitType.id === 8 && hasBowFiredThisTurn(piece.pieceId);
           const fireButtonHtml = unitType.id === 8
@@ -6409,7 +6474,7 @@
             <div class="badge" style="background:${getBadgeColour(unitType.category)}">${unitType.id}</div>
             <div class="current-piece-name">${unitType.name} #${copyNumber}${piece.hasShield ? " · 🛡" : ""}</div>
             <div class="current-piece-stat">Move ${unitType.move}</div>
-            <div class="current-piece-stat">HP ${piece.currentHp}/${unitType.maxHp}</div>
+            <div class="current-piece-stat">${getPieceHpLabel(piece)}</div>
             ${fireButtonHtml}${farmButtonHtml}${genericActionButtonHtml}
           `;
           fragment.appendChild(row);
@@ -6939,7 +7004,7 @@
       visiblePieces.forEach(piece => {
         const unitType = getUnitType(piece.typeId);
         const copyNumber = getCopyNumber(piece);
-        const isDead = piece.currentHp <= 0;
+        const isDead = isPieceDefeated(piece);
         const isSelected = piece.pieceId === state.selectedPieceId;
         const hasShield = Boolean(piece.hasShield);
 
@@ -6948,7 +7013,7 @@
         card.dataset.pieceId = piece.pieceId;
         card.setAttribute("role", "button");
         card.setAttribute("tabindex", "0");
-        card.setAttribute("aria-label", `${unitType.name} copy ${copyNumber}, movement ${unitType.move}, HP ${piece.currentHp} of ${unitType.maxHp}`);
+        card.setAttribute("aria-label", `${unitType.name} copy ${copyNumber}, movement ${unitType.move}, ${getPieceHpLabel(piece)}`);
 
         card.innerHTML = `
           ${hasShield ? `<div class="shield-ribbon">🛡 Shield</div>` : ""}
@@ -6959,12 +7024,12 @@
           </div>
           <div class="stats">
             <div class="stat-pill"><span>Move</span><strong class="move-value">${unitType.move}</strong></div>
-            <div class="stat-pill"><span>HP</span><strong class="hp-value">${piece.currentHp}/${unitType.maxHp}</strong></div>
+            <div class="stat-pill"><span>HP</span><strong class="hp-value">${getPieceHpDisplay(piece)}</strong></div>
           </div>
           <div class="hp-controls">
-            <button class="hp-btn" data-hp-change="-1" data-piece-id="${piece.pieceId}" aria-label="Decrease ${unitType.name} copy ${copyNumber} HP">−</button>
-            <div class="hp-readout">HP ${piece.currentHp} / ${unitType.maxHp}</div>
-            <button class="hp-btn" data-hp-change="1" data-piece-id="${piece.pieceId}" aria-label="Increase ${unitType.name} copy ${copyNumber} HP">+</button>
+            <button class="hp-btn" data-hp-change="-1" data-piece-id="${piece.pieceId}" aria-label="Decrease ${unitType.name} copy ${copyNumber} HP" ${isKingType(unitType) ? "disabled" : ""}>−</button>
+            <div class="hp-readout">${getPieceHpLabel(piece)}</div>
+            <button class="hp-btn" data-hp-change="1" data-piece-id="${piece.pieceId}" aria-label="Increase ${unitType.name} copy ${copyNumber} HP" ${isKingType(unitType) ? "disabled" : ""}>+</button>
           </div>
           <div class="quick-action">${unitType.action}</div>
         `;
@@ -7005,7 +7070,7 @@
         card.dataset.typeId = unitType.id;
         card.setAttribute("role", "button");
         card.setAttribute("tabindex", "0");
-        card.setAttribute("aria-label", `${unitType.name} rules, movement ${unitType.move}, max HP ${unitType.maxHp}`);
+        card.setAttribute("aria-label", `${unitType.name} rules, movement ${unitType.move}, max HP ${getMaxHpDisplay(unitType)}`);
 
         card.innerHTML = `
           <div class="unit-top">
@@ -7015,7 +7080,7 @@
           </div>
           <div class="stats">
             <div class="stat-pill"><span>Move</span><strong class="move-value">${unitType.move}</strong></div>
-            <div class="stat-pill"><span>Max HP</span><strong class="hp-value">${unitType.maxHp}</strong></div>
+            <div class="stat-pill"><span>Max HP</span><strong class="hp-value">${getMaxHpDisplay(unitType)}</strong></div>
           </div>
           <button class="add-btn" data-add-type-id="${unitType.id}" title="${getAddPieceStatus(unitType)}" ${canAddPieceType(unitType.id) ? "" : "disabled"}>${state.setupComplete ? "Summon" : "Add to Board"}</button>
           <div class="quick-action">${unitType.action}</div>
@@ -7047,8 +7112,8 @@
         detailBadge.style.background = getBadgeColour(unitType.category);
         detailName.textContent = `${unitType.name} #${copyNumber}`;
         detailMove.textContent = unitType.move;
-        detailHp.textContent = `${selectedPiece.currentHp} / ${unitType.maxHp}`;
-        detailHpReadout.textContent = `HP ${selectedPiece.currentHp} / ${unitType.maxHp}`;
+        detailHp.textContent = getPieceHpDisplay(selectedPiece);
+        detailHpReadout.textContent = getPieceHpLabel(selectedPiece);
         detailAction.textContent = unitType.action;
         detailRitual.textContent = unitType.ritual;
         detailShieldStatus.textContent = selectedPiece.hasShield ? "🛡 Shield equipped — next hit breaks it" : "No shield equipped";
@@ -7062,7 +7127,7 @@
       detailBadge.style.background = getBadgeColour(unitType.category);
       detailName.textContent = unitType.name;
       detailMove.textContent = unitType.move;
-      detailHp.textContent = `0 active / ${unitType.maxHp} max`;
+      detailHp.textContent = isKingType(unitType) ? "∞ / ∞" : `0 active / ${unitType.maxHp} max`;
       detailHpReadout.textContent = "No active copy selected";
       detailAction.textContent = unitType.action;
       detailRitual.textContent = unitType.ritual;
@@ -7074,9 +7139,12 @@
     function setDetailButtonsEnabled(enabled) {
       const selectedPiece = getPiece(state.selectedPieceId);
 
-      document.getElementById("detailHpMinus").disabled = !enabled;
-      document.getElementById("detailHpPlus").disabled = !enabled;
-      document.getElementById("healSelected").disabled = !enabled;
+      const selectedUnitType = selectedPiece ? getUnitType(selectedPiece.typeId) : null;
+      const selectedIsKing = Boolean(selectedUnitType && isKingType(selectedUnitType));
+
+      document.getElementById("detailHpMinus").disabled = !enabled || selectedIsKing;
+      document.getElementById("detailHpPlus").disabled = !enabled || selectedIsKing;
+      document.getElementById("healSelected").disabled = !enabled || selectedIsKing;
       document.getElementById("eatBread").disabled = !canSelectedPieceEatBread(selectedPiece);
       document.getElementById("removeSelected").disabled = !enabled;
     }
@@ -7086,6 +7154,12 @@
       const unequipButton = document.getElementById("unequipShield");
 
       if (!selectedPiece) {
+        equipButton.disabled = true;
+        unequipButton.disabled = true;
+        return;
+      }
+
+      if (isKingType(selectedPiece.typeId)) {
         equipButton.disabled = true;
         unequipButton.disabled = true;
         return;
@@ -7448,7 +7522,10 @@
       if (action === "restore-all") {
         state.activePieces.forEach(piece => {
           const unitType = getUnitType(piece.typeId);
-          piece.currentHp = unitType.maxHp;
+
+          if (!isKingType(unitType)) {
+            piece.currentHp = unitType.maxHp;
+          }
         });
         saveState();
         render();
