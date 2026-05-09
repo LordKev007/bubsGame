@@ -3581,6 +3581,31 @@
       gap: 14px;
     }
 
+    .page-actions {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+    }
+
+    .back-to-tracker-btn {
+      border: 1px solid rgba(43, 33, 24, 0.3);
+      border-radius: 999px;
+      min-height: 42px;
+      padding: 0 16px;
+      color: var(--ink);
+      background: linear-gradient(180deg, #fff9eb, #ead7af);
+      box-shadow: 0 2px 0 rgba(0,0,0,0.18);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .back-to-tracker-btn:active {
+      transform: translateY(1px);
+      box-shadow: 0 1px 0 rgba(0,0,0,0.18);
+    }
+
     header,
     section {
       border: 2px solid var(--border);
@@ -3736,6 +3761,10 @@
 </head>
 <body>
   <main class="rules-page">
+    <div class="page-actions">
+      <button class="back-to-tracker-btn" type="button" onclick="window.close();">← Back to Tracker</button>
+    </div>
+
     <header>
       <h1>Kings of the Field</h1>
       <div class="subtitle">Player Rules</div>
@@ -3991,6 +4020,31 @@
       gap: 14px;
     }
 
+    .page-actions {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+    }
+
+    .back-to-tracker-btn {
+      border: 1px solid rgba(43, 33, 24, 0.3);
+      border-radius: 999px;
+      min-height: 42px;
+      padding: 0 16px;
+      color: var(--ink);
+      background: linear-gradient(180deg, #fff9eb, #ead7af);
+      box-shadow: 0 2px 0 rgba(0,0,0,0.18);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .back-to-tracker-btn:active {
+      transform: translateY(1px);
+      box-shadow: 0 1px 0 rgba(0,0,0,0.18);
+    }
+
     header,
     .round-card {
       border: 2px solid var(--border);
@@ -4075,6 +4129,10 @@
 </head>
 <body>
   <main class="news-page">
+    <div class="page-actions">
+      <button class="back-to-tracker-btn" type="button" onclick="window.close();">← Back to Tracker</button>
+    </div>
+
     <header>
       <h1>Kings of the Field</h1>
       <div class="subtitle">All Round News</div>
