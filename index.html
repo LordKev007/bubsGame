@@ -8,12 +8,17 @@
        added to the Home Screen. The manifest path is relative so it works
        from GitHub Pages project sites as well as a normal root domain. -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-title" content="Kings Tracker" />
+  <meta name="apple-mobile-web-app-title" content="King's Grid" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="theme-color" content="#244d78" />
+  <!-- Home Screen / app icons.
+       Save the custom crown image beside index.html as kings-grid-icon.png.
+       iPad uses apple-touch-icon for the Home Screen icon. -->
+  <link rel="apple-touch-icon" href="./kings-grid-icon.png" />
+  <link rel="icon" type="image/png" href="./kings-grid-icon.png" />
   <link rel="manifest" href="./manifest.json" />
-  <title>Boardgame Tracker</title>
+  <title>King's Grid</title>
   <style>
     :root {
       --panel: #fff8e9;
@@ -719,6 +724,10 @@
       background: linear-gradient(180deg, #244d78, #17314e);
     }
 
+    .turn-team.neutral-team {
+      background: linear-gradient(180deg, #766a5a, #4a4034);
+    }
+
     .turn-step-title {
       font-size: 28px;
       line-height: 1;
@@ -909,6 +918,10 @@
 
     .coin.red-team {
       background: linear-gradient(160deg, #a12b24, #5b1510);
+    }
+
+    .coin.neutral-team {
+      background: linear-gradient(160deg, #766a5a, #4a4034);
     }
 
     .coin.flipping {
@@ -2635,11 +2648,11 @@
 </head>
 <body>
   <main class="app">
-    <section class="top-bar" id="gameHeaderPanel" aria-label="Boardgame tracker header">
+    <section class="top-bar" id="gameHeaderPanel" aria-label="King's Grid header">
       <div class="title-card">
         <div class="crest" aria-hidden="true">♛</div>
         <div>
-          <h1>Boardgame Tracker</h1>
+          <h1>King's Grid</h1>
           <div class="subtitle">Capture the enemy King while protecting your own. Track your pieces, resources, items, and turn order as the battle unfolds.</div>
           <div class="header-tools">
             <div class="team-selector" aria-label="Team colour selector">
@@ -2958,7 +2971,7 @@
 
   <script>
     // ------------------------------------------------------------
-    // Boardgame Tracker
+    // King's Grid
     // Single-file, offline-friendly tracker for iPad / browser use.
     // ------------------------------------------------------------
 
@@ -3225,13 +3238,14 @@
       { id: 20, name: "Shopkeeper", move: 2, maxHp: 3, action: "Passive — Allows the Shop feature during the Shopping step.", ritual: "5 Bronze", category: "special", ritualCosts: [{ type: "currency", name: "bronze", quantity: 5 }] }
     ];
 
-    const STORAGE_KEY = "boardgameTrackerStateV9";
+    const STORAGE_KEY = "boardgameTrackerStateV10";
 
     const defaultState = {
       selectedPieceId: null,
       selectedRuleTypeId: 1,
       filter: "all",
-      team: "blue",
+      team: null,
+      teamSelected: false,
       testMode: false,
       selectedTheme: "classic",
       search: "",
@@ -3549,7 +3563,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kings of the Field - Rules</title>
+  <title>King's Grid - Rules</title>
   <style>
     :root {
       --paper: #fff8e9;
@@ -3765,7 +3779,7 @@
     </div>
 
     <header>
-      <h1>Kings of the Field</h1>
+      <h1>King's Grid</h1>
       <div class="subtitle">Player Rules</div>
     </header>
 
@@ -3989,7 +4003,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kings of the Field - Round News</title>
+  <title>King's Grid - Round News</title>
   <style>
     :root {
       --paper: #fff8e9;
@@ -4133,7 +4147,7 @@
     </div>
 
     <header>
-      <h1>Kings of the Field</h1>
+      <h1>King's Grid</h1>
       <div class="subtitle">All Round News</div>
     </header>
     ${contentHtml}
@@ -4520,7 +4534,12 @@
         return;
       }
 
-      const owner = state.team || "blue";
+      if (!hasSelectedTeam()) {
+        window.alert("Select Red or Blue before adding a base.");
+        return;
+      }
+
+      const owner = state.team;
       const defaultName = `${getTeamLabel(owner)} Base ${state.bases.filter(base => base.owner === owner).length + 1}`;
 
       state.bases.push({
@@ -5390,6 +5409,22 @@
       return ` Spent 3 ${resourceName}.`;
     }
 
+    function resolveGenericActionEffect(unitType) {
+      if (!unitType) {
+        return "";
+      }
+
+      if (unitType.id === 18) {
+        // Thief: the boardgame handles whether the Thief is within range of
+        // the enemy King. When the Steal button is used, the tracker records
+        // the successful steal and adds the Bronze to this player's currency.
+        state.currency.bronze = (state.currency.bronze || 0) + 1;
+        return " Stole 1 Bronze.";
+      }
+
+      return payWorkerBuildCost(unitType);
+    }
+
     function canUseGenericAction(piece) {
       if (!piece || piece.currentHp <= 0) {
         return false;
@@ -5419,9 +5454,9 @@
 
       const unitType = getUnitType(piece.typeId);
       const actionLabel = getGenericActionLabel(unitType);
-      const costNote = payWorkerBuildCost(unitType);
+      const effectNote = resolveGenericActionEffect(unitType);
       recordGenericActionUsedThisTurn(piece.pieceId);
-      logRoundEvent(`${unitType.name} #${getCopyNumber(piece)} used ${actionLabel}.${costNote}`);
+      logRoundEvent(`${unitType.name} #${getCopyNumber(piece)} used ${actionLabel}.${effectNote}`);
       saveState();
       render();
     }
@@ -5437,11 +5472,56 @@
     }
 
     function getTeamLabel(team) {
-      return team === "red" ? "Red Team" : "Blue Team";
+      if (team === "red") {
+        return "Red Team";
+      }
+
+      if (team === "blue") {
+        return "Blue Team";
+      }
+
+      return "No Team Selected";
     }
 
     function flipTeam(team) {
       return team === "red" ? "blue" : "red";
+    }
+
+    function hasSelectedTeam() {
+      return state.teamSelected === true && (state.team === "red" || state.team === "blue");
+    }
+
+    function getPregameStartIssues() {
+      const issues = [];
+
+      if (!hasSelectedTeam()) {
+        issues.push("select Red or Blue as your team");
+      }
+
+      if (!state.setupComplete) {
+        if (state.activePieces.length === STARTING_TOTAL_PIECES) {
+          issues.push("press Finish Setup to confirm your starting army");
+        } else {
+          const remaining = Math.max(0, STARTING_TOTAL_PIECES - state.activePieces.length);
+          issues.push(`choose ${remaining} more starting piece${remaining === 1 ? "" : "s"}`);
+        }
+      }
+
+      return issues;
+    }
+
+    function canStartTurnOrder() {
+      return getPregameStartIssues().length === 0;
+    }
+
+    function getPregameInstructions() {
+      const issues = getPregameStartIssues();
+
+      if (issues.length === 0) {
+        return "Setup is confirmed. Flip the coin or manually set Red or Blue as the first player to officially start the game.";
+      }
+
+      return `Before starting: ${issues.join("; ")}.`;
     }
 
     function getCurrentTurnStep() {
@@ -5638,6 +5718,11 @@
     }
 
     function startTurnOrderWithFirstTeam(firstTeam) {
+      if (!canStartTurnOrder()) {
+        window.alert(getPregameInstructions());
+        return;
+      }
+
       state.turnOrder = {
         ...state.turnOrder,
         started: true,
@@ -5660,6 +5745,11 @@
     }
 
     function flipCoinForFirstPlayer() {
+      if (!canStartTurnOrder()) {
+        window.alert(getPregameInstructions());
+        return;
+      }
+
       state.turnOrder.coinFlipping = true;
       state.turnOrder.started = false;
       saveState();
@@ -6117,27 +6207,34 @@
       turnRoundLabel.textContent = isStarted ? `Round ${turnOrder.round}` : "Before Round 1";
       turnTeamLabel.textContent = isStarted ? `${getTeamLabel(currentTeam)} acts now` : "Choose first player";
       turnTeamLabel.classList.toggle("red-team", isStarted && currentTeam === "red");
-      turnTeamLabel.classList.toggle("blue-team", !isStarted || currentTeam === "blue");
+      turnTeamLabel.classList.toggle("blue-team", isStarted && currentTeam === "blue");
+      turnTeamLabel.classList.toggle("neutral-team", !isStarted);
       turnStepTitle.textContent = isStarted ? currentStep.title : "Coin Flip";
       turnStepTitle.classList.toggle("red-team-text", isStarted && currentTeam === "red");
       turnStepTitle.classList.toggle("blue-team-text", isStarted && currentTeam === "blue");
       turnInstructions.textContent = isStarted
         ? (currentStep.kind === "roundEnd" ? "End of round! Claim your reward and review what happened before advancing." : currentStep.instructions)
-        : "Flip the coin to randomly choose who acts first. After a full round, the first-player order switches.";
+        : getPregameInstructions();
 
       previousTurn.disabled = !isStarted || isFlipping;
       nextTurn.disabled = !isStarted || isFlipping;
       firstPlayerControls.classList.toggle("hidden", isStarted && !isFlipping);
-      coinFlipButton.disabled = isFlipping;
+      coinFlipButton.disabled = isFlipping || !canStartTurnOrder();
       coinFlipButton.textContent = isFlipping ? "Flipping..." : "Flip Coin for First Player";
+
+      document.querySelectorAll("[data-set-first-team]").forEach(button => {
+        button.disabled = isFlipping || !canStartTurnOrder();
+        button.title = canStartTurnOrder() ? "Set the first player and start the game." : getPregameInstructions();
+      });
 
       coinDisplay.classList.toggle("flipping", isFlipping);
       coinDisplay.classList.toggle("red-team", isStarted && (turnOrder.startingTeam === "red"));
-      coinDisplay.classList.toggle("blue-team", !isStarted || turnOrder.startingTeam === "blue");
+      coinDisplay.classList.toggle("blue-team", isStarted && turnOrder.startingTeam === "blue");
+      coinDisplay.classList.toggle("neutral-team", !isStarted);
       coinDisplay.textContent = isFlipping ? "?" : (isStarted ? (turnOrder.startingTeam === "red" ? "Red" : "Blue") : "?");
       coinNote.textContent = isStarted
         ? `${getTeamLabel(turnOrder.startingTeam)} won the coin flip. Round ${turnOrder.round} order: ${getTeamOrderForCurrentRound().map(getTeamLabel).join(" → ")}.`
-        : "The winner acts first for Round 1. After each full round, first-player order switches.";
+        : getPregameInstructions();
 
       renderCurrentReference(currentStep, isStarted);
       renderTurnPiecesList(currentStep, isStarted);
@@ -7178,14 +7275,16 @@
     }
 
     function renderTeam() {
-      const isRedTeam = state.team === "red";
+      const selectedTeam = hasSelectedTeam() ? state.team : null;
+      const isRedTeam = selectedTeam === "red";
+      const isBlueTeam = selectedTeam === "blue";
 
-      document.documentElement.style.setProperty("--team-accent", isRedTeam ? "#a12b24" : "#244d78");
-      document.documentElement.style.setProperty("--team-accent-dark", isRedTeam ? "#5b1510" : "#17314e");
-      document.documentElement.style.setProperty("--team-accent-soft", isRedTeam ? "rgba(161, 43, 36, 0.14)" : "rgba(36, 77, 120, 0.12)");
+      document.documentElement.style.setProperty("--team-accent", isRedTeam ? "#a12b24" : (isBlueTeam ? "#244d78" : "#766a5a"));
+      document.documentElement.style.setProperty("--team-accent-dark", isRedTeam ? "#5b1510" : (isBlueTeam ? "#17314e" : "#4a4034"));
+      document.documentElement.style.setProperty("--team-accent-soft", isRedTeam ? "rgba(161, 43, 36, 0.14)" : (isBlueTeam ? "rgba(36, 77, 120, 0.12)" : "rgba(118, 106, 90, 0.16)"));
 
       teamButtons.forEach(button => {
-        button.classList.toggle("active", button.dataset.team === state.team);
+        button.classList.toggle("active", selectedTeam !== null && button.dataset.team === selectedTeam);
       });
     }
 
@@ -7566,6 +7665,7 @@
     teamButtons.forEach(button => {
       button.addEventListener("click", () => {
         state.team = button.dataset.team;
+        state.teamSelected = true;
         saveState();
         render();
       });
