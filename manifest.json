@@ -1,10 +1,24 @@
 {
-  "name": "Kings of the Field Tracker",
-  "short_name": "Kings Tracker",
+  "name": "King's Grid",
+  "short_name": "King's Grid",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f8efd9",
+  "background_color": "#303030",
   "theme_color": "#244d78",
-  "orientation": "landscape"
+  "orientation": "landscape",
+  "icons": [
+    {
+      "src": "./kings-grid-icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./kings-grid-icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
 }
