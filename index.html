@@ -80,6 +80,7 @@
 
     .title-card,
     .currency-panel,
+    .stardust-panel,
     .giving-tiles-panel,
     .cannon-panel,
     .turn-panel,
@@ -147,6 +148,12 @@
       color: white;
       background: linear-gradient(180deg, var(--team-accent), var(--team-accent-dark));
       border-color: var(--team-accent-dark);
+    }
+
+    .team-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      filter: grayscale(0.25);
     }
 
     .test-mode-toggle {
@@ -240,7 +247,7 @@
 
     .utility-panels-row {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 10px;
       align-items: stretch;
     }
@@ -249,6 +256,7 @@
       min-width: 0;
     }
 
+    .stardust-panel,
     .giving-tiles-panel {
       padding: 10px;
     }
@@ -499,9 +507,13 @@
 
     .cannon-controls {
       display: grid;
-      grid-template-columns: 1fr auto auto auto auto auto;
+      grid-template-columns: repeat(4, minmax(92px, 1fr));
       gap: 8px;
       align-items: center;
+    }
+
+    .cannon-controls > div:first-child {
+      grid-column: 1 / -1;
     }
 
     .cannon-status-title {
@@ -519,7 +531,7 @@
     }
 
     .cannon-pill {
-      min-width: 94px;
+      min-width: 0;
       min-height: 34px;
       padding: 6px 10px;
       border-radius: 999px;
@@ -549,6 +561,7 @@
       font-weight: 900;
       padding: 0 10px;
       white-space: nowrap;
+      min-width: 0;
     }
 
     .cannon-action-btn.secondary {
@@ -558,6 +571,18 @@
     .cannon-action-btn:disabled {
       opacity: 0.45;
       cursor: not-allowed;
+    }
+
+    @media (max-width: 1100px) {
+      .cannon-controls {
+        grid-template-columns: repeat(3, minmax(88px, 1fr));
+      }
+    }
+
+    @media (max-width: 760px) {
+      .cannon-controls {
+        grid-template-columns: repeat(2, minmax(88px, 1fr));
+      }
     }
 
     .walkthrough-panel {
@@ -1288,6 +1313,188 @@
       padding: 12px;
     }
 
+    .world-event-box {
+      display: grid;
+      gap: 8px;
+      border: 2px solid rgba(107, 61, 134, 0.34);
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.6), transparent 40%),
+        linear-gradient(180deg, rgba(245, 234, 255, 0.92), rgba(231, 214, 245, 0.86));
+      border-radius: 14px;
+      padding: 12px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.45);
+    }
+
+    .world-event-box.waiting {
+      border-style: dashed;
+      opacity: 0.86;
+    }
+
+    .world-event-title {
+      color: var(--purple);
+      font-size: 18px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.45px;
+    }
+
+    .world-event-name {
+      color: #3f2352;
+      font-size: 22px;
+      font-weight: 900;
+      line-height: 1.1;
+    }
+
+    .world-event-text {
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .world-event-note {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.3;
+    }
+
+    .world-event-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .world-event-btn {
+      border: 1px solid rgba(43, 33, 24, 0.3);
+      background: linear-gradient(180deg, #f2e6ff, #cda8e8);
+      color: #2f163d;
+      border-radius: 10px;
+      min-height: 38px;
+      cursor: pointer;
+      box-shadow: 0 2px 0 rgba(0,0,0,0.18);
+      font-weight: 900;
+      padding: 0 12px;
+    }
+
+    .world-event-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .world-event-manual-panel {
+      margin-top: 4px;
+      display: grid;
+      gap: 8px;
+      border-top: 1px solid rgba(107, 61, 134, 0.24);
+      padding-top: 10px;
+    }
+
+    .world-event-manual-heading {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      color: #3f2352;
+      font-size: 15px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.45px;
+    }
+
+    .world-event-manual-heading span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    .world-event-choice-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 8px;
+      max-height: 360px;
+      overflow-y: auto;
+      padding: 3px 2px 5px;
+    }
+
+    .world-event-choice-card {
+      position: relative;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 8px;
+      align-items: start;
+      min-height: 92px;
+      border: 1px solid rgba(107, 61, 134, 0.34);
+      border-radius: 14px;
+      padding: 10px;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top right, rgba(255,255,255,0.72), transparent 42%),
+        linear-gradient(180deg, rgba(255,255,255,0.72), rgba(246, 235, 255, 0.78));
+      box-shadow: 0 3px 0 rgba(63, 35, 82, 0.14);
+      cursor: pointer;
+      text-align: left;
+      overflow: hidden;
+    }
+
+    .world-event-choice-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(107,61,134,0.12), transparent 38%, rgba(212,168,69,0.16));
+      opacity: 0;
+      transition: opacity 140ms ease;
+      pointer-events: none;
+    }
+
+    .world-event-choice-card:hover::before,
+    .world-event-choice-card:focus-visible::before {
+      opacity: 1;
+    }
+
+    .world-event-choice-card:active {
+      transform: translateY(1px);
+      box-shadow: 0 1px 0 rgba(63, 35, 82, 0.18);
+    }
+
+    .world-event-choice-number {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 11px;
+      color: #fff7ff;
+      background: linear-gradient(160deg, #6b3d86, #321545);
+      border: 2px solid rgba(212, 168, 69, 0.8);
+      font-size: 13px;
+      font-weight: 900;
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,0.12);
+    }
+
+    .world-event-choice-name {
+      color: #3f2352;
+      font-size: 16px;
+      font-weight: 900;
+      line-height: 1.1;
+    }
+
+    .world-event-choice-text {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.25;
+    }
+
+    .world-event-choice-card:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      filter: grayscale(0.35);
+    }
+
     .round-reward-title {
       font-size: 18px;
       font-weight: 900;
@@ -1392,6 +1599,7 @@
       .current-reference-actions { grid-template-columns: 1fr; }
     }
 
+    .stardust-controls,
     .giving-tiles-controls {
       display: grid;
       grid-template-columns: 1fr 48px 48px 48px;
@@ -1399,6 +1607,7 @@
       align-items: center;
     }
 
+    .stardust-label,
     .giving-tiles-label {
       font-weight: 900;
       color: var(--team-accent-dark);
@@ -1406,6 +1615,7 @@
       letter-spacing: 0.4px;
     }
 
+    .stardust-note,
     .giving-tiles-note {
       color: var(--muted);
       font-size: 13px;
@@ -2843,6 +3053,27 @@
     </section>
 
     <div class="utility-panels-row" id="specialSystemsPanel">
+      <section class="stardust-panel" id="stardustPanel" aria-label="Stardust tracker">
+        <div class="panel-header">
+          <div>
+            <h2>Stardust</h2>
+            <div class="panel-note">Special resource · separate from inventory</div>
+          </div>
+          <button class="collapse-btn" id="toggleStardustPanel" type="button" aria-expanded="true">Collapse</button>
+        </div>
+        <div class="panel-content" id="stardustContent">
+          <div class="stardust-controls">
+            <div>
+              <div class="stardust-label">Stored</div>
+              <div class="stardust-note">Track from 0 to 5. Does not use resource slots.</div>
+            </div>
+            <button class="small-btn" data-stardust-change="-1" aria-label="Decrease Stardust">−</button>
+            <div class="count" id="stardustCount">0</div>
+            <button class="small-btn" data-stardust-change="1" aria-label="Increase Stardust">+</button>
+          </div>
+        </div>
+      </section>
+
       <section class="cannon-panel" id="cannonPanel" aria-label="Cannon tracker">
         <div class="panel-header">
           <div>
@@ -3007,10 +3238,36 @@
       { kind: "summon", title: "Summoning Unit", instructions: "Summon a unit if you have the needed resources, items, and currency." },
       { kind: "crafting", title: "Crafting", instructions: "Craft items if you have the full recipe and enough item space." },
       { kind: "shopping", title: "Shopping", instructions: "Shopping is available only if that team has an active living Shopkeeper." },
-      { kind: "roundEnd", title: "End of Round Rewards", instructions: "Collect end-of-round income and review the round summary." }
+      { kind: "roundEnd", title: "End of Round Rewards", instructions: "Collect end-of-round income, resolve any World Event, and review the round summary." }
     ];
 
     const startingSetupTypeIds = [3, 6, 7, 8, 9, 16, 18, 19];
+
+    const WORLD_EVENT_MIN_INTERVAL = 6;
+    const WORLD_EVENT_MAX_INTERVAL = 10;
+
+    const worldEvents = [
+      { id: 1, name: "Meteor Showers", description: "Each player gains 1 Stardust for each Giving Tile they are occupying.", effect: "meteor" },
+      { id: 2, name: "Market Crash", description: "Each player loses 1 Gold, if they have Gold.", effect: "market-crash" },
+      { id: 3, name: "Market Boom", description: "Each player gains 1 Gold.", effect: "market-boom" },
+      { id: 4, name: "Heavy Wind", description: "Each player's pieces are pushed 2 tiles right from that player's perspective. Movement is stopped by the board border or existing walls.", effect: "note" },
+      { id: 5, name: "Divergence", description: "Both players choose a non-King unit they control. Those units swap owners.", effect: "note" },
+      { id: 6, name: "Bountiful Harvest", description: "Each player receives 2 Bread.", effect: "bread" },
+      { id: 7, name: "Peace Treaty", description: "All players move their Warriors and Mages 2 tiles back toward their initial base.", effect: "note" },
+      { id: 8, name: "Earthquake", description: "Deal 2 damage to each wall. Wood and Stone walls only.", effect: "note" },
+      { id: 9, name: "Pisces", description: "If a player has three of a kind, that group must be reduced to two. Apply this to each three-of-a-kind group.", effect: "note" },
+      { id: 10, name: "Baby Boom", description: "Each player can summon 2 Warriors for free.", effect: "note" },
+      { id: 11, name: "High Seas", description: "Each player gains a Cannon, if they do not already have one.", effect: "cannon" },
+      { id: 12, name: "Famine", description: "Each player must discard down to 7 Resources.", effect: "note" },
+      { id: 13, name: "Disease", description: "Each player must deal 4 points of damage among their pieces.", effect: "note" },
+      { id: 14, name: "Pestilence", description: "Insects eat all crops. All players lose all Bread.", effect: "pestilence" },
+      { id: 15, name: "Uno Reverso", description: "Piece turn order inverts. Player order does not change.", effect: "reverse-turn-order" },
+      { id: 16, name: "Free Trade Economy", description: "All shop items are 50% off until this effect is cleared. Round up if necessary, so 3 becomes 2.", effect: "free-trade" },
+      { id: 17, name: "God's Blessing", description: "Act as though each player has 5 Giving Tiles this turn.", effect: "gods-blessing" },
+      { id: 18, name: "Medical Breakthrough", description: "Each player may heal 4 points of damage among their pieces.", effect: "note" },
+      { id: 19, name: "War Support", description: "Each player gains 3 Shields.", effect: "shields" },
+      { id: 20, name: "The Odyssey", description: "Each player loses all but one Warrior or Mage. The player chooses who to keep. All non-Warrior pieces remain.", effect: "note" }
+    ];
 
     const givingTileRewardPool = [
       { name: "Wood", icon: "🪵" },
@@ -3260,7 +3517,8 @@
         resources: false,
         items: false,
         cannon: false,
-        giving: false
+        giving: false,
+        stardust: false
       },
       coach: {
         active: false,
@@ -3286,7 +3544,12 @@
         summonsByTurnKey: {},
         arrowsFiredByTurnKey: {},
         farmersUsedByTurnKey: {},
-        actionsUsedByTurnKey: {}
+        actionsUsedByTurnKey: {},
+        nextWorldEventRound: null,
+        worldEventsByRound: {},
+        worldEventsResolvedByTurnKey: {},
+        reversePieceOrder: false,
+        freeTradeActive: false
       },
       currency: {
         gold: 0,
@@ -3294,6 +3557,7 @@
         bronze: 0
       },
       givingTiles: 0,
+      stardust: 0,
       resources: Object.fromEntries(resourceTypes.map(resourceName => [resourceName, 0])),
       items: Object.fromEntries(itemTypes.map(itemName => [itemName, 0])),
       roundLog: [],
@@ -3325,6 +3589,9 @@
     const toggleShop = null;
     const toggleCrafting = null;
     const shopLockNote = null;
+    const stardustContent = document.getElementById("stardustContent");
+    const toggleStardustPanel = document.getElementById("toggleStardustPanel");
+    const stardustCount = document.getElementById("stardustCount");
     const cannonContent = document.getElementById("cannonContent");
     const toggleCannonPanel = document.getElementById("toggleCannonPanel");
     const givingContent = document.getElementById("givingContent");
@@ -3784,14 +4051,20 @@
     </header>
 
     <section>
+      <h2>Game Objective</h2>
+      <p>The goal of <strong>King's Grid</strong> is to capture the enemy King and bring that King to a base tile you own.</p>
+      <div class="callout">The King cannot be killed. The King has infinite HP and is a capture-only objective.</div>
+    </section>
+
+    <section>
       <h2>Starting the Game</h2>
       <ol>
-        <li>Both players choose a team: <strong>Red</strong> or <strong>Blue</strong>.</li>
-        <li>Flip a coin to determine who moves first.</li>
-        <li>Each player chooses a <strong>Starting Army</strong> from the allowed starting units. Choosing units this way bypasses their Summoning Cost. This is the only way to bypass Summoning Cost in the game.</li>
-        <li>Each player chooses <strong>7 units</strong>. Each individual type of unit has a limit of <strong>3 copies</strong>.</li>
-        <li>Place your team’s <strong>King</strong> on your Starting Base Tile.</li>
-        <li>Place your Starting Army in any configuration within <strong>2 tiles</strong> of your King.</li>
+        <li>Each player chooses a team: <strong>Red</strong> or <strong>Blue</strong>. Once the game has started, players may not switch teams in the tracker.</li>
+        <li>Each player builds a starting army of <strong>8 total pieces</strong>: the King plus 7 starting units.</li>
+        <li>Each individual non-King unit type has a limit of <strong>3 copies</strong>.</li>
+        <li>Press <strong>Finish Setup</strong> after the starting army is confirmed.</li>
+        <li>The game officially starts only after a player flips the coin or manually sets Red or Blue as the first player.</li>
+        <li>The first-player order switches after each full round.</li>
       </ol>
       <h3>Starting Army Choices</h3>
       <div class="tag-list">
@@ -3804,84 +4077,171 @@
         <span class="tag">Thief</span>
         <span class="tag">Strategist</span>
       </div>
+      <p class="note">Choosing units during setup bypasses Summoning Cost. This is the only way to bypass Summoning Cost.</p>
     </section>
 
     <section>
-      <h2>Winning</h2>
-      <p>To win the game, you must capture the opponent’s <strong>King</strong> and bring that King to a base tile you own.</p>
+      <h2>The King</h2>
       <ul>
-        <li>Any unit can use its action to <strong>Capture</strong> the opponent’s King if that unit is adjacent to the King.</li>
-        <li>While capturing the King, the capturing unit can move a maximum of <strong>2 tiles per turn</strong>.</li>
-        <li>If the capturing unit’s maximum movement is only 1, it can still only move <strong>1 tile</strong>.</li>
-        <li>When captured, the King must move with the piece that is currently capturing him.</li>
+        <li>The King has <strong>Movement 3</strong>.</li>
+        <li>The King has <strong>infinite HP</strong>.</li>
+        <li>The King cannot take damage, be defeated, eat Bread, heal, or equip Shields.</li>
+        <li>The King is captured, not killed.</li>
+      </ul>
+      <h3>Empower</h3>
+      <p><strong>Empower</strong> is the King's passive ability. Any friendly piece that starts its turn within <strong>3 tiles</strong> of its King gains <strong>+1 movement</strong> for that turn.</p>
+      <p class="note">The tracker does not check board distance. Players confirm Empower positioning on the physical board.</p>
+    </section>
+
+    <section>
+      <h2>Winning and Capturing the King</h2>
+      <ul>
+        <li>Any unit can use its action to <strong>Capture</strong> the opponent's King if that unit is adjacent to the King.</li>
+        <li>While carrying the King, the capturing unit can move a maximum of <strong>2 tiles per turn</strong>.</li>
+        <li>If the capturing unit's normal maximum movement is only 1, it still moves only <strong>1 tile</strong>.</li>
+        <li>The captured King moves with the unit that is carrying him.</li>
         <li>Only one of your units may use the Capture action per round.</li>
       </ul>
       <div class="callout">You win when the captured enemy King reaches a base tile you own.</div>
     </section>
 
     <section>
-      <h2>Summoning</h2>
-      <p>During the <strong>Summoning Unit</strong> phase, you may summon one unit, then summon additional units for each active <strong>Ritual Caster</strong> you own.</p>
+      <h2>Turn Order</h2>
+      <p>Each initiative step gives both players a chance to act with matching pieces. If a player has no matching pieces, that player simply passes that step.</p>
       <ul>
-        <li>The Summoning Cost lists the Resources, Items, and Currencies needed to summon that piece.</li>
-        <li>When a unit is summoned, the player may choose any base tile they own as its starting position.</li>
+        <li>The first player of the round acts first on each step.</li>
+        <li>The other player acts second on that same step.</li>
+        <li>After a full round, the first-player order switches.</li>
+        <li><strong>Uno Reverso</strong> can invert the piece order, but it does not change player order.</li>
       </ul>
     </section>
 
     <section>
-      <h2>Bases</h2>
-      <p>Every player starts with one base. The starting base is always two rows from the back rank, in the centre column of the board.</p>
+      <h2>Resources, Items, Currency, and Stardust</h2>
+      <div class="two-column">
+        <div class="mini-card">
+          <h3>Resources</h3>
+          <p>Resources use the standard resource inventory. A player may hold up to <strong>11 resource slots</strong>.</p>
+          <div class="tag-list">
+            <span class="tag">Wood</span><span class="tag">Stone</span><span class="tag">Iron</span><span class="tag">Sulphur</span><span class="tag">Rope</span><span class="tag">Bread</span><span class="tag">Leather</span><span class="tag">Glass</span><span class="tag">Gem</span>
+          </div>
+        </div>
+        <div class="mini-card">
+          <h3>Items</h3>
+          <p>Items use the item inventory. A player may hold up to <strong>11 item slots</strong>.</p>
+          <div class="tag-list">
+            <span class="tag">Arrow</span><span class="tag">Shield</span><span class="tag">Cannon Ball</span><span class="tag">Cannon</span><span class="tag">Artifact</span>
+          </div>
+        </div>
+      </div>
+      <h3>Currency</h3>
+      <p>Currency is tracked separately as Gold, Silver, and Bronze. During setup and Test Mode, currency can be adjusted manually. After setup, manual economy additions are locked, and changes should come from rewards, actions, shopping, crafting, or World Events.</p>
+      <h3>Stardust</h3>
+      <p><strong>Stardust</strong> is a special resource tracked separately from the resource inventory. It does not count against the 11 resource slots. A player may hold from <strong>0 to 5 Stardust</strong>.</p>
+    </section>
+
+    <section>
+      <h2>Giving Tiles</h2>
+      <p>Giving Tiles are special spaces on the board. Track the number of Giving Tiles occupied, from <strong>0 to 5</strong>.</p>
       <ul>
-        <li>A secondary Base Tile can be created by having the necessary <strong>Base Builder</strong> units surrounding a tile.</li>
-        <li>A secondary Base Tile may only be placed on your starting side of the board. Halfway is designated by the centre Giving Tile.</li>
-        <li>Each base has <strong>6 HP</strong>.</li>
-        <li>If a unit is standing on a base tile, that unit takes the damage instead of the base, unless that unit is a King.</li>
-        <li>Damage does not overflow. If a unit with 1 HP takes 2 damage, the extra point is not transferred to the base.</li>
+        <li>During the Giving Tile step, each occupied Giving Tile gives one random resource.</li>
+        <li>Gem and Iron are excluded from the random Giving Tile reward pool.</li>
+        <li>Giving Tile rewards require open resource slots unless a rule specifically says otherwise.</li>
+        <li>Gaining or losing Giving Tiles is recorded in the round news.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>End of Round Rewards</h2>
+      <p>At the end of each round, each player receives <strong>1 free Bronze</strong>, then chooses one bonus:</p>
+      <div class="tag-list">
+        <span class="tag">Wood</span>
+        <span class="tag">Stone</span>
+        <span class="tag">Bread</span>
+        <span class="tag">Second Bronze</span>
+      </div>
+    </section>
+
+    <section>
+      <h2>Summoning</h2>
+      <p>During the <strong>Summoning Unit</strong> phase, a player may summon one unit, plus one additional unit for each active living <strong>Ritual Caster</strong> they control.</p>
+      <ul>
+        <li>Summoning requires the full listed Summoning Cost.</li>
+        <li>Ritual Caster gives an extra summon, but costs still apply.</li>
+        <li>The King cannot be summoned.</li>
+        <li>Summoned Bow Warriors do not receive the free setup Arrows.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Crafting</h2>
+      <p>Crafting happens during the Crafting step. The full recipe cost must be paid, and the player must have enough item space for the result.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Crafted Item</th><th>Result</th><th>Cost</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Cannon</td><td>1 Cannon</td><td>6 Iron, 2 Rope, 2 Sulphur</td></tr>
+            <tr><td>Cannon Ball</td><td>1 Cannon Ball</td><td>2 Iron</td></tr>
+            <tr><td>Arrows</td><td>5 Arrows</td><td>1 Wood, 1 Stone, 1 Rope</td></tr>
+            <tr><td>Shield</td><td>1 Shield</td><td>3 Wood, 1 Iron, 1 Rope</td></tr>
+            <tr><td>Artifact</td><td>1 Artifact</td><td>3 Glass, 8 Stone, 1 Iron</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Shopping</h2>
+      <p>Shopping is available only during a player's Shopping step and only if that player has an active living <strong>Shopkeeper</strong>.</p>
+      <ul>
+        <li>Currency can be converted upward: 3 Bronze to 1 Silver, or 3 Silver to 1 Gold.</li>
+        <li>Arrows may be bought in the shop for <strong>1 Bronze each</strong>.</li>
+        <li><strong>Free Trade Economy</strong> makes all shop items 50% off while active, rounding up when necessary.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Actions Tracked by the App</h2>
+      <ul>
+        <li><strong>Bow Warrior - Fire:</strong> spends 1 Arrow.</li>
+        <li><strong>Farmer - Farm:</strong> gains 1 Bread if there is resource space.</li>
+        <li><strong>Thief - Steal:</strong> adds 1 Bronze after players confirm the Thief is within 5 tiles of the enemy King.</li>
+        <li><strong>Wood Worker - Build:</strong> spends 3 Wood.</li>
+        <li><strong>Stone Worker - Build:</strong> spends 3 Stone.</li>
+        <li><strong>Iron Worker - Build:</strong> spends 3 Iron.</li>
+      </ul>
+      <p class="note">The app tracks costs and logs the action, but board position and target validity are confirmed by the players.</p>
+    </section>
+
+    <section>
+      <h2>Bases</h2>
+      <p>Every player starts with one base. Each base has <strong>6 HP</strong>. Players may establish additional bases, up to a maximum of <strong>4 bases</strong> tracked in the app.</p>
+      <ul>
+        <li>A secondary Base Tile can be created by using the Base Builder rules.</li>
+        <li>If a unit is standing on a base tile, that unit takes damage instead of the base, unless that unit is a King.</li>
+        <li>Damage does not overflow from a unit to the base.</li>
       </ul>
     </section>
 
     <section>
       <h2>Base Specialization</h2>
-      <p>Each base can be specialized for a cost. Each specialization adds a passive bonus to the team who controls it.</p>
+      <p>Each base can have one specialization. A base can be re-specialized later if the player can pay the new cost and meet the active-unit requirement.</p>
       <div class="table-wrap">
         <table>
           <thead>
-            <tr>
-              <th>Specialization</th>
-              <th>Cost</th>
-              <th>Required Active Units</th>
-            </tr>
+            <tr><th>Specialization</th><th>Cost</th><th>Required Active Units</th></tr>
           </thead>
           <tbody>
-            <tr>
-              <td><strong>Chapel</strong></td>
-              <td>5 Stone, 2 Glass, 1 Gold</td>
-              <td>2 active Medics</td>
-            </tr>
-            <tr>
-              <td><strong>Graveyard</strong></td>
-              <td>5 Stone, 5 Rope, 1 Gold</td>
-              <td>1 active Necromancer</td>
-            </tr>
-            <tr>
-              <td><strong>Recruitment Center</strong></td>
-              <td>5 Wood, 3 Iron, 1 Gold</td>
-              <td>2 active Strategists</td>
-            </tr>
-            <tr>
-              <td><strong>Hospital</strong></td>
-              <td>5 Glass, 2 Wood, 3 Iron, 1 Gold</td>
-              <td>1 active Priest</td>
-            </tr>
-            <tr>
-              <td><strong>Merchant District</strong></td>
-              <td>3 Rope, 3 Wood, 2 Bread, 1 Gold</td>
-              <td>3 active Shopkeepers</td>
-            </tr>
+            <tr><td><strong>Chapel</strong></td><td>5 Stone, 2 Glass, 1 Gold</td><td>2 active Medics</td></tr>
+            <tr><td><strong>Graveyard</strong></td><td>5 Stone, 5 Rope, 1 Gold</td><td>1 active Necromancer</td></tr>
+            <tr><td><strong>Recruitment Center</strong></td><td>5 Wood, 3 Iron, 1 Gold</td><td>2 active Strategists</td></tr>
+            <tr><td><strong>Hospital</strong></td><td>5 Glass, 2 Wood, 3 Iron, 1 Gold</td><td>1 active Priest</td></tr>
+            <tr><td><strong>Merchant District</strong></td><td>3 Rope, 3 Wood, 2 Bread, 1 Gold</td><td>3 active Shopkeepers</td></tr>
           </tbody>
         </table>
       </div>
-      <p>Once a base has been specialized, it may be re-specialized if the player can pay the cost and has the required units on the field.</p>
     </section>
 
     <section>
@@ -3897,7 +4257,7 @@
 
     <section>
       <h2>Defences</h2>
-      <p>Defences, often called walls, are <strong>5-by-1 tile</strong> structures. They protect all adjacent units, friend or foe, from ranged attacks by Warrior (Bow), magic attacks by Mage, and cannon balls.</p>
+      <p>Defences, often called walls, are <strong>5-by-1 tile</strong> structures. They protect adjacent units, friend or foe, from ranged attacks by Warrior (Bow), magic attacks by Mage, and cannon balls.</p>
       <div class="two-column">
         <div class="mini-card">
           <h3>Wall Types</h3>
@@ -3910,27 +4270,57 @@
         <div class="mini-card">
           <h3>Wall Limits</h3>
           <p>A player can have up to <strong>3 of each type</strong> of wall on the field at any time.</p>
-          <p>A player cannot create new walls once the limit has been reached. They must wait for a wall to break, or break one of their own walls.</p>
         </div>
       </div>
-      <p>Basic attacks damage wooden and stone walls. Iron walls require a cannon to destroy.</p>
+      <p>Any World Event that causes movement is stopped by the game border or existing walls.</p>
     </section>
 
     <section>
       <h2>Cannons</h2>
       <ul>
-        <li>A player may have <strong>one cannon</strong> on the field at any time.</li>
+        <li>A player may have <strong>one cannon</strong> total.</li>
         <li>Cannons have <strong>2 HP</strong>.</li>
-        <li>One unit must use its action to spend a Cannon Ball and <strong>load</strong> the cannon before another unit can use its action to fire it.</li>
+        <li>A Cannon Ball must be spent to load the cannon.</li>
         <li>Cannon balls instantly destroy walls when they hit.</li>
         <li>Cannon balls can be shot over walls if the player wishes.</li>
-        <li>A Cannon Ball deals <strong>2 damage</strong> if used against a unit or another cannon.</li>
+        <li>A Cannon Ball deals <strong>2 damage</strong> to a unit or another cannon.</li>
         <li>A player may use a cannon to destroy their own wall.</li>
         <li>A cannon cannot move unless a <strong>Mechanist</strong> or an <strong>Artillerist</strong> pushes it.</li>
-        <li>Any unit may use its action to <strong>place</strong> a cannon on its turn, even units without action effects.</li>
+        <li>Any unit may use its action to <strong>place</strong> a cannon on its turn.</li>
       </ul>
-      <h3>Placing a Cannon</h3>
-      <p>When placing a cannon, choose any owned base as its starting location, or place it next to any Mechanist or Artillerist.</p>
+    </section>
+
+    <section>
+      <h2>World Events</h2>
+      <p>World Events are shared events that affect both players. In a normal game, a World Event occurs every <strong>6 to 10 rounds</strong>. In Test Mode, a World Event is available at the end of every round.</p>
+      <h3>Local iPad Rule</h3>
+      <ol>
+        <li>The first player of the World Event round clicks <strong>Reveal World Event</strong>.</li>
+        <li>The other player selects the same event from the <strong>Manual Match Event Deck</strong> on their own iPad.</li>
+        <li>Both players resolve the same event on the physical board.</li>
+      </ol>
+      <p class="note">Some World Events are applied automatically by the tracker. Events involving board position, walls, player choices, or discarding are resolved manually by the players.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>#</th><th>World Event</th><th>Effect</th></tr>
+          </thead>
+          <tbody>
+            ${worldEvents.map(event => `<tr><td>${event.id}</td><td><strong>${event.name}</strong></td><td>${event.description}</td></tr>`).join("")}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Round News</h2>
+      <p>The tracker records important events in the round news, including actions, damage, rewards, Giving Tile changes, Stardust changes, and World Events.</p>
+      <p>The <strong>All Round News</strong> window shows the full saved news history grouped by round.</p>
+    </section>
+
+    <section>
+      <h2>Test Mode</h2>
+      <p>Test Mode is for playtesting and debugging. It allows manual economy edits after setup and makes World Events available at the end of every round.</p>
     </section>
   </main>
 </body>
@@ -4259,6 +4649,216 @@
 
     function saveState() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function getRandomWorldEventInterval() {
+      return WORLD_EVENT_MIN_INTERVAL + Math.floor(Math.random() * (WORLD_EVENT_MAX_INTERVAL - WORLD_EVENT_MIN_INTERVAL + 1));
+    }
+
+    function ensureWorldEventState() {
+      if (!state.turnOrder.worldEventsByRound) {
+        state.turnOrder.worldEventsByRound = {};
+      }
+
+      if (!state.turnOrder.worldEventsResolvedByTurnKey) {
+        state.turnOrder.worldEventsResolvedByTurnKey = {};
+      }
+
+      if (!Number.isInteger(state.turnOrder.nextWorldEventRound)) {
+        state.turnOrder.nextWorldEventRound = state.turnOrder.round + getRandomWorldEventInterval();
+      }
+    }
+
+    function getWorldEventForRound(roundNumber) {
+      ensureWorldEventState();
+      const eventId = state.turnOrder.worldEventsByRound[String(roundNumber)];
+      return worldEvents.find(event => event.id === eventId) || null;
+    }
+
+    function isWorldEventDueThisRound() {
+      if (!state.turnOrder.started) {
+        return false;
+      }
+
+      if (state.testMode) {
+        return true;
+      }
+
+      ensureWorldEventState();
+      return state.turnOrder.round >= state.turnOrder.nextWorldEventRound;
+    }
+
+    function hasResolvedWorldEventThisTurn() {
+      ensureWorldEventState();
+      return Boolean(state.turnOrder.worldEventsResolvedByTurnKey[getCurrentTurnKey()]);
+    }
+
+    function getWorldEventRevealTeam() {
+      return state.turnOrder.firstTeam || state.turnOrder.startingTeam || "red";
+    }
+
+    function isWorldEventRevealTurn() {
+      return Boolean(
+        state.turnOrder.started &&
+        getCurrentTurnStep().kind === "roundEnd" &&
+        getCurrentTurnTeam() === getWorldEventRevealTeam()
+      );
+    }
+
+    function isWorldEventManualMatchTurn() {
+      return Boolean(
+        state.turnOrder.started &&
+        getCurrentTurnStep().kind === "roundEnd" &&
+        getCurrentTurnTeam() !== getWorldEventRevealTeam()
+      );
+    }
+
+    function canRevealWorldEvent() {
+      return Boolean(
+        state.turnOrder.started &&
+        getCurrentTurnStep().kind === "roundEnd" &&
+        getCurrentTurnTeam() === state.team &&
+        isWorldEventRevealTurn() &&
+        isWorldEventDueThisRound() &&
+        !hasResolvedWorldEventThisTurn()
+      );
+    }
+
+    function canManuallyMatchWorldEvent() {
+      return Boolean(
+        state.turnOrder.started &&
+        getCurrentTurnStep().kind === "roundEnd" &&
+        getCurrentTurnTeam() === state.team &&
+        isWorldEventManualMatchTurn() &&
+        isWorldEventDueThisRound() &&
+        !getWorldEventForRound(state.turnOrder.round) &&
+        !hasResolvedWorldEventThisTurn()
+      );
+    }
+
+    function addToCollectionWithCapacity(collectionName, itemName, quantity) {
+      const targetType = collectionName === "resources" ? "resource" : "item";
+      const availableSpace = getAvailableSpaceForTargetType(targetType);
+      const quantityAdded = Math.min(quantity, availableSpace);
+
+      if (quantityAdded > 0) {
+        state[collectionName][itemName] = (state[collectionName][itemName] || 0) + quantityAdded;
+      }
+
+      return quantityAdded;
+    }
+
+    function getPurchaseCostAmount(purchase) {
+      if (state.turnOrder && state.turnOrder.freeTradeActive) {
+        return Math.max(1, Math.ceil(purchase.costAmount / 2));
+      }
+
+      return purchase.costAmount;
+    }
+
+    function applyWorldEventEffect(event) {
+      if (!event) {
+        return "";
+      }
+
+      switch (event.effect) {
+        case "meteor": {
+          const gained = Math.min(5 - (state.stardust || 0), state.givingTiles || 0);
+          state.stardust = clamp((state.stardust || 0) + gained, 0, 5);
+          return gained > 0 ? `Gained ${gained} Stardust.` : "No Stardust gained.";
+        }
+        case "market-crash": {
+          const lostGold = (state.currency.gold || 0) > 0 ? 1 : 0;
+          state.currency.gold = Math.max(0, (state.currency.gold || 0) - 1);
+          return lostGold > 0 ? "Lost 1 Gold." : "No Gold to lose.";
+        }
+        case "market-boom":
+          state.currency.gold = (state.currency.gold || 0) + 1;
+          return "Gained 1 Gold.";
+        case "bread": {
+          const breadAdded = addToCollectionWithCapacity("resources", "Bread", 2);
+          return breadAdded > 0 ? `Gained ${breadAdded} Bread.` : "No resource space for Bread.";
+        }
+        case "cannon":
+          if (getTotalCannonsOwned() <= 0 && canGainCannon(1) && getAvailableSpaceForTargetType("item") > 0) {
+            state.items.Cannon = (state.items.Cannon || 0) + 1;
+            return "Gained 1 Cannon.";
+          }
+          return getTotalCannonsOwned() > 0 ? "Already has a Cannon, so no Cannon gained." : "No item space for Cannon.";
+        case "pestilence": {
+          const lostBread = state.resources.Bread || 0;
+          state.resources.Bread = 0;
+          return lostBread > 0 ? `Lost ${lostBread} Bread.` : "No Bread to lose.";
+        }
+        case "reverse-turn-order":
+          state.turnOrder.reversePieceOrder = !state.turnOrder.reversePieceOrder;
+          return state.turnOrder.reversePieceOrder ? "Piece turn order is now inverted." : "Piece turn order returned to normal.";
+        case "free-trade":
+          state.turnOrder.freeTradeActive = true;
+          return "Free Trade Economy is active. Shop prices are 50% off, rounded up.";
+        case "gods-blessing": {
+          const rewardCount = Math.min(5, getAvailableSpaceForTargetType("resource"));
+          const rewards = getRandomGivingTileRewards(rewardCount);
+          rewards.forEach(reward => {
+            state.resources[reward.name] = (state.resources[reward.name] || 0) + 1;
+          });
+          return rewardCount > 0 ? `God's Blessing produced: ${rewards.map(reward => reward.name).join(", ")}.` : "No resource space for God's Blessing rewards.";
+        }
+        case "shields": {
+          const shieldsAdded = addToCollectionWithCapacity("items", "Shield", 3);
+          return shieldsAdded > 0 ? `Gained ${shieldsAdded} Shield${shieldsAdded === 1 ? "" : "s"}.` : "No item space for Shields.";
+        }
+        default:
+          return "Resolve this event on the board.";
+      }
+    }
+
+    function resolveWorldEvent(event, sourceLabel) {
+      if (!event) {
+        return;
+      }
+
+      ensureWorldEventState();
+      state.turnOrder.worldEventsByRound[String(state.turnOrder.round)] = event.id;
+      state.turnOrder.worldEventsResolvedByTurnKey[getCurrentTurnKey()] = true;
+      const effectResult = applyWorldEventEffect(event);
+
+      if (!state.testMode) {
+        state.turnOrder.nextWorldEventRound = state.turnOrder.round + getRandomWorldEventInterval();
+      }
+
+      logRoundEvent(`World Event${sourceLabel ? ` (${sourceLabel})` : ""} — ${event.name}: ${event.description} ${effectResult}`);
+      saveState();
+      render();
+    }
+
+    function revealWorldEvent() {
+      if (!canRevealWorldEvent()) {
+        return;
+      }
+
+      const randomEvent = worldEvents[Math.floor(Math.random() * worldEvents.length)];
+      resolveWorldEvent(randomEvent, "revealed");
+    }
+
+    function manuallySelectWorldEvent(eventId) {
+      if (!canManuallyMatchWorldEvent()) {
+        return;
+      }
+
+      const selectedEvent = worldEvents.find(event => event.id === Number(eventId));
+
+      if (!selectedEvent) {
+        return;
+      }
+
+      const confirmed = window.confirm(`Apply "${selectedEvent.name}" as this round's World Event on this tracker?`);
+
+      if (!confirmed) {
+        return;
+      }
+
+      resolveWorldEvent(selectedEvent, "manual match");
     }
 
     function logRoundEvent(message) {
@@ -4998,6 +5598,26 @@
       render();
     }
 
+    function changeStardust(amount) {
+      const previousCount = state.stardust || 0;
+      const newCount = clamp(previousCount + amount, 0, 5);
+
+      if (newCount === previousCount) {
+        return;
+      }
+
+      state.stardust = newCount;
+
+      if (newCount > previousCount) {
+        logRoundEvent(`Gained ${newCount - previousCount} Stardust. Now holding ${newCount}/5.`);
+      } else {
+        logRoundEvent(`Lost ${previousCount - newCount} Stardust. Now holding ${newCount}/5.`);
+      }
+
+      saveState();
+      render();
+    }
+
     function changeGivingTiles(amount) {
       const previousCount = state.givingTiles || 0;
       const newCount = clamp(previousCount + amount, 0, 5);
@@ -5046,8 +5666,9 @@
     function getAffordableQuantity(purchase) {
       const currencyAvailable = state.currency[purchase.costCurrency] || 0;
       const spaceAvailable = getAvailableSpaceForTargetType(purchase.targetType);
+      const effectiveCost = getPurchaseCostAmount(purchase);
 
-      if (currencyAvailable < purchase.costAmount || spaceAvailable <= 0) {
+      if (currencyAvailable < effectiveCost || spaceAvailable <= 0) {
         return 0;
       }
 
@@ -5524,8 +6145,19 @@
       return `Before starting: ${issues.join("; ")}.`;
     }
 
+    function getEffectiveTurnSteps() {
+      if (!state.turnOrder || !state.turnOrder.reversePieceOrder) {
+        return turnSteps;
+      }
+
+      const unitSteps = turnSteps.filter(step => step.kind === "unit").reverse();
+      const nonUnitSteps = turnSteps.filter(step => step.kind !== "unit");
+      return [...unitSteps, ...nonUnitSteps];
+    }
+
     function getCurrentTurnStep() {
-      return turnSteps[state.turnOrder.stepIndex] || turnSteps[0];
+      const effectiveSteps = getEffectiveTurnSteps();
+      return effectiveSteps[state.turnOrder.stepIndex] || effectiveSteps[0];
     }
 
     function advanceTurn() {
@@ -5539,7 +6171,7 @@
         state.turnOrder.teamIndex = 0;
         state.turnOrder.stepIndex += 1;
 
-        if (state.turnOrder.stepIndex >= turnSteps.length) {
+        if (state.turnOrder.stepIndex >= getEffectiveTurnSteps().length) {
           state.turnOrder.stepIndex = 0;
           state.turnOrder.round += 1;
           state.turnOrder.firstTeam = flipTeam(state.turnOrder.firstTeam || state.turnOrder.startingTeam || "red");
@@ -5563,7 +6195,7 @@
 
         if (state.turnOrder.stepIndex < 0) {
           state.turnOrder.round = Math.max(1, state.turnOrder.round - 1);
-          state.turnOrder.stepIndex = turnSteps.length - 1;
+          state.turnOrder.stepIndex = getEffectiveTurnSteps().length - 1;
           state.turnOrder.firstTeam = flipTeam(state.turnOrder.firstTeam || state.turnOrder.startingTeam || "red");
         }
       }
@@ -5737,7 +6369,12 @@
         summonsByTurnKey: {},
         arrowsFiredByTurnKey: {},
         farmersUsedByTurnKey: {},
-        actionsUsedByTurnKey: {}
+        actionsUsedByTurnKey: {},
+        nextWorldEventRound: state.testMode ? 1 : getRandomWorldEventInterval(),
+        worldEventsByRound: {},
+        worldEventsResolvedByTurnKey: {},
+        reversePieceOrder: false,
+        freeTradeActive: false
       };
 
       saveState();
@@ -5859,9 +6496,10 @@
       }
 
       const collectionName = getCollectionNameForTargetType(purchase.targetType);
-      state.currency[purchase.costCurrency] -= purchase.costAmount;
+      const effectiveCost = getPurchaseCostAmount(purchase);
+      state.currency[purchase.costCurrency] -= effectiveCost;
       state[collectionName][purchase.targetName] += quantityToBuy;
-      logRoundEvent(`Purchased ${quantityToBuy} ${purchase.targetName} for ${purchase.costAmount} ${purchase.costCurrency}.`);
+      logRoundEvent(`Purchased ${quantityToBuy} ${purchase.targetName} for ${effectiveCost} ${purchase.costCurrency}${state.turnOrder.freeTradeActive ? " under Free Trade Economy" : ""}.`);
       saveState();
       render();
     }
@@ -6146,18 +6784,21 @@
       const itemsCollapsed = isPanelCollapsed("items");
       const cannonCollapsed = isPanelCollapsed("cannon");
       const givingCollapsed = isPanelCollapsed("giving");
+      const stardustCollapsed = isPanelCollapsed("stardust");
 
       turnContent.classList.toggle("hidden", turnCollapsed);
       resourceGrid.classList.toggle("hidden", resourcesCollapsed);
       itemGrid.classList.toggle("hidden", itemsCollapsed);
       cannonContent.classList.toggle("hidden", cannonCollapsed);
       givingContent.classList.toggle("hidden", givingCollapsed);
+      stardustContent.classList.toggle("hidden", stardustCollapsed);
 
       updatePanelToggle(toggleTurnPanel, turnCollapsed);
       updatePanelToggle(toggleResourcesPanel, resourcesCollapsed);
       updatePanelToggle(toggleItemsPanel, itemsCollapsed);
       updatePanelToggle(toggleCannonPanel, cannonCollapsed);
       updatePanelToggle(toggleGivingPanel, givingCollapsed);
+      updatePanelToggle(toggleStardustPanel, stardustCollapsed);
     }
 
     function renderWalkthrough() {
@@ -6260,6 +6901,95 @@
         .slice(-10)
         .map(event => `<div class="round-summary-item">${event.message}</div>`)
         .join("");
+    }
+
+    function getWorldEventChoiceGridHtml(canChooseManualEvent) {
+      return `
+        <div class="world-event-manual-panel">
+          <div class="world-event-manual-heading">
+            <div>Manual Match Event Deck</div>
+            <span>Select the event revealed on the other iPad</span>
+          </div>
+          <div class="world-event-choice-grid" aria-label="Choose the revealed World Event manually">
+            ${worldEvents.map(event => `
+              <button
+                class="world-event-choice-card"
+                type="button"
+                data-action="manual-world-event"
+                data-world-event-id="${event.id}"
+                ${canChooseManualEvent ? "" : "disabled"}>
+                <div class="world-event-choice-number">${event.id}</div>
+                <div>
+                  <div class="world-event-choice-name">${event.name}</div>
+                  <div class="world-event-choice-text">${event.description}</div>
+                </div>
+              </button>
+            `).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    function getWorldEventBoxHtml() {
+      if (!state.turnOrder.started) {
+        return "";
+      }
+
+      const isDue = isWorldEventDueThisRound();
+      const revealedEvent = getWorldEventForRound(state.turnOrder.round);
+      const canReveal = canRevealWorldEvent();
+      const canManualMatch = canManuallyMatchWorldEvent();
+      const revealTeam = getWorldEventRevealTeam();
+      const nextRound = state.turnOrder.nextWorldEventRound;
+
+      if (!isDue && !revealedEvent) {
+        const nextEventText = Number.isInteger(nextRound)
+          ? `Next World Event expected in Round ${nextRound}.`
+          : "Next World Event has not been scheduled yet.";
+
+        return `
+          <div class="world-event-box waiting">
+            <div class="world-event-title">World Event</div>
+            <div class="world-event-text">No World Event this round. ${nextEventText}</div>
+            <div class="world-event-note">In Test Mode, World Events appear every round.</div>
+          </div>
+        `;
+      }
+
+      if (revealedEvent) {
+        return `
+          <div class="world-event-box">
+            <div class="world-event-title">World Event Revealed</div>
+            <div class="world-event-name">${revealedEvent.name}</div>
+            <div class="world-event-text">${revealedEvent.description}</div>
+            <div class="world-event-note">Apply any board movement, wall damage, swapping, discarding, or player-choice effects manually on the physical board.</div>
+          </div>
+        `;
+      }
+
+      if (isWorldEventRevealTurn()) {
+        return `
+          <div class="world-event-box">
+            <div class="world-event-title">World Event Due!</div>
+            <div class="world-event-name">${getTeamLabel(revealTeam)} Generates the Event</div>
+            <div class="world-event-text">The first player of Round ${state.turnOrder.round} reveals one random World Event. The other player then selects the same event from their Manual Match deck.</div>
+            <div class="world-event-actions">
+              <button class="world-event-btn" type="button" data-action="reveal-world-event" ${canReveal ? "" : "disabled"}>Reveal World Event</button>
+            </div>
+            <div class="world-event-note">Only the first player of the round should use the random reveal button.</div>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="world-event-box">
+          <div class="world-event-title">World Event Due!</div>
+          <div class="world-event-name">Waiting for ${getTeamLabel(revealTeam)}</div>
+          <div class="world-event-text">${getTeamLabel(revealTeam)} is responsible for generating the random World Event for Round ${state.turnOrder.round}. After it is revealed, select the matching event below on this tracker.</div>
+          <div class="world-event-note">This keeps both local iPads matched without online syncing.</div>
+          ${getWorldEventChoiceGridHtml(canManualMatch)}
+        </div>
+      `;
     }
 
     function getActionReferenceData(unitType) {
@@ -6518,7 +7248,7 @@
         summon: "Summon one unit, plus one extra summon for each living Ritual Caster. Ritual costs still apply.",
         crafting: "Craft items from resources. Recipes require the full cost and enough item space.",
         shopping: "Shop only during your Shopping step, and only with a living Shopkeeper.",
-        roundEnd: "Claim 1 free Bronze, then choose Wood, Stone, Bread, or a second Bronze. Review the round summary."
+        roundEnd: "Claim 1 free Bronze, then choose Wood, Stone, Bread, or a second Bronze. If a World Event is due, reveal it before advancing."
       };
 
       currentReferenceTitle.textContent = currentStep.title;
@@ -6695,6 +7425,8 @@
           rewardNote = "Reward already claimed for this end-of-round step.";
         }
 
+        const worldEventHtml = getWorldEventBoxHtml();
+
         turnPiecesList.innerHTML = `
           <div class="round-reward-box">
             <div class="round-reward-title">⭐ End of Round! ⭐</div>
@@ -6705,6 +7437,7 @@
               <button class="round-reward-btn" data-round-reward="Bread" ${canClaim ? "" : "disabled"}>+ Bronze & Bread</button>
               <button class="round-reward-btn primary" data-round-reward="bronze" ${canClaim ? "" : "disabled"}>+ 2 Bronze</button>
             </div>
+            ${worldEventHtml}
             <div>
               <h3 class="section-title" style="margin-top:8px;">End-of-Round Summary</h3>
               <div class="round-summary-list">${summaryHtml}</div>
@@ -6820,6 +7553,7 @@
       document.getElementById("silverCount").textContent = state.currency.silver;
       document.getElementById("bronzeCount").textContent = state.currency.bronze;
       givingTilesCount.textContent = state.givingTiles || 0;
+      stardustCount.textContent = state.stardust || 0;
 
       economyLockNote.textContent = manualEconomyLocked
         ? "Manual economy edits are locked after setup. Use rewards, shop, crafting, and game actions."
@@ -6982,12 +7716,14 @@
           const affordableQuantity = getAffordableQuantity(purchase);
           const canBuy = affordableQuantity > 0;
           const currencyLabel = purchase.costCurrency.charAt(0).toUpperCase() + purchase.costCurrency.slice(1);
+          const effectiveCost = getPurchaseCostAmount(purchase);
+          const originalCostText = effectiveCost !== purchase.costAmount ? ` <span style="text-decoration:line-through; opacity:0.65;">${purchase.costAmount}</span>` : "";
 
           const card = document.createElement("div");
           card.className = `shop-card${canBuy ? "" : " disabled"}`;
           card.innerHTML = `
             <div class="shop-title">${purchase.quantity} ${purchase.targetName}</div>
-            <div class="shop-cost">Cost: ${purchase.costAmount} ${currencyLabel}</div>
+            <div class="shop-cost">Cost: ${effectiveCost}${originalCostText} ${currencyLabel}</div>
             <div class="buy-row">
               <div class="buy-quantity">Buys now: ${canBuy ? affordableQuantity : 0}</div>
               <button class="buy-btn" data-buy-id="${purchase.id}" ${canBuy ? "" : "disabled"}>Buy</button>
@@ -7285,6 +8021,10 @@
 
       teamButtons.forEach(button => {
         button.classList.toggle("active", selectedTeam !== null && button.dataset.team === selectedTeam);
+        button.disabled = Boolean(state.turnOrder && state.turnOrder.started);
+        button.title = state.turnOrder && state.turnOrder.started
+          ? "Team selection is locked after the game starts. Reset the game to choose a different team."
+          : "Choose this tracker's team before starting the game.";
       });
     }
 
@@ -7399,6 +8139,12 @@
       render();
     });
 
+    toggleStardustPanel.addEventListener("click", () => {
+      setManualPanelCollapsed("stardust", !isPanelCollapsed("stardust"));
+      saveState();
+      render();
+    });
+
     toggleGivingPanel.addEventListener("click", () => {
       setManualPanelCollapsed("giving", !isPanelCollapsed("giving"));
       saveState();
@@ -7449,6 +8195,12 @@
     document.querySelectorAll("[data-giving-tiles-change]").forEach(button => {
       button.addEventListener("click", () => {
         changeGivingTiles(Number(button.dataset.givingTilesChange));
+      });
+    });
+
+    document.querySelectorAll("[data-stardust-change]").forEach(button => {
+      button.addEventListener("click", () => {
+        changeStardust(Number(button.dataset.stardustChange));
       });
     });
 
@@ -7664,6 +8416,11 @@
 
     teamButtons.forEach(button => {
       button.addEventListener("click", () => {
+        if (state.turnOrder && state.turnOrder.started) {
+          window.alert("Team selection is locked after the game starts. Reset the game to choose a different team.");
+          return;
+        }
+
         state.team = button.dataset.team;
         state.teamSelected = true;
         saveState();
@@ -7763,6 +8520,20 @@
 
       if (givingButton) {
         resolveGivingTilesReward();
+        return;
+      }
+
+      const worldEventButton = event.target.closest('[data-action="reveal-world-event"]');
+
+      if (worldEventButton) {
+        revealWorldEvent();
+        return;
+      }
+
+      const manualWorldEventButton = event.target.closest('[data-action="manual-world-event"]');
+
+      if (manualWorldEventButton) {
+        manuallySelectWorldEvent(Number(manualWorldEventButton.dataset.worldEventId));
         return;
       }
 
