@@ -3270,7 +3270,7 @@
       </aside>
     </section>
 
-    <div class="footer-note">Tip: In Safari on iPad, use Share → Add to Home Screen to make this feel like a little boardgame app. <span id="appVersionLabel">v0.2.0</span></div>
+    <div class="footer-note">Tip: In Safari on iPad, use Share → Add to Home Screen to make this feel like a little boardgame app. <span id="appVersionLabel">v0.2.2</span></div>
   </main>
 
   <div class="giving-results-overlay" id="givingResultsOverlay">
@@ -3302,7 +3302,7 @@
     const MAX_RESOURCE_SLOTS = 11;
     const MAX_ITEM_SLOTS = 11;
     const STARTING_TOTAL_PIECES = 8;
-    const APP_VERSION = "v0.2.0";
+    const APP_VERSION = "v0.2.2";
 
     const turnSteps = [
       { kind: "unit", typeId: 1, title: "King", instructions: "Each team may move/action all active Kings." },
@@ -3332,7 +3332,7 @@
       { kind: "roundEnd", title: "End of Round Rewards", instructions: "Collect end-of-round income, reveal and resolve one World Event, and review the round summary." }
     ];
 
-    const startingSetupTypeIds = [3, 6, 7, 8, 9, 16, 18, 19];
+    const startingSetupTypeIds = [3, 6, 7, 8, 12, 11, 16, 18, 19];
 
     const worldEvents = [
       { id: 1, name: "Meteor Showers", description: "Each player gains 1 Stardust for each Giving Tile they are occupying.", effect: "meteor" },
@@ -3583,7 +3583,7 @@
       { id: 20, name: "Shopkeeper", move: 2, maxHp: 3, action: "Passive — Allows the Shop feature during the Shopping step.", ritual: "5 Bronze", category: "special", ritualCosts: [{ type: "currency", name: "bronze", quantity: 5 }] }
     ];
 
-    const STORAGE_KEY = "boardgameTrackerStateV10";
+    const STORAGE_KEY = "boardgameTrackerStateV11";
 
     const defaultState = {
       selectedPieceId: null,
@@ -4160,7 +4160,8 @@
         <span class="tag">Warrior (Sword)</span>
         <span class="tag">Warrior (Spear)</span>
         <span class="tag">Warrior (Bow)</span>
-        <span class="tag">Warrior (Lance &amp; Horse)</span>
+        <span class="tag">Medic</span>
+        <span class="tag">Priest</span>
         <span class="tag">Mechanist</span>
         <span class="tag">Thief</span>
         <span class="tag">Strategist</span>
@@ -6767,6 +6768,8 @@
           getTips: () => {
             const tips = ["Before setup is finished, only legal starting pieces are shown."];
             const bowCount = getPiecesForType(8).length;
+            const medicCount = getPiecesForType(12).length;
+            const priestCount = getPiecesForType(11).length;
             const shopkeeperCount = getPiecesForType(20).length;
             const strategistCount = getPiecesForType(19).length;
             const workerCount = getPiecesForType(3).length + getPiecesForType(4).length + getPiecesForType(5).length;
@@ -6775,6 +6778,14 @@
               tips.push(`${bowCount} Bow Warrior${bowCount === 1 ? "" : "s"}: setup gives 3 free Arrows each.`);
             } else {
               tips.push("Bow Warriors are slow but can threaten from far away.");
+            }
+
+            if (medicCount > 0) {
+              tips.push("Medics help keep damaged pieces alive, but cannot heal other Medics.");
+            }
+
+            if (priestCount > 0) {
+              tips.push("Priests can revive eligible defeated allies with full HP.");
             }
 
             if (shopkeeperCount > 0) {
