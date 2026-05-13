@@ -1495,6 +1495,96 @@
       filter: grayscale(0.35);
     }
 
+    .baby-boom-panel {
+      margin-top: 4px;
+      display: grid;
+      gap: 10px;
+      border: 1px solid rgba(161, 43, 36, 0.24);
+      background:
+        radial-gradient(circle at top right, rgba(255,255,255,0.72), transparent 40%),
+        linear-gradient(180deg, rgba(255, 244, 221, 0.92), rgba(255, 225, 196, 0.78));
+      border-radius: 14px;
+      padding: 12px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.48), 0 3px 0 rgba(161, 43, 36, 0.10);
+    }
+
+    .baby-boom-heading {
+      display: grid;
+      gap: 2px;
+    }
+
+    .baby-boom-title {
+      color: #7a211b;
+      font-size: 17px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.45px;
+    }
+
+    .baby-boom-note {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.3;
+    }
+
+    .baby-boom-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(180px, 1fr)) auto;
+      gap: 8px;
+      align-items: end;
+    }
+
+    .baby-boom-field {
+      display: grid;
+      gap: 4px;
+    }
+
+    .baby-boom-label {
+      color: #7a211b;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.35px;
+    }
+
+    .baby-boom-select {
+      width: 100%;
+      min-height: 38px;
+      border: 1px solid rgba(43, 33, 24, 0.28);
+      background: rgba(255,255,255,0.72);
+      border-radius: 10px;
+      color: var(--ink);
+      font-weight: 900;
+      padding: 0 10px;
+    }
+
+    .baby-boom-btn {
+      border: 1px solid rgba(43, 33, 24, 0.3);
+      background: linear-gradient(180deg, #ffe1da, #e7a094);
+      color: #4d1712;
+      border-radius: 10px;
+      min-height: 38px;
+      cursor: pointer;
+      box-shadow: 0 2px 0 rgba(0,0,0,0.18);
+      font-weight: 900;
+      padding: 0 12px;
+      white-space: nowrap;
+    }
+
+    .baby-boom-btn:disabled,
+    .baby-boom-select:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      filter: grayscale(0.35);
+    }
+
+    @media (max-width: 760px) {
+      .baby-boom-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
     .round-reward-title {
       font-size: 18px;
       font-weight: 900;
@@ -3180,7 +3270,7 @@
       </aside>
     </section>
 
-    <div class="footer-note">Tip: In Safari on iPad, use Share → Add to Home Screen to make this feel like a little boardgame app.</div>
+    <div class="footer-note">Tip: In Safari on iPad, use Share → Add to Home Screen to make this feel like a little boardgame app. <span id="appVersionLabel">v0.2.0</span></div>
   </main>
 
   <div class="giving-results-overlay" id="givingResultsOverlay">
@@ -3212,6 +3302,7 @@
     const MAX_RESOURCE_SLOTS = 11;
     const MAX_ITEM_SLOTS = 11;
     const STARTING_TOTAL_PIECES = 8;
+    const APP_VERSION = "v0.2.0";
 
     const turnSteps = [
       { kind: "unit", typeId: 1, title: "King", instructions: "Each team may move/action all active Kings." },
@@ -3238,13 +3329,10 @@
       { kind: "summon", title: "Summoning Unit", instructions: "Summon a unit if you have the needed resources, items, and currency." },
       { kind: "crafting", title: "Crafting", instructions: "Craft items if you have the full recipe and enough item space." },
       { kind: "shopping", title: "Shopping", instructions: "Shopping is available only if that team has an active living Shopkeeper." },
-      { kind: "roundEnd", title: "End of Round Rewards", instructions: "Collect end-of-round income, resolve any World Event, and review the round summary." }
+      { kind: "roundEnd", title: "End of Round Rewards", instructions: "Collect end-of-round income, reveal and resolve one World Event, and review the round summary." }
     ];
 
     const startingSetupTypeIds = [3, 6, 7, 8, 9, 16, 18, 19];
-
-    const WORLD_EVENT_MIN_INTERVAL = 6;
-    const WORLD_EVENT_MAX_INTERVAL = 10;
 
     const worldEvents = [
       { id: 1, name: "Meteor Showers", description: "Each player gains 1 Stardust for each Giving Tile they are occupying.", effect: "meteor" },
@@ -3256,14 +3344,14 @@
       { id: 7, name: "Peace Treaty", description: "All players move their Warriors and Mages 2 tiles back toward their initial base.", effect: "note" },
       { id: 8, name: "Earthquake", description: "Deal 2 damage to each wall. Wood and Stone walls only.", effect: "note" },
       { id: 9, name: "Pisces", description: "If a player has three of a kind, that group must be reduced to two. Apply this to each three-of-a-kind group.", effect: "note" },
-      { id: 10, name: "Baby Boom", description: "Each player can summon 2 Warriors for free.", effect: "note" },
+      { id: 10, name: "Baby Boom", description: "Each player can summon 2 Warriors for free.", effect: "baby-boom" },
       { id: 11, name: "High Seas", description: "Each player gains a Cannon, if they do not already have one.", effect: "cannon" },
       { id: 12, name: "Famine", description: "Each player must discard down to 7 Resources.", effect: "note" },
       { id: 13, name: "Disease", description: "Each player must deal 4 points of damage among their pieces.", effect: "note" },
       { id: 14, name: "Pestilence", description: "Insects eat all crops. All players lose all Bread.", effect: "pestilence" },
       { id: 15, name: "Uno Reverso", description: "Piece turn order inverts. Player order does not change.", effect: "reverse-turn-order" },
       { id: 16, name: "Free Trade Economy", description: "All shop items are 50% off until this effect is cleared. Round up if necessary, so 3 becomes 2.", effect: "free-trade" },
-      { id: 17, name: "God's Blessing", description: "Act as though each player has 5 Giving Tiles this turn.", effect: "gods-blessing" },
+      { id: 17, name: "God's Blessing", description: "Each player immediately receives 5 random Giving Tile rewards.", effect: "gods-blessing" },
       { id: 18, name: "Medical Breakthrough", description: "Each player may heal 4 points of damage among their pieces.", effect: "note" },
       { id: 19, name: "War Support", description: "Each player gains 3 Shields.", effect: "shields" },
       { id: 20, name: "The Odyssey", description: "Each player loses all but one Warrior or Mage. The player chooses who to keep. All non-Warrior pieces remain.", effect: "note" }
@@ -3475,9 +3563,9 @@
     const unitTypes = [
       { id: 1, name: "King", move: 3, maxHp: 6, action: "Passive — Empower: Any friendly piece that starts its turn within 3 tiles of the King gains +1 movement for that turn.", ritual: "Cannot be summoned", category: "royal", ritualCosts: [] },
       { id: 2, name: "Base Builder", move: 2, maxHp: 1, action: "Build Base — Choose a location within 1 tile that has at least 3 adjacent Base Keepers. That tile becomes a Base tile.", ritual: "1 Silver, 2 Bronze, 2 Stone, 2 Rope", category: "worker", ritualCosts: [{ type: "currency", name: "silver", quantity: 1 }, { type: "currency", name: "bronze", quantity: 2 }, { type: "resource", name: "Stone", quantity: 2 }, { type: "resource", name: "Rope", quantity: 2 }] },
-      { id: 3, name: "Wood Worker", move: 2, maxHp: 6, action: "Build Wooden Defence — Place a wooden defence within 1 tile. Cost: 3 Wood.", ritual: "3 Wood, 1 Sulphur", category: "worker", ritualCosts: [{ type: "resource", name: "Wood", quantity: 3 }, { type: "resource", name: "Sulphur", quantity: 1 }] },
-      { id: 4, name: "Stone Worker", move: 2, maxHp: 6, action: "Build Stone Defence — Place a stone defence within 1 tile. Cost: 3 Stone.", ritual: "3 Stone, 2 Sulphur", category: "worker", ritualCosts: [{ type: "resource", name: "Stone", quantity: 3 }, { type: "resource", name: "Sulphur", quantity: 2 }] },
-      { id: 5, name: "Iron Worker", move: 2, maxHp: 6, action: "Build Iron Defence — Place an iron defence within 1 tile. Cost: 3 Iron.", ritual: "3 Iron, 3 Sulphur", category: "worker", ritualCosts: [{ type: "resource", name: "Iron", quantity: 3 }, { type: "resource", name: "Sulphur", quantity: 3 }] },
+      { id: 3, name: "Wood Worker", move: 2, maxHp: 6, action: "Build Wooden Defence — Place a wooden defence within 1 tile. Cost: 2 Wood.", ritual: "3 Wood, 1 Sulphur", category: "worker", ritualCosts: [{ type: "resource", name: "Wood", quantity: 3 }, { type: "resource", name: "Sulphur", quantity: 1 }] },
+      { id: 4, name: "Stone Worker", move: 2, maxHp: 6, action: "Build Stone Defence — Place a stone defence within 1 tile. Cost: 2 Stone.", ritual: "3 Stone, 2 Sulphur", category: "worker", ritualCosts: [{ type: "resource", name: "Stone", quantity: 3 }, { type: "resource", name: "Sulphur", quantity: 2 }] },
+      { id: 5, name: "Iron Worker", move: 2, maxHp: 6, action: "Build Iron Defence — Place an iron defence within 1 tile. Cost: 2 Iron.", ritual: "3 Iron, 3 Sulphur", category: "worker", ritualCosts: [{ type: "resource", name: "Iron", quantity: 3 }, { type: "resource", name: "Sulphur", quantity: 3 }] },
       { id: 6, name: "Warrior (Sword)", move: 2, maxHp: 4, action: "Melee Attack — Range 1, Damage 2.", ritual: "4 Bronze, 1 Stone, 1 Wood", category: "fighter", ritualCosts: [{ type: "currency", name: "bronze", quantity: 4 }, { type: "resource", name: "Stone", quantity: 1 }, { type: "resource", name: "Wood", quantity: 1 }] },
       { id: 7, name: "Warrior (Spear)", move: 2, maxHp: 4, action: "Melee Attack — Range 3, Damage 1.", ritual: "2 Silver, 1 Wood, 1 Stone", category: "fighter", ritualCosts: [{ type: "currency", name: "silver", quantity: 2 }, { type: "resource", name: "Wood", quantity: 1 }, { type: "resource", name: "Stone", quantity: 1 }] },
       { id: 8, name: "Warrior (Bow)", move: 1, maxHp: 2, action: "Ranged Attack — Range 7, Damage 1. Cost: 1 Arrow.", ritual: "1 Silver, 2 Wood, 1 Rope, 1 Sulphur", category: "fighter", ritualCosts: [{ type: "currency", name: "silver", quantity: 1 }, { type: "resource", name: "Wood", quantity: 2 }, { type: "resource", name: "Rope", quantity: 1 }, { type: "resource", name: "Sulphur", quantity: 1 }] },
@@ -3545,9 +3633,9 @@
         arrowsFiredByTurnKey: {},
         farmersUsedByTurnKey: {},
         actionsUsedByTurnKey: {},
-        nextWorldEventRound: null,
         worldEventsByRound: {},
         worldEventsResolvedByTurnKey: {},
+        babyBoomUsedByRound: {},
         reversePieceOrder: false,
         freeTradeActive: false
       },
@@ -4208,9 +4296,9 @@
         <li><strong>Bow Warrior - Fire:</strong> spends 1 Arrow.</li>
         <li><strong>Farmer - Farm:</strong> gains 1 Bread if there is resource space.</li>
         <li><strong>Thief - Steal:</strong> adds 1 Bronze after players confirm the Thief is within 5 tiles of the enemy King.</li>
-        <li><strong>Wood Worker - Build:</strong> spends 3 Wood.</li>
-        <li><strong>Stone Worker - Build:</strong> spends 3 Stone.</li>
-        <li><strong>Iron Worker - Build:</strong> spends 3 Iron.</li>
+        <li><strong>Wood Worker - Build:</strong> spends 2 Wood.</li>
+        <li><strong>Stone Worker - Build:</strong> spends 2 Stone.</li>
+        <li><strong>Iron Worker - Build:</strong> spends 2 Iron.</li>
       </ul>
       <p class="note">The app tracks costs and logs the action, but board position and target validity are confirmed by the players.</p>
     </section>
@@ -4292,7 +4380,7 @@
 
     <section>
       <h2>World Events</h2>
-      <p>World Events are shared events that affect both players. In a normal game, a World Event occurs every <strong>6 to 10 rounds</strong>. In Test Mode, a World Event is available at the end of every round.</p>
+      <p>World Events are shared events that affect both players. One World Event occurs at the end of every round.</p>
       <h3>Local iPad Rule</h3>
       <ol>
         <li>The first player of the World Event round clicks <strong>Reveal World Event</strong>.</li>
@@ -4320,7 +4408,7 @@
 
     <section>
       <h2>Test Mode</h2>
-      <p>Test Mode is for playtesting and debugging. It allows manual economy edits after setup and makes World Events available at the end of every round.</p>
+      <p>Test Mode is for playtesting and debugging. It allows manual economy edits after setup. World Events occur at the end of every round in normal play as well.</p>
     </section>
   </main>
 </body>
@@ -4651,10 +4739,6 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     }
 
-    function getRandomWorldEventInterval() {
-      return WORLD_EVENT_MIN_INTERVAL + Math.floor(Math.random() * (WORLD_EVENT_MAX_INTERVAL - WORLD_EVENT_MIN_INTERVAL + 1));
-    }
-
     function ensureWorldEventState() {
       if (!state.turnOrder.worldEventsByRound) {
         state.turnOrder.worldEventsByRound = {};
@@ -4662,10 +4746,6 @@
 
       if (!state.turnOrder.worldEventsResolvedByTurnKey) {
         state.turnOrder.worldEventsResolvedByTurnKey = {};
-      }
-
-      if (!Number.isInteger(state.turnOrder.nextWorldEventRound)) {
-        state.turnOrder.nextWorldEventRound = state.turnOrder.round + getRandomWorldEventInterval();
       }
     }
 
@@ -4676,16 +4756,7 @@
     }
 
     function isWorldEventDueThisRound() {
-      if (!state.turnOrder.started) {
-        return false;
-      }
-
-      if (state.testMode) {
-        return true;
-      }
-
-      ensureWorldEventState();
-      return state.turnOrder.round >= state.turnOrder.nextWorldEventRound;
+      return Boolean(state.turnOrder.started);
     }
 
     function hasResolvedWorldEventThisTurn() {
@@ -4802,15 +4873,131 @@
           rewards.forEach(reward => {
             state.resources[reward.name] = (state.resources[reward.name] || 0) + 1;
           });
-          return rewardCount > 0 ? `God's Blessing produced: ${rewards.map(reward => reward.name).join(", ")}.` : "No resource space for God's Blessing rewards.";
+          return rewardCount > 0 ? `God's Blessing gave ${rewardCount} random Giving Tile reward${rewardCount === 1 ? "" : "s"}: ${rewards.map(reward => reward.name).join(", ")}.` : "No resource space for God's Blessing rewards.";
         }
         case "shields": {
           const shieldsAdded = addToCollectionWithCapacity("items", "Shield", 3);
           return shieldsAdded > 0 ? `Gained ${shieldsAdded} Shield${shieldsAdded === 1 ? "" : "s"}.` : "No item space for Shields.";
         }
+        case "baby-boom":
+          ensureBabyBoomState();
+          return "Choose up to 2 free Warriors from the Baby Boom reinforcement panel.";
         default:
           return "Resolve this event on the board.";
       }
+    }
+
+    function ensureBabyBoomState() {
+      if (!state.turnOrder.babyBoomUsedByRound) {
+        state.turnOrder.babyBoomUsedByRound = {};
+      }
+    }
+
+    function getBabyBoomUsedThisRound() {
+      ensureBabyBoomState();
+      return state.turnOrder.babyBoomUsedByRound[String(state.turnOrder.round)] || 0;
+    }
+
+    function getBabyBoomRemainingThisRound() {
+      return Math.max(0, 2 - getBabyBoomUsedThisRound());
+    }
+
+    function getBabyBoomWarriorTypes() {
+      return unitTypes.filter(unitType => [6, 7, 8, 9].includes(unitType.id));
+    }
+
+    function isBabyBoomActiveThisRound() {
+      const revealedEvent = getWorldEventForRound(state.turnOrder.round);
+      return Boolean(revealedEvent && revealedEvent.effect === "baby-boom");
+    }
+
+    function canUseBabyBoomPanel() {
+      return Boolean(
+        state.turnOrder.started &&
+        getCurrentTurnStep().kind === "roundEnd" &&
+        getCurrentTurnTeam() === state.team &&
+        isBabyBoomActiveThisRound() &&
+        getBabyBoomRemainingThisRound() > 0 &&
+        state.activePieces.length < MAX_ACTIVE_PIECES
+      );
+    }
+
+    function canAddBabyBoomWarrior(typeId) {
+      const unitType = getUnitType(typeId);
+
+      if (!canUseBabyBoomPanel()) {
+        return false;
+      }
+
+      if (![6, 7, 8, 9].includes(unitType.id)) {
+        return false;
+      }
+
+      if (state.activePieces.length >= MAX_ACTIVE_PIECES) {
+        return false;
+      }
+
+      return getPiecesForType(unitType.id).length < getMaxCopiesForType(unitType.id);
+    }
+
+    function addFreeWorldEventPiece(typeId, sourceName) {
+      const unitType = getUnitType(typeId);
+
+      if (!canAddBabyBoomWarrior(unitType.id)) {
+        return false;
+      }
+
+      const newPiece = {
+        pieceId: state.nextPieceId,
+        typeId: unitType.id,
+        copyNumber: getNextCopyNumberForType(unitType.id),
+        currentHp: unitType.maxHp,
+        hasShield: false
+      };
+
+      state.nextPieceId += 1;
+      state.activePieces.push(newPiece);
+      state.selectedPieceId = newPiece.pieceId;
+      state.selectedRuleTypeId = unitType.id;
+      state.filter = state.filter === "rules" ? "all" : state.filter;
+
+      ensureBabyBoomState();
+      state.turnOrder.babyBoomUsedByRound[String(state.turnOrder.round)] = getBabyBoomUsedThisRound() + 1;
+      logRoundEvent(`${sourceName} added ${unitType.name} #${newPiece.copyNumber} for free.`);
+      return true;
+    }
+
+    function addBabyBoomWarriors(firstTypeId, secondTypeId) {
+      if (!canUseBabyBoomPanel()) {
+        return;
+      }
+
+      const requestedTypeIds = [Number(firstTypeId), Number(secondTypeId)].filter(typeId => Number.isInteger(typeId) && typeId > 0);
+
+      if (requestedTypeIds.length === 0) {
+        window.alert("Choose at least one Warrior to add from Baby Boom.");
+        return;
+      }
+
+      let addedCount = 0;
+
+      requestedTypeIds.forEach(typeId => {
+        if (getBabyBoomRemainingThisRound() <= 0) {
+          return;
+        }
+
+        if (addFreeWorldEventPiece(typeId, "Baby Boom")) {
+          addedCount += 1;
+        }
+      });
+
+      if (addedCount === 0) {
+        window.alert("Those Warrior choices cannot be added. Check the 15-piece board limit and the 3-copy limit for each unit type.");
+        return;
+      }
+
+      saveState();
+      render();
     }
 
     function resolveWorldEvent(event, sourceLabel) {
@@ -4823,9 +5010,6 @@
       state.turnOrder.worldEventsResolvedByTurnKey[getCurrentTurnKey()] = true;
       const effectResult = applyWorldEventEffect(event);
 
-      if (!state.testMode) {
-        state.turnOrder.nextWorldEventRound = state.turnOrder.round + getRandomWorldEventInterval();
-      }
 
       logRoundEvent(`World Event${sourceLabel ? ` (${sourceLabel})` : ""} — ${event.name}: ${event.description} ${effectResult}`);
       saveState();
@@ -6012,7 +6196,7 @@
         return true;
       }
 
-      return (state.resources[resourceName] || 0) >= 3;
+      return (state.resources[resourceName] || 0) >= 2;
     }
 
     function payWorkerBuildCost(unitType) {
@@ -6022,12 +6206,12 @@
         return "";
       }
 
-      if ((state.resources[resourceName] || 0) < 3) {
+      if ((state.resources[resourceName] || 0) < 2) {
         return "";
       }
 
-      state.resources[resourceName] -= 3;
-      return ` Spent 3 ${resourceName}.`;
+      state.resources[resourceName] -= 2;
+      return ` Spent 2 ${resourceName}.`;
     }
 
     function resolveGenericActionEffect(unitType) {
@@ -6370,9 +6554,9 @@
         arrowsFiredByTurnKey: {},
         farmersUsedByTurnKey: {},
         actionsUsedByTurnKey: {},
-        nextWorldEventRound: state.testMode ? 1 : getRandomWorldEventInterval(),
         worldEventsByRound: {},
         worldEventsResolvedByTurnKey: {},
+        babyBoomUsedByRound: {},
         reversePieceOrder: false,
         freeTradeActive: false
       };
@@ -6602,7 +6786,7 @@
             }
 
             if (workerCount > 0) {
-              tips.push("Workers can build walls later, but each wall costs 3 matching resources.");
+              tips.push("Workers can build walls later, and each wall costs 2 matching resources.");
             }
 
             return tips;
@@ -6930,6 +7114,45 @@
       `;
     }
 
+    function getBabyBoomPanelHtml() {
+      const isActive = isBabyBoomActiveThisRound();
+
+      if (!isActive) {
+        return "";
+      }
+
+      const remaining = getBabyBoomRemainingThisRound();
+      const canUse = canUseBabyBoomPanel();
+      const optionsHtml = [
+        `<option value="">Choose a Warrior...</option>`,
+        ...getBabyBoomWarriorTypes().map(unitType => {
+          const existingCount = getPiecesForType(unitType.id).length;
+          const disabled = existingCount >= getMaxCopiesForType(unitType.id) ? "disabled" : "";
+          return `<option value="${unitType.id}" ${disabled}>${unitType.name} (${existingCount}/${getMaxCopiesForType(unitType.id)})</option>`;
+        })
+      ].join("");
+
+      return `
+        <div class="baby-boom-panel">
+          <div class="baby-boom-heading">
+            <div class="baby-boom-title">Baby Boom Reinforcements</div>
+            <div class="baby-boom-note">Add up to 2 free Warrior pieces to match the physical board. Remaining this round: ${remaining}.</div>
+          </div>
+          <div class="baby-boom-grid">
+            <label class="baby-boom-field">
+              <span class="baby-boom-label">Free Warrior 1</span>
+              <select class="baby-boom-select" id="babyBoomWarriorOne" ${canUse ? "" : "disabled"}>${optionsHtml}</select>
+            </label>
+            <label class="baby-boom-field">
+              <span class="baby-boom-label">Free Warrior 2</span>
+              <select class="baby-boom-select" id="babyBoomWarriorTwo" ${canUse && remaining >= 2 ? "" : "disabled"}>${optionsHtml}</select>
+            </label>
+            <button class="baby-boom-btn" type="button" data-action="apply-baby-boom" ${canUse ? "" : "disabled"}>Add Warriors</button>
+          </div>
+        </div>
+      `;
+    }
+
     function getWorldEventBoxHtml() {
       if (!state.turnOrder.started) {
         return "";
@@ -6940,21 +7163,6 @@
       const canReveal = canRevealWorldEvent();
       const canManualMatch = canManuallyMatchWorldEvent();
       const revealTeam = getWorldEventRevealTeam();
-      const nextRound = state.turnOrder.nextWorldEventRound;
-
-      if (!isDue && !revealedEvent) {
-        const nextEventText = Number.isInteger(nextRound)
-          ? `Next World Event expected in Round ${nextRound}.`
-          : "Next World Event has not been scheduled yet.";
-
-        return `
-          <div class="world-event-box waiting">
-            <div class="world-event-title">World Event</div>
-            <div class="world-event-text">No World Event this round. ${nextEventText}</div>
-            <div class="world-event-note">In Test Mode, World Events appear every round.</div>
-          </div>
-        `;
-      }
 
       if (revealedEvent) {
         return `
@@ -6963,6 +7171,7 @@
             <div class="world-event-name">${revealedEvent.name}</div>
             <div class="world-event-text">${revealedEvent.description}</div>
             <div class="world-event-note">Apply any board movement, wall damage, swapping, discarding, or player-choice effects manually on the physical board.</div>
+            ${getBabyBoomPanelHtml()}
           </div>
         `;
       }
@@ -7248,7 +7457,7 @@
         summon: "Summon one unit, plus one extra summon for each living Ritual Caster. Ritual costs still apply.",
         crafting: "Craft items from resources. Recipes require the full cost and enough item space.",
         shopping: "Shop only during your Shopping step, and only with a living Shopkeeper.",
-        roundEnd: "Claim 1 free Bronze, then choose Wood, Stone, Bread, or a second Bronze. If a World Event is due, reveal it before advancing."
+        roundEnd: "Claim 1 free Bronze, then choose Wood, Stone, Bread, or a second Bronze. Reveal and resolve one World Event before advancing."
       };
 
       currentReferenceTitle.textContent = currentStep.title;
@@ -8056,6 +8265,11 @@
       renderFilters();
       renderUnits();
       renderDetails();
+
+      const appVersionLabel = document.getElementById("appVersionLabel");
+      if (appVersionLabel) {
+        appVersionLabel.textContent = APP_VERSION;
+      }
     }
 
     toggleWalkthroughPanel.addEventListener("click", () => {
@@ -8534,6 +8748,15 @@
 
       if (manualWorldEventButton) {
         manuallySelectWorldEvent(Number(manualWorldEventButton.dataset.worldEventId));
+        return;
+      }
+
+      const babyBoomButton = event.target.closest('[data-action="apply-baby-boom"]');
+
+      if (babyBoomButton) {
+        const firstSelect = document.getElementById("babyBoomWarriorOne");
+        const secondSelect = document.getElementById("babyBoomWarriorTwo");
+        addBabyBoomWarriors(firstSelect ? firstSelect.value : "", secondSelect ? secondSelect.value : "");
         return;
       }
 
