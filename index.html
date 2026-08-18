@@ -2176,6 +2176,129 @@
       font-weight: 800;
     }
 
+    .resource-sale-panel {
+      display: grid;
+      gap: 10px;
+      border: 2px solid rgba(140, 69, 28, 0.26);
+      background: linear-gradient(180deg, rgba(255, 247, 230, 0.96), rgba(244, 225, 191, 0.82));
+      border-radius: 14px;
+      padding: 10px;
+      margin-bottom: 12px;
+    }
+
+    .resource-sale-heading {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: baseline;
+      flex-wrap: wrap;
+    }
+
+    .resource-sale-title {
+      font-size: 17px;
+      font-weight: 900;
+      color: #6f3516;
+    }
+
+    .resource-sale-note {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .resource-sale-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(150px, 1fr));
+      gap: 7px;
+    }
+
+    .resource-sale-card {
+      display: grid;
+      grid-template-columns: 30px minmax(0, 1fr) 30px;
+      gap: 5px;
+      align-items: center;
+      border: 1px solid rgba(43, 33, 24, 0.20);
+      background: rgba(255,255,255,0.60);
+      border-radius: 11px;
+      padding: 6px;
+    }
+
+    .resource-sale-card.selected {
+      border-color: rgba(140, 69, 28, 0.62);
+      box-shadow: inset 0 0 0 1px rgba(140, 69, 28, 0.16);
+    }
+
+    .resource-sale-name {
+      text-align: center;
+      font-size: 13px;
+      font-weight: 900;
+      line-height: 1.1;
+      min-width: 0;
+    }
+
+    .resource-sale-name span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .resource-sale-step {
+      min-height: 30px;
+      padding: 0;
+      font-size: 18px;
+      font-weight: 900;
+      border: 1px solid rgba(43, 33, 24, 0.3);
+      background: linear-gradient(180deg, #fff9eb, #ead7af);
+      color: var(--ink);
+      border-radius: 9px;
+      cursor: pointer;
+    }
+
+    .resource-sale-footer {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .resource-sale-summary {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.25;
+    }
+
+    .resource-sale-summary strong {
+      color: #6f3516;
+    }
+
+    .resource-sale-button {
+      min-height: 38px;
+      padding: 0 14px;
+      font-weight: 900;
+      cursor: pointer;
+      background: linear-gradient(180deg, #e2a06d, #b86a35);
+      color: #2f1709;
+      border: 1px solid rgba(92, 45, 17, 0.42);
+      border-radius: 10px;
+    }
+
+    .resource-sale-button:disabled,
+    .resource-sale-step:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    @media (max-width: 900px) {
+      .resource-sale-grid { grid-template-columns: repeat(2, minmax(140px, 1fr)); }
+    }
+
+    @media (max-width: 520px) {
+      .resource-sale-grid { grid-template-columns: 1fr; }
+      .resource-sale-footer { grid-template-columns: 1fr; }
+    }
+
     .shop-groups {
       display: grid;
       gap: 12px;
@@ -3076,7 +3199,7 @@
     <section class="shop-panel hidden" id="shopPanel" aria-label="Shop">
       <div class="panel-header">
         <h2>Shop</h2>
-        <div class="panel-note">Purchases use currency and fill available Resources or Items slots.</div>
+        <div class="panel-note">Buy, convert currency, or sell any 3 Resources for 1 Bronze.</div>
       </div>
       <div class="shop-content" id="shopGrid"></div>
     </section>
@@ -3324,7 +3447,7 @@
     const MAX_ITEM_SLOTS = 11;
     const MAX_BREAD = 3;
     const STARTING_TOTAL_PIECES = 8;
-    const APP_VERSION = "v0.2.3";
+    const APP_VERSION = "v0.2.4";
 
     const turnSteps = [
       { kind: "unit", typeId: 1, title: "King", instructions: "Each team may move/action all active Kings." },
@@ -3681,6 +3804,7 @@
     };
 
     let state = loadState();
+    let shopSaleSelection = {};
 
     const walkthroughContent = document.getElementById("walkthroughContent");
     const toggleWalkthroughPanel = document.getElementById("toggleWalkthroughPanel");
@@ -4330,7 +4454,10 @@
       <ul>
         <li>Currency can be converted upward: 3 Bronze to 1 Silver, or 3 Silver to 1 Gold.</li>
         <li>Arrows may be bought in the shop for <strong>1 Bronze each</strong>.</li>
-        <li><strong>Free Trade Economy</strong> makes all shop items 50% off while active, rounding up when necessary.</li>
+        <li><strong>Sell Resources:</strong> During the Shopping step, a player with an active living Shopkeeper may sell any <strong>3 Resources</strong> for <strong>1 Bronze</strong>. The three Resources may be mixed and do not have to match.</li>
+        <li>Resources must be sold in complete groups of 3. Bread and Items are not Resources and cannot be included in a sale.</li>
+        <li>Resources may still be discarded at any time to free inventory space, but discarded Resources give no Bronze or other benefit.</li>
+        <li><strong>Free Trade Economy</strong> makes all shop items 50% off while active, rounding up when necessary. It does not change the 3 Resources → 1 Bronze sale rate.</li>
       </ul>
     </section>
 
@@ -5964,6 +6091,150 @@
 
     function canUseCraftingNow() {
       return isCurrentTeamTurnForStep("crafting");
+    }
+
+    function getShopSaleSelectedTotal() {
+      return resourceTypes.reduce((total, resourceName) => total + (shopSaleSelection[resourceName] || 0), 0);
+    }
+
+    function sanitizeShopSaleSelection() {
+      let remainingSlots = 3;
+      const sanitized = {};
+
+      resourceTypes.forEach(resourceName => {
+        if (remainingSlots <= 0) {
+          return;
+        }
+
+        const owned = state.resources[resourceName] || 0;
+        const requested = Math.max(0, shopSaleSelection[resourceName] || 0);
+        const kept = Math.min(owned, requested, remainingSlots);
+
+        if (kept > 0) {
+          sanitized[resourceName] = kept;
+          remainingSlots -= kept;
+        }
+      });
+
+      shopSaleSelection = sanitized;
+    }
+
+    function changeShopSaleSelection(resourceName, amount) {
+      if (!canUseShopNow() || !state.shopOpen || !resourceTypes.includes(resourceName)) {
+        return;
+      }
+
+      sanitizeShopSaleSelection();
+
+      const currentSelected = shopSaleSelection[resourceName] || 0;
+      const owned = state.resources[resourceName] || 0;
+      const selectedTotal = getShopSaleSelectedTotal();
+
+      if (amount > 0) {
+        if (selectedTotal >= 3 || currentSelected >= owned) {
+          return;
+        }
+        shopSaleSelection[resourceName] = currentSelected + 1;
+      } else if (amount < 0) {
+        if (currentSelected <= 0) {
+          return;
+        }
+        const nextValue = currentSelected - 1;
+        if (nextValue > 0) {
+          shopSaleSelection[resourceName] = nextValue;
+        } else {
+          delete shopSaleSelection[resourceName];
+        }
+      }
+
+      renderShop();
+    }
+
+    function sellSelectedResources() {
+      if (!canUseShopNow() || !state.shopOpen) {
+        return;
+      }
+
+      sanitizeShopSaleSelection();
+
+      if (getShopSaleSelectedTotal() !== 3) {
+        return;
+      }
+
+      const soldParts = [];
+
+      resourceTypes.forEach(resourceName => {
+        const quantity = shopSaleSelection[resourceName] || 0;
+        if (quantity <= 0) {
+          return;
+        }
+
+        if ((state.resources[resourceName] || 0) < quantity) {
+          return;
+        }
+
+        state.resources[resourceName] -= quantity;
+        soldParts.push(`${quantity} ${resourceName}`);
+      });
+
+      const soldCount = resourceTypes.reduce((total, resourceName) => total + (shopSaleSelection[resourceName] || 0), 0);
+      if (soldCount !== 3) {
+        return;
+      }
+
+      state.currency.bronze = (state.currency.bronze || 0) + 1;
+      logRoundEvent(`Sold 3 Resources for 1 Bronze: ${soldParts.join(", ")}.`);
+      shopSaleSelection = {};
+      saveState();
+      render();
+    }
+
+    function renderResourceSelling() {
+      sanitizeShopSaleSelection();
+
+      const section = document.createElement("section");
+      section.className = "resource-sale-panel";
+
+      const selectedTotal = getShopSaleSelectedTotal();
+      const selectedParts = resourceTypes
+        .filter(resourceName => (shopSaleSelection[resourceName] || 0) > 0)
+        .map(resourceName => `${shopSaleSelection[resourceName]} ${resourceName}`);
+
+      const heading = document.createElement("div");
+      heading.className = "resource-sale-heading";
+      heading.innerHTML = `
+        <div class="resource-sale-title">Sell Resources</div>
+        <div class="resource-sale-note">Any 3 Resources → 1 Bronze · mixed groups allowed</div>
+      `;
+      section.appendChild(heading);
+
+      const grid = document.createElement("div");
+      grid.className = "resource-sale-grid";
+
+      resourceTypes.forEach(resourceName => {
+        const owned = state.resources[resourceName] || 0;
+        const selected = shopSaleSelection[resourceName] || 0;
+        const card = document.createElement("div");
+        card.className = `resource-sale-card${selected > 0 ? " selected" : ""}`;
+        card.innerHTML = `
+          <button class="resource-sale-step" type="button" data-sale-resource="${resourceName}" data-sale-change="-1" ${selected <= 0 ? "disabled" : ""} aria-label="Remove ${resourceName} from sale">−</button>
+          <div class="resource-sale-name">${resourceName}<span>Owned ${owned} · Selling ${selected}</span></div>
+          <button class="resource-sale-step" type="button" data-sale-resource="${resourceName}" data-sale-change="1" ${owned <= selected || selectedTotal >= 3 ? "disabled" : ""} aria-label="Add ${resourceName} to sale">+</button>
+        `;
+        grid.appendChild(card);
+      });
+
+      section.appendChild(grid);
+
+      const footer = document.createElement("div");
+      footer.className = "resource-sale-footer";
+      footer.innerHTML = `
+        <div class="resource-sale-summary"><strong>${selectedTotal}/3 selected.</strong> ${selectedParts.length > 0 ? selectedParts.join(" + ") : "Choose resources above."}</div>
+        <button class="resource-sale-button" type="button" data-sell-selected-resources ${selectedTotal === 3 ? "" : "disabled"}>Sell 3 → +1 Bronze</button>
+      `;
+      section.appendChild(footer);
+
+      shopGrid.appendChild(section);
     }
 
     function canUseShopNow() {
@@ -7708,7 +7979,7 @@
         const currentTeam = getCurrentTurnTeam();
         const isYourTurn = currentTeam === state.team;
         const canOpen = canUseShopNow();
-        let note = "Shopping requires an active living Trader.";
+        let note = "Shopping requires an active living Shopkeeper.";
 
         if (!isYourTurn) {
           note = `Wait for ${getTeamLabel(currentTeam)} to finish their shopping step.`;
@@ -8023,15 +8294,21 @@
     function renderShop() {
       if (!canUseShopNow()) {
         state.shopOpen = false;
+        shopSaleSelection = {};
       }
 
       shopPanel.classList.toggle("hidden", !state.shopOpen);
       shopGrid.innerHTML = "";
 
+      if (!state.shopOpen) {
+        return;
+      }
+
       // The shop content is deliberately stacked vertically:
-      // 1. Currency Conversion
-      // 2. Purchases grouped by the item/resource being bought
-      // This keeps conversion from being treated as one giant shop card.
+      // 1. Resource selling
+      // 2. Currency Conversion
+      // 3. Purchases grouped by the item/resource being bought
+      renderResourceSelling();
       renderCurrencyConversions();
 
       const groupedPurchases = getGroupedShopPurchases();
@@ -8591,6 +8868,18 @@
     });
 
     shopGrid.addEventListener("click", event => {
+      const saleStepButton = event.target.closest("[data-sale-resource]");
+      if (saleStepButton) {
+        changeShopSaleSelection(saleStepButton.dataset.saleResource, Number(saleStepButton.dataset.saleChange));
+        return;
+      }
+
+      const sellButton = event.target.closest("[data-sell-selected-resources]");
+      if (sellButton) {
+        sellSelectedResources();
+        return;
+      }
+
       const convertButton = event.target.closest("[data-convert-id]");
       if (convertButton) {
         convertCurrency(convertButton.dataset.convertId);
@@ -8853,6 +9142,9 @@
       if (shopButton) {
         if (canUseShopNow()) {
           state.shopOpen = !state.shopOpen;
+          if (!state.shopOpen) {
+            shopSaleSelection = {};
+          }
           saveState();
           render();
         }
