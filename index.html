@@ -3131,6 +3131,27 @@
       <div class="resource-grid panel-content" id="resourceGrid"></div>
     </section>
 
+    <section class="tracker-panel" id="breadPanel" aria-label="Bread tracker">
+      <div class="panel-header">
+        <div>
+          <h2>Bread</h2>
+          <div class="panel-note"><span id="breadCount">0</span> / 3 Bread stored · separate from inventory</div>
+        </div>
+        <button class="collapse-btn" id="toggleBreadPanel" type="button" aria-expanded="true">Collapse</button>
+      </div>
+      <div class="panel-content" id="breadContent">
+        <div class="stardust-controls">
+          <div>
+            <div class="stardust-label">Stored Bread</div>
+            <div class="stardust-note">Maximum 3. Bread does not use resource or item slots.</div>
+          </div>
+          <button class="small-btn" data-bread-change="-1" aria-label="Decrease Bread">−</button>
+          <div class="count" id="breadPanelCount">0</div>
+          <button class="small-btn" data-bread-change="1" aria-label="Increase Bread">+</button>
+        </div>
+      </div>
+    </section>
+
     <section class="tracker-panel" id="itemsPanel" aria-label="Item tracker">
       <div class="panel-header">
         <div>
@@ -3301,8 +3322,9 @@
     const MAX_ACTIVE_PIECES = 15;
     const MAX_RESOURCE_SLOTS = 11;
     const MAX_ITEM_SLOTS = 11;
+    const MAX_BREAD = 3;
     const STARTING_TOTAL_PIECES = 8;
-    const APP_VERSION = "v0.2.2";
+    const APP_VERSION = "v0.2.3";
 
     const turnSteps = [
       { kind: "unit", typeId: 1, title: "King", instructions: "Each team may move/action all active Kings." },
@@ -3373,7 +3395,6 @@
       "Iron",
       "Sulphur",
       "Rope",
-      "Bread",
       "Leather",
       "Glass",
       "Gem"
@@ -3446,7 +3467,7 @@
         costs: [
           { type: "resource", name: "Rope", quantity: 3 },
           { type: "resource", name: "Wood", quantity: 3 },
-          { type: "resource", name: "Bread", quantity: 2 },
+          { type: "bread", name: "Bread", quantity: 2 },
           { type: "currency", name: "gold", quantity: 1 }
         ],
         requirements: [{ typeId: 20, quantity: 3, label: "3 active Shopkeepers" }]
@@ -3574,7 +3595,7 @@
       { id: 11, name: "Priest", move: 1, maxHp: 1, action: "Heal — Choose an eligible dead ally and revive them with full HP.", ritual: "2 Glass, 1 Sulphur", category: "support", ritualCosts: [{ type: "resource", name: "Glass", quantity: 2 }, { type: "resource", name: "Sulphur", quantity: 1 }] },
       { id: 12, name: "Medic", move: 1, maxHp: 6, action: "Heal a damaged unit by 1 HP. Cannot heal a Medic.", ritual: "1 Iron, 6 Leather, 3 Bronze", category: "support", ritualCosts: [{ type: "resource", name: "Iron", quantity: 1 }, { type: "resource", name: "Leather", quantity: 6 }, { type: "currency", name: "bronze", quantity: 3 }] },
       { id: 13, name: "Necromancer", move: 1, maxHp: 1, action: "Heal — Choose an eligible dead ally unit and revive it with full HP.", ritual: "1 Gem, 7 Leather, 1 Silver, 2 Bronze", category: "support", ritualCosts: [{ type: "resource", name: "Gem", quantity: 1 }, { type: "resource", name: "Leather", quantity: 7 }, { type: "currency", name: "silver", quantity: 1 }, { type: "currency", name: "bronze", quantity: 2 }] },
-      { id: 14, name: "Farmer", move: 1, maxHp: 6, action: "Gain 1 Bread item card.", ritual: "1 Gold, 6 Leather", category: "support", ritualCosts: [{ type: "currency", name: "gold", quantity: 1 }, { type: "resource", name: "Leather", quantity: 6 }] },
+      { id: 14, name: "Farmer", move: 1, maxHp: 6, action: "Farm — Gain 1 Bread, up to the 3 Bread storage limit.", ritual: "1 Gold, 6 Leather", category: "support", ritualCosts: [{ type: "currency", name: "gold", quantity: 1 }, { type: "resource", name: "Leather", quantity: 6 }] },
       { id: 15, name: "Artillerist", move: 2, maxHp: 2, action: "May load and fire a cannon as one action. Must be adjacent to the cannon. Passive — May push the cannon 1 tile in any direction to an unoccupied tile.", ritual: "3 Sulphur", category: "special", ritualCosts: [{ type: "resource", name: "Sulphur", quantity: 3 }] },
       { id: 16, name: "Mechanist", move: 4, maxHp: 2, action: "Repair — Repair a built item, such as a wall, base, or cannon. Passive — May push the cannon 1 tile in any direction to an unoccupied tile.", ritual: "1 Shield, 2 Sulphur", category: "special", ritualCosts: [{ type: "item", name: "Shield", quantity: 1 }, { type: "resource", name: "Sulphur", quantity: 2 }] },
       { id: 17, name: "Ritual Caster", move: 1, maxHp: 1, action: "Passive — Grants 1 additional summon during your Summoning Unit phase. Costs still apply.", ritual: "1 Gold, 2 Sulphur, 1 Artifact", category: "special", ritualCosts: [{ type: "currency", name: "gold", quantity: 1 }, { type: "resource", name: "Sulphur", quantity: 2 }, { type: "item", name: "Artifact", quantity: 1 }] },
@@ -3603,6 +3624,7 @@
       collapsedPanels: {
         turn: false,
         resources: false,
+        bread: false,
         items: false,
         cannon: false,
         giving: false,
@@ -3646,6 +3668,7 @@
       },
       givingTiles: 0,
       stardust: 0,
+      bread: 0,
       resources: Object.fromEntries(resourceTypes.map(resourceName => [resourceName, 0])),
       items: Object.fromEntries(itemTypes.map(itemName => [itemName, 0])),
       roundLog: [],
@@ -3734,6 +3757,10 @@
     const resourceGrid = document.getElementById("resourceGrid");
     const resourceUsed = document.getElementById("resourceUsed");
     const toggleResourcesPanel = document.getElementById("toggleResourcesPanel");
+    const breadContent = document.getElementById("breadContent");
+    const breadCount = document.getElementById("breadCount");
+    const breadPanelCount = document.getElementById("breadPanelCount");
+    const toggleBreadPanel = document.getElementById("toggleBreadPanel");
     const itemGrid = document.getElementById("itemGrid");
     const itemUsed = document.getElementById("itemUsed");
     const toggleItemsPanel = document.getElementById("toggleItemsPanel");
@@ -3838,16 +3865,30 @@
           return createFreshGameState();
         }
 
+        // v0.2.3 Bread migration: Bread used to live inside Resources.
+        // Keep the same storage key so an in-progress game continues normally,
+        // move the old Bread count into its new standalone pool, and remove the
+        // legacy Resources.Bread property. The new rule caps stored Bread at 3.
+        const savedResources = { ...(saved.resources || {}) };
+        const legacyBread = Number(savedResources.Bread || 0);
+        delete savedResources.Bread;
+        const migratedBread = clamp(
+          Number.isFinite(Number(saved.bread)) ? Number(saved.bread) : legacyBread,
+          0,
+          MAX_BREAD
+        );
+
         return {
           ...cloneDefaultState(),
           ...saved,
+          bread: migratedBread,
           currency: {
             ...defaultState.currency,
             ...(saved.currency || {})
           },
           resources: {
             ...defaultState.resources,
-            ...(saved.resources || {})
+            ...savedResources
           },
           items: {
             ...defaultState.items,
@@ -4206,13 +4247,13 @@
     </section>
 
     <section>
-      <h2>Resources, Items, Currency, and Stardust</h2>
+      <h2>Resources, Bread, Items, Currency, and Stardust</h2>
       <div class="two-column">
         <div class="mini-card">
           <h3>Resources</h3>
           <p>Resources use the standard resource inventory. A player may hold up to <strong>11 resource slots</strong>.</p>
           <div class="tag-list">
-            <span class="tag">Wood</span><span class="tag">Stone</span><span class="tag">Iron</span><span class="tag">Sulphur</span><span class="tag">Rope</span><span class="tag">Bread</span><span class="tag">Leather</span><span class="tag">Glass</span><span class="tag">Gem</span>
+            <span class="tag">Wood</span><span class="tag">Stone</span><span class="tag">Iron</span><span class="tag">Sulphur</span><span class="tag">Rope</span><span class="tag">Leather</span><span class="tag">Glass</span><span class="tag">Gem</span>
           </div>
         </div>
         <div class="mini-card">
@@ -4223,6 +4264,8 @@
           </div>
         </div>
       </div>
+      <h3>Bread</h3>
+      <p><strong>Bread</strong> is tracked separately from Resources and Items. It does not use inventory slots. A player may hold a maximum of <strong>3 Bread</strong>.</p>
       <h3>Currency</h3>
       <p>Currency is tracked separately as Gold, Silver, and Bronze. During setup and Test Mode, currency can be adjusted manually. After setup, manual economy additions are locked, and changes should come from rewards, actions, shopping, crafting, or World Events.</p>
       <h3>Stardust</h3>
@@ -4233,9 +4276,9 @@
       <h2>Giving Tiles</h2>
       <p>Giving Tiles are special spaces on the board. Track the number of Giving Tiles occupied, from <strong>0 to 5</strong>.</p>
       <ul>
-        <li>During the Giving Tile step, each occupied Giving Tile gives one random resource.</li>
+        <li>During the Giving Tile step, each occupied Giving Tile gives one random reward from the resource/Bread reward pool.</li>
         <li>Gem and Iron are excluded from the random Giving Tile reward pool.</li>
-        <li>Giving Tile rewards require open resource slots unless a rule specifically says otherwise.</li>
+        <li>Normal resource rewards require open resource slots. Bread uses its separate 3-Bread storage instead.</li>
         <li>Gaining or losing Giving Tiles is recorded in the round news.</li>
       </ul>
     </section>
@@ -4295,7 +4338,7 @@
       <h2>Actions Tracked by the App</h2>
       <ul>
         <li><strong>Bow Warrior - Fire:</strong> spends 1 Arrow.</li>
-        <li><strong>Farmer - Farm:</strong> gains 1 Bread if there is resource space.</li>
+        <li><strong>Farmer - Farm:</strong> gains 1 Bread if Bread storage is below 3.</li>
         <li><strong>Thief - Steal:</strong> adds 1 Bronze after players confirm the Thief is within 5 tiles of the enemy King.</li>
         <li><strong>Wood Worker - Build:</strong> spends 2 Wood.</li>
         <li><strong>Stone Worker - Build:</strong> spends 2 Stone.</li>
@@ -4848,8 +4891,8 @@
           state.currency.gold = (state.currency.gold || 0) + 1;
           return "Gained 1 Gold.";
         case "bread": {
-          const breadAdded = addToCollectionWithCapacity("resources", "Bread", 2);
-          return breadAdded > 0 ? `Gained ${breadAdded} Bread.` : "No resource space for Bread.";
+          const breadAdded = addBreadWithCapacity(2);
+          return breadAdded > 0 ? `Gained ${breadAdded} Bread.` : "Bread storage is already full (3/3).";
         }
         case "cannon":
           if (getTotalCannonsOwned() <= 0 && canGainCannon(1) && getAvailableSpaceForTargetType("item") > 0) {
@@ -4858,8 +4901,8 @@
           }
           return getTotalCannonsOwned() > 0 ? "Already has a Cannon, so no Cannon gained." : "No item space for Cannon.";
         case "pestilence": {
-          const lostBread = state.resources.Bread || 0;
-          state.resources.Bread = 0;
+          const lostBread = state.bread || 0;
+          state.bread = 0;
           return lostBread > 0 ? `Lost ${lostBread} Bread.` : "No Bread to lose.";
         }
         case "reverse-turn-order":
@@ -4869,12 +4912,11 @@
           state.turnOrder.freeTradeActive = true;
           return "Free Trade Economy is active. Shop prices are 50% off, rounded up.";
         case "gods-blessing": {
-          const rewardCount = Math.min(5, getAvailableSpaceForTargetType("resource"));
-          const rewards = getRandomGivingTileRewards(rewardCount);
-          rewards.forEach(reward => {
-            state.resources[reward.name] = (state.resources[reward.name] || 0) + 1;
-          });
-          return rewardCount > 0 ? `God's Blessing gave ${rewardCount} random Giving Tile reward${rewardCount === 1 ? "" : "s"}: ${rewards.map(reward => reward.name).join(", ")}.` : "No resource space for God's Blessing rewards.";
+          const rolledRewards = getRandomGivingTileRewards(5);
+          const gainedRewards = applyGivingTileRewardsWithCapacity(rolledRewards);
+          return gainedRewards.length > 0
+            ? `God's Blessing gave ${gainedRewards.length} reward${gainedRewards.length === 1 ? "" : "s"}: ${gainedRewards.map(reward => reward.name).join(", ")}.`
+            : "No capacity for God's Blessing rewards.";
         }
         case "shields": {
           const shieldsAdded = addToCollectionWithCapacity("items", "Shield", 3);
@@ -5198,6 +5240,10 @@
         return state.items[cost.name] || 0;
       }
 
+      if (cost.type === "bread") {
+        return state.bread || 0;
+      }
+
       return 0;
     }
 
@@ -5219,6 +5265,8 @@
           state.resources[cost.name] -= cost.quantity;
         } else if (cost.type === "item") {
           state.items[cost.name] -= cost.quantity;
+        } else if (cost.type === "bread") {
+          state.bread = Math.max(0, (state.bread || 0) - cost.quantity);
         }
       });
     }
@@ -5267,6 +5315,10 @@
     function getCostDisplayName(cost) {
       if (cost.type === "currency") {
         return cost.name.charAt(0).toUpperCase() + cost.name.slice(1);
+      }
+
+      if (cost.type === "bread") {
+        return "Bread";
       }
 
       return cost.name;
@@ -5736,6 +5788,34 @@
       render();
     }
 
+    function getBreadSpaceAvailable() {
+      return Math.max(0, MAX_BREAD - (state.bread || 0));
+    }
+
+    function addBreadWithCapacity(quantity) {
+      const quantityAdded = Math.min(Math.max(0, quantity), getBreadSpaceAvailable());
+      if (quantityAdded > 0) {
+        state.bread = (state.bread || 0) + quantityAdded;
+      }
+      return quantityAdded;
+    }
+
+    function changeBread(amount) {
+      if (amount > 0 && !canManuallyEditEconomy()) {
+        return;
+      }
+
+      const previousCount = state.bread || 0;
+      const newCount = clamp(previousCount + amount, 0, MAX_BREAD);
+      if (newCount === previousCount) {
+        return;
+      }
+
+      state.bread = newCount;
+      saveState();
+      render();
+    }
+
     function canSelectedPieceEatBread(piece) {
       if (!piece || piece.currentHp <= 0) {
         return false;
@@ -5747,7 +5827,7 @@
         return false;
       }
 
-      return (state.resources.Bread || 0) > 0 && piece.currentHp < unitType.maxHp;
+      return (state.bread || 0) > 0 && piece.currentHp < unitType.maxHp;
     }
 
     function eatBreadWithPiece(pieceId) {
@@ -5760,7 +5840,7 @@
       const unitType = getUnitType(piece.typeId);
       const previousHp = piece.currentHp;
 
-      state.resources.Bread -= 1;
+      state.bread -= 1;
       piece.currentHp = clamp(piece.currentHp + 2, 0, unitType.maxHp);
 
       logRoundEvent(`${unitType.name} #${getCopyNumber(piece)} ate Bread: HP ${previousHp} → ${piece.currentHp}. 1 Bread used.`);
@@ -6064,7 +6144,7 @@
         currentStep.kind === "unit" &&
         currentStep.typeId === 14 &&
         currentTeam === state.team &&
-        getAvailableSpaceForTargetType("resource") > 0 &&
+        getBreadSpaceAvailable() > 0 &&
         !hasFarmerFarmedThisTurn(piece.pieceId)
       );
     }
@@ -6077,7 +6157,7 @@
       }
 
       const copyNumber = getCopyNumber(piece);
-      state.resources.Bread = (state.resources.Bread || 0) + 1;
+      addBreadWithCapacity(1);
       recordFarmerFarmedThisTurn(piece.pieceId);
       logRoundEvent(`Farmer #${copyNumber} farmed 1 Bread.`);
       saveState();
@@ -6415,7 +6495,7 @@
         return false;
       }
 
-      if (getAvailableSpaceForTargetType("resource") <= 0) {
+      if (getAvailableSpaceForTargetType("resource") <= 0 && getBreadSpaceAvailable() <= 0) {
         return false;
       }
 
@@ -6442,17 +6522,25 @@
         return;
       }
 
+      if ((choice === "Wood" || choice === "Stone") && getAvailableSpaceForTargetType("resource") <= 0) {
+        window.alert("There is no room in Resources for the bonus resource.");
+        return;
+      }
+
+      if (choice === "Bread" && getBreadSpaceAvailable() <= 0) {
+        window.alert("Bread storage is full (3/3). Choose another bonus.");
+        return;
+      }
+
       state.currency.bronze += 1;
 
       if (choice === "bronze") {
         state.currency.bronze += 1;
         logRoundEvent("End-of-round reward claimed: 1 free Bronze plus bonus Bronze.");
-      } else if (choice === "Wood" || choice === "Stone" || choice === "Bread") {
-        if (getAvailableSpaceForTargetType("resource") <= 0) {
-          window.alert("There is no room in Resources for the bonus resource.");
-          return;
-        }
-
+      } else if (choice === "Bread") {
+        addBreadWithCapacity(1);
+        logRoundEvent("End-of-round reward claimed: 1 free Bronze plus bonus Bread.");
+      } else if (choice === "Wood" || choice === "Stone") {
         state.resources[choice] = (state.resources[choice] || 0) + 1;
         logRoundEvent(`End-of-round reward claimed: 1 free Bronze plus bonus ${choice}.`);
       }
@@ -6473,28 +6561,42 @@
       return results;
     }
 
+    function applyGivingTileRewardsWithCapacity(rewards) {
+      const gainedRewards = [];
+
+      rewards.forEach(reward => {
+        if (reward.name === "Bread") {
+          if (addBreadWithCapacity(1) > 0) {
+            gainedRewards.push(reward);
+          }
+          return;
+        }
+
+        if (getAvailableSpaceForTargetType("resource") > 0) {
+          state.resources[reward.name] = (state.resources[reward.name] || 0) + 1;
+          gainedRewards.push(reward);
+        }
+      });
+
+      return gainedRewards;
+    }
+
     function resolveGivingTilesReward() {
       if (!canResolveGivingTiles()) {
         return;
       }
 
       const tileCount = state.givingTiles || 0;
-      const availableSpace = getAvailableSpaceForTargetType("resource");
-      const rewardCount = Math.min(tileCount, availableSpace);
-
-      if (rewardCount <= 0) {
-        window.alert("There is no room in Resources for Giving Tile rewards.");
-        return;
-      }
-
-      const rewards = getRandomGivingTileRewards(rewardCount);
-
-      rewards.forEach(reward => {
-        state.resources[reward.name] = (state.resources[reward.name] || 0) + 1;
-      });
+      const rolledRewards = getRandomGivingTileRewards(tileCount);
+      const rewards = applyGivingTileRewardsWithCapacity(rolledRewards);
+      const rewardCount = rewards.length;
 
       state.turnOrder.lastGivingResolvedKey = getCurrentTurnKey();
-      logRoundEvent(`Giving Tiles produced: ${rewards.map(reward => reward.name).join(", ")}.`);
+      logRoundEvent(
+        rewardCount > 0
+          ? `Giving Tiles produced: ${rewards.map(reward => reward.name).join(", ")}.${rewardCount < tileCount ? ` ${tileCount - rewardCount} reward${tileCount - rewardCount === 1 ? " was" : "s were"} blocked by storage limits.` : ""}`
+          : `Giving Tiles produced no storable rewards; all ${tileCount} reward${tileCount === 1 ? " was" : "s were"} blocked by storage limits.`
+      );
       saveState();
       render();
       showGivingTileRewards(rewards, tileCount, rewardCount);
@@ -6506,8 +6608,8 @@
       givingResultsOverlay.classList.toggle("subtle-mode", useSubtleMode);
       givingResultsGrid.innerHTML = "";
       givingResultsSubtitle.textContent = rewardCount < tileCount
-        ? `You occupied ${tileCount} Giving Tiles, but only had room for ${rewardCount} reward${rewardCount === 1 ? "" : "s"}.`
-        : `You occupied ${tileCount} Giving Tile${tileCount === 1 ? "" : "s"} and received ${rewardCount} random resource${rewardCount === 1 ? "" : "s"}.`;
+        ? `You occupied ${tileCount} Giving Tiles and stored ${rewardCount} reward${rewardCount === 1 ? "" : "s"}; the rest were blocked by Resource/Bread limits.`
+        : `You occupied ${tileCount} Giving Tile${tileCount === 1 ? "" : "s"} and received ${rewardCount} random reward${rewardCount === 1 ? "" : "s"}.`;
 
       const fragment = document.createDocumentFragment();
 
@@ -6976,6 +7078,7 @@
     function renderCollapsiblePanels() {
       const turnCollapsed = isPanelCollapsed("turn");
       const resourcesCollapsed = isPanelCollapsed("resources");
+      const breadCollapsed = isPanelCollapsed("bread");
       const itemsCollapsed = isPanelCollapsed("items");
       const cannonCollapsed = isPanelCollapsed("cannon");
       const givingCollapsed = isPanelCollapsed("giving");
@@ -6983,6 +7086,7 @@
 
       turnContent.classList.toggle("hidden", turnCollapsed);
       resourceGrid.classList.toggle("hidden", resourcesCollapsed);
+      breadContent.classList.toggle("hidden", breadCollapsed);
       itemGrid.classList.toggle("hidden", itemsCollapsed);
       cannonContent.classList.toggle("hidden", cannonCollapsed);
       givingContent.classList.toggle("hidden", givingCollapsed);
@@ -6990,6 +7094,7 @@
 
       updatePanelToggle(toggleTurnPanel, turnCollapsed);
       updatePanelToggle(toggleResourcesPanel, resourcesCollapsed);
+      updatePanelToggle(toggleBreadPanel, breadCollapsed);
       updatePanelToggle(toggleItemsPanel, itemsCollapsed);
       updatePanelToggle(toggleCannonPanel, cannonCollapsed);
       updatePanelToggle(toggleGivingPanel, givingCollapsed);
@@ -7654,7 +7759,7 @@
             <div class="round-reward-buttons">
               <button class="round-reward-btn" data-round-reward="Wood" ${canClaim ? "" : "disabled"}>+ Bronze & Wood</button>
               <button class="round-reward-btn" data-round-reward="Stone" ${canClaim ? "" : "disabled"}>+ Bronze & Stone</button>
-              <button class="round-reward-btn" data-round-reward="Bread" ${canClaim ? "" : "disabled"}>+ Bronze & Bread</button>
+              <button class="round-reward-btn" data-round-reward="Bread" ${canClaim && getBreadSpaceAvailable() > 0 ? "" : "disabled"}>+ Bronze & Bread</button>
               <button class="round-reward-btn primary" data-round-reward="bronze" ${canClaim ? "" : "disabled"}>+ 2 Bronze</button>
             </div>
             ${worldEventHtml}
@@ -7774,6 +7879,8 @@
       document.getElementById("bronzeCount").textContent = state.currency.bronze;
       givingTilesCount.textContent = state.givingTiles || 0;
       stardustCount.textContent = state.stardust || 0;
+      breadCount.textContent = state.bread || 0;
+      breadPanelCount.textContent = state.bread || 0;
 
       economyLockNote.textContent = manualEconomyLocked
         ? "Manual economy edits are locked after setup. Use rewards, shop, crafting, and game actions."
@@ -7782,6 +7889,16 @@
       document.querySelectorAll("[data-currency]").forEach(button => {
         button.disabled = manualEconomyLocked;
         button.title = manualEconomyLocked ? "Manual currency edits are locked after setup." : "Adjust during setup/testing.";
+      });
+
+      document.querySelectorAll("[data-bread-change]").forEach(button => {
+        const amount = Number(button.dataset.breadChange);
+        button.disabled = amount > 0
+          ? manualEconomyLocked || (state.bread || 0) >= MAX_BREAD
+          : (state.bread || 0) <= 0;
+        button.title = amount > 0 && manualEconomyLocked
+          ? "Manual Bread additions are locked after setup."
+          : (amount > 0 ? "Add Bread during setup/testing." : "Discard/remove 1 Bread.");
       });
 
       document.querySelectorAll("[data-giving-animation]").forEach(button => {
@@ -8352,6 +8469,12 @@
       render();
     });
 
+    toggleBreadPanel.addEventListener("click", () => {
+      setManualPanelCollapsed("bread", !isPanelCollapsed("bread"));
+      saveState();
+      render();
+    });
+
     toggleItemsPanel.addEventListener("click", () => {
       setManualPanelCollapsed("items", !isPanelCollapsed("items"));
       saveState();
@@ -8426,6 +8549,12 @@
     document.querySelectorAll("[data-stardust-change]").forEach(button => {
       button.addEventListener("click", () => {
         changeStardust(Number(button.dataset.stardustChange));
+      });
+    });
+
+    document.querySelectorAll("[data-bread-change]").forEach(button => {
+      button.addEventListener("click", () => {
+        changeBread(Number(button.dataset.breadChange));
       });
     });
 
@@ -8609,7 +8738,7 @@
       }
 
       if (action === "reset-game") {
-        const confirmed = window.confirm("Reset the whole game? This removes active pieces, resets currency, clears resources, clears items, resets turn order, and returns to setup mode.");
+        const confirmed = window.confirm("Reset the whole game? This removes active pieces, resets currency, clears resources, clears Bread, clears items, resets turn order, and returns to setup mode.");
 
         if (!confirmed) {
           return;
