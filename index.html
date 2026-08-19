@@ -3447,7 +3447,7 @@
     const MAX_ITEM_SLOTS = 11;
     const MAX_BREAD = 3;
     const STARTING_TOTAL_PIECES = 8;
-    const APP_VERSION = "v0.2.6";
+    const APP_VERSION = "v0.2.7";
 
     const turnSteps = [
       { kind: "unit", typeId: 1, title: "King", instructions: "Each team may move/action all active Kings." },
@@ -3466,9 +3466,9 @@
       { kind: "unit", typeId: 14, title: "Farmer", instructions: "Each team may move/action all active Farmers." },
       { kind: "unit", typeId: 15, title: "Artillerist", instructions: "Each team may move/action all active Artillerists." },
       { kind: "unit", typeId: 16, title: "Mechanist", instructions: "Each team may move/action all active Mechanists." },
-      { kind: "unit", typeId: 17, title: "Ritual Caster", instructions: "Each team may move/action all active Ritual Casters." },
       { kind: "unit", typeId: 18, title: "Thief", instructions: "Each team may move/action all active Thieves." },
       { kind: "unit", typeId: 19, title: "Strategist", instructions: "Each team may move/action all active Strategists." },
+      { kind: "unit", typeId: 17, title: "Oracle", instructions: "Each team may move all active Oracles. Negate is used only after this team reveals a World Event at the end of the round." },
       { kind: "unit", typeId: 20, title: "Shopkeeper", instructions: "Each team may move/action all active Shopkeepers." },
       { kind: "giving", title: "Giving Tile Random Item Pickup", instructions: "Each round, resolve one random resource pickup per Giving Tile occupied." },
       { kind: "summon", title: "Summoning Unit", instructions: "Summon a unit if you have the needed resources, items, and currency." },
@@ -3721,7 +3721,7 @@
       { id: 14, name: "Farmer", move: 1, maxHp: 6, action: "Farm — Gain 1 Bread, up to the 3 Bread storage limit.", ritual: "1 Gold, 6 Leather", category: "support", ritualCosts: [{ type: "currency", name: "gold", quantity: 1 }, { type: "resource", name: "Leather", quantity: 6 }] },
       { id: 15, name: "Artillerist", move: 2, maxHp: 2, action: "May load and fire a cannon as one action. Must be adjacent to the cannon. Passive — May push the cannon 1 tile in any direction to an unoccupied tile.", ritual: "3 Sulphur", category: "special", ritualCosts: [{ type: "resource", name: "Sulphur", quantity: 3 }] },
       { id: 16, name: "Mechanist", move: 4, maxHp: 2, action: "Repair — Repair a built item, such as a wall, base, or cannon. Passive — May push the cannon 1 tile in any direction to an unoccupied tile.", ritual: "1 Shield, 2 Sulphur", category: "special", ritualCosts: [{ type: "item", name: "Shield", quantity: 1 }, { type: "resource", name: "Sulphur", quantity: 2 }] },
-      { id: 17, name: "Ritual Caster", move: 1, maxHp: 1, action: "Passive — Grants 1 additional summon during your Summoning Unit phase. Costs still apply.", ritual: "1 Gold, 2 Sulphur, 1 Artifact", category: "special", ritualCosts: [{ type: "currency", name: "gold", quantity: 1 }, { type: "resource", name: "Sulphur", quantity: 2 }, { type: "item", name: "Artifact", quantity: 1 }] },
+      { id: 17, name: "Oracle", move: 1, maxHp: 1, action: "Negate — When your team is responsible for revealing the World Event, after the random event is revealed but before it resolves, you may invoke an Oracle to negate that event for both players. The Oracle then Ascends to the heavens and is removed from the board.", ritual: "3 Glass", category: "special", ritualCosts: [{ type: "resource", name: "Glass", quantity: 3 }] },
       { id: 18, name: "Thief", move: 4, maxHp: 1, action: "If within 5 tiles of the opponent's King, steal 1 Bronze from the opponent's hand. May go over the 5 Bronze limit with this effect.", ritual: "2 Bronze, 1 Rope", category: "special", ritualCosts: [{ type: "currency", name: "bronze", quantity: 2 }, { type: "resource", name: "Rope", quantity: 1 }] },
       { id: 19, name: "Strategist", move: 1, maxHp: 1, action: "Delete this unit on any ally unit's turn to grant that ally a second action for the round.", ritual: "3 Sulphur, 1 Iron", category: "special", ritualCosts: [{ type: "resource", name: "Sulphur", quantity: 3 }, { type: "resource", name: "Iron", quantity: 1 }] },
       { id: 20, name: "Shopkeeper", move: 2, maxHp: 3, action: "Passive — Allows the Shop feature during the Shopping step.", ritual: "5 Bronze", category: "special", ritualCosts: [{ type: "currency", name: "bronze", quantity: 5 }] }
@@ -3779,8 +3779,11 @@
         farmersUsedByTurnKey: {},
         actionsUsedByTurnKey: {},
         worldEventsByRound: {},
+        pendingWorldEventsByRound: {},
+        worldEventsNegatedByRound: {},
         worldEventsResolvedByTurnKey: {},
         babyBoomUsedByRound: {},
+        initiativeOrderVersion: 2,
         reversePieceOrder: false,
         freeTradeActive: false
       },
@@ -3981,6 +3984,45 @@
       return nextCopyNumber;
     }
 
+    function migrateInitiativeOrder(savedTurnOrder) {
+      const migrated = {
+        ...defaultState.turnOrder,
+        ...(savedTurnOrder || {})
+      };
+
+      if (migrated.initiativeOrderVersion === 2) {
+        return migrated;
+      }
+
+      // v0.2.7 moved unit #17 (now Oracle) from before Thief to the
+      // second-last unit initiative, immediately before Shopkeeper. Preserve
+      // the exact current step of an in-progress v0.2.6 game by mapping the
+      // old step identity to its new index (including Uno Reverso order).
+      const oldUnitTypeIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 11, 13, 14, 15, 16, 17, 18, 19, 20];
+      const oldUnitSteps = oldUnitTypeIds.map(typeId => ({ kind: "unit", typeId }));
+      const oldNonUnitSteps = [
+        { kind: "giving" },
+        { kind: "summon" },
+        { kind: "crafting" },
+        { kind: "shopping" },
+        { kind: "roundEnd" }
+      ];
+      const oldEffectiveSteps = migrated.reversePieceOrder
+        ? [...oldUnitSteps].reverse().concat(oldNonUnitSteps)
+        : oldUnitSteps.concat(oldNonUnitSteps);
+      const newEffectiveSteps = migrated.reversePieceOrder
+        ? turnSteps.filter(step => step.kind === "unit").reverse().concat(turnSteps.filter(step => step.kind !== "unit"))
+        : turnSteps;
+      const oldStep = oldEffectiveSteps[migrated.stepIndex] || oldEffectiveSteps[0];
+      const mappedIndex = newEffectiveSteps.findIndex(step =>
+        step.kind === oldStep.kind && (step.kind !== "unit" || step.typeId === oldStep.typeId)
+      );
+
+      migrated.stepIndex = mappedIndex >= 0 ? mappedIndex : migrated.stepIndex;
+      migrated.initiativeOrderVersion = 2;
+      return migrated;
+    }
+
     function loadState() {
       try {
         const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
@@ -4018,10 +4060,7 @@
             ...defaultState.items,
             ...(saved.items || {})
           },
-          turnOrder: {
-            ...defaultState.turnOrder,
-            ...(saved.turnOrder || {})
-          },
+          turnOrder: migrateInitiativeOrder(saved.turnOrder),
           pendingBaseSpecializations: saved.pendingBaseSpecializations || {},
           collapsedPanels: {
             ...defaultState.collapsedPanels,
@@ -4420,10 +4459,9 @@
 
     <section>
       <h2>Summoning</h2>
-      <p>During the <strong>Summoning Unit</strong> phase, a player may summon one unit, plus one additional unit for each active living <strong>Ritual Caster</strong> they control.</p>
+      <p>During the <strong>Summoning Unit</strong> phase, a player may summon <strong>one unit</strong>.</p>
       <ul>
         <li>Summoning requires the full listed Summoning Cost.</li>
-        <li>Ritual Caster gives an extra summon, but costs still apply.</li>
         <li>The King cannot be summoned.</li>
         <li>Summoned Bow Warriors do not receive the free setup Arrows.</li>
       </ul>
@@ -4552,11 +4590,20 @@
     <section>
       <h2>World Events</h2>
       <p>World Events are shared events that affect both players. One World Event occurs at the end of every round.</p>
+      <h3>Oracle — Negate</h3>
+      <ul>
+        <li>Only the player responsible for randomly revealing the World Event may invoke an Oracle.</li>
+        <li>The choice is made <strong>after</strong> the random World Event has been revealed, but <strong>before</strong> its effect is resolved.</li>
+        <li>If invoked, the Oracle negates that World Event for <strong>both players</strong>.</li>
+        <li>The Oracle then <strong>Ascends to the heavens</strong> and is removed from the board.</li>
+      </ul>
       <h3>Local iPad Rule</h3>
       <ol>
         <li>The first player of the World Event round clicks <strong>Reveal World Event</strong>.</li>
-        <li>The other player selects the same event from the <strong>Manual Match Event Deck</strong> on their own iPad.</li>
-        <li>Both players resolve the same event on the physical board.</li>
+        <li>After the event is revealed, the revealing player may invoke an Oracle if one is alive.</li>
+        <li>If the event is allowed, the other player selects the same event from the <strong>Manual Match Event Deck</strong> on their own iPad.</li>
+        <li>If an Oracle negates it, the other player records the same event as <strong>negated</strong> instead of applying its effect.</li>
+        <li>Both trackers therefore record the same World Event result.</li>
       </ol>
       <p class="note">Some World Events are applied automatically by the tracker. Events involving board position, walls, player choices, or discarding are resolved manually by the players.</p>
       <div class="table-wrap">
@@ -4915,9 +4962,28 @@
         state.turnOrder.worldEventsByRound = {};
       }
 
+      if (!state.turnOrder.pendingWorldEventsByRound) {
+        state.turnOrder.pendingWorldEventsByRound = {};
+      }
+
+      if (!state.turnOrder.worldEventsNegatedByRound) {
+        state.turnOrder.worldEventsNegatedByRound = {};
+      }
+
       if (!state.turnOrder.worldEventsResolvedByTurnKey) {
         state.turnOrder.worldEventsResolvedByTurnKey = {};
       }
+    }
+
+    function getPendingWorldEventForRound(roundNumber) {
+      ensureWorldEventState();
+      const eventId = state.turnOrder.pendingWorldEventsByRound[String(roundNumber)];
+      return worldEvents.find(event => event.id === eventId) || null;
+    }
+
+    function wasWorldEventNegated(roundNumber) {
+      ensureWorldEventState();
+      return Boolean(state.turnOrder.worldEventsNegatedByRound[String(roundNumber)]);
     }
 
     function getWorldEventForRound(roundNumber) {
@@ -4962,6 +5028,7 @@
         getCurrentTurnTeam() === state.team &&
         isWorldEventRevealTurn() &&
         isWorldEventDueThisRound() &&
+        !getPendingWorldEventForRound(state.turnOrder.round) &&
         !hasResolvedWorldEventThisTurn()
       );
     }
@@ -5078,7 +5145,7 @@
 
     function isBabyBoomActiveThisRound() {
       const revealedEvent = getWorldEventForRound(state.turnOrder.round);
-      return Boolean(revealedEvent && revealedEvent.effect === "baby-boom");
+      return Boolean(revealedEvent && !wasWorldEventNegated(state.turnOrder.round) && revealedEvent.effect === "baby-boom");
     }
 
     function canUseBabyBoomPanel() {
@@ -5170,16 +5237,37 @@
       render();
     }
 
+    function getLivingOraclePieces() {
+      return state.activePieces.filter(piece => piece.typeId === 17 && piece.currentHp > 0);
+    }
+
+    function hasLivingOracle() {
+      return getLivingOraclePieces().length > 0;
+    }
+
+    function canMakeOracleDecision() {
+      return Boolean(
+        state.turnOrder.started &&
+        getCurrentTurnStep().kind === "roundEnd" &&
+        getCurrentTurnTeam() === state.team &&
+        isWorldEventRevealTurn() &&
+        getPendingWorldEventForRound(state.turnOrder.round) &&
+        !hasResolvedWorldEventThisTurn()
+      );
+    }
+
     function resolveWorldEvent(event, sourceLabel) {
       if (!event) {
         return;
       }
 
       ensureWorldEventState();
-      state.turnOrder.worldEventsByRound[String(state.turnOrder.round)] = event.id;
+      const roundKey = String(state.turnOrder.round);
+      state.turnOrder.worldEventsByRound[roundKey] = event.id;
+      delete state.turnOrder.pendingWorldEventsByRound[roundKey];
+      delete state.turnOrder.worldEventsNegatedByRound[roundKey];
       state.turnOrder.worldEventsResolvedByTurnKey[getCurrentTurnKey()] = true;
       const effectResult = applyWorldEventEffect(event);
-
 
       logRoundEvent(`World Event${sourceLabel ? ` (${sourceLabel})` : ""} — ${event.name}: ${event.description} ${effectResult}`);
       saveState();
@@ -5192,7 +5280,63 @@
       }
 
       const randomEvent = worldEvents[Math.floor(Math.random() * worldEvents.length)];
-      resolveWorldEvent(randomEvent, "revealed");
+
+      if (!hasLivingOracle()) {
+        resolveWorldEvent(randomEvent, "revealed");
+        return;
+      }
+
+      ensureWorldEventState();
+      state.turnOrder.pendingWorldEventsByRound[String(state.turnOrder.round)] = randomEvent.id;
+      logRoundEvent(`World Event revealed — ${randomEvent.name}: ${randomEvent.description} Oracle decision pending.`);
+      saveState();
+      render();
+    }
+
+    function allowPendingWorldEvent() {
+      if (!canMakeOracleDecision()) {
+        return;
+      }
+
+      const pendingEvent = getPendingWorldEventForRound(state.turnOrder.round);
+      resolveWorldEvent(pendingEvent, "revealed");
+    }
+
+    function negatePendingWorldEventWithOracle(pieceId) {
+      if (!canMakeOracleDecision()) {
+        return;
+      }
+
+      const oracle = getPiece(Number(pieceId));
+      const pendingEvent = getPendingWorldEventForRound(state.turnOrder.round);
+
+      if (!oracle || oracle.typeId !== 17 || oracle.currentHp <= 0 || !pendingEvent) {
+        return;
+      }
+
+      const oracleNumber = getCopyNumber(oracle);
+      const confirmed = window.confirm(`Invoke Oracle #${oracleNumber} to negate "${pendingEvent.name}" for BOTH players? The Oracle will Ascend to the heavens and be removed from the board.`);
+
+      if (!confirmed) {
+        return;
+      }
+
+      const roundKey = String(state.turnOrder.round);
+      state.activePieces = state.activePieces.filter(piece => piece.pieceId !== oracle.pieceId);
+
+      if (state.selectedPieceId === oracle.pieceId) {
+        state.selectedPieceId = state.activePieces.length > 0 ? state.activePieces[0].pieceId : null;
+        state.selectedRuleTypeId = 17;
+      }
+
+      ensureWorldEventState();
+      state.turnOrder.worldEventsByRound[roundKey] = pendingEvent.id;
+      state.turnOrder.worldEventsNegatedByRound[roundKey] = true;
+      delete state.turnOrder.pendingWorldEventsByRound[roundKey];
+      state.turnOrder.worldEventsResolvedByTurnKey[getCurrentTurnKey()] = true;
+      logRoundEvent(`Oracle #${oracleNumber} Ascended to the heavens and negated World Event — ${pendingEvent.name} — for both players. No World Event effect was applied.`);
+      saveState();
+      render();
     }
 
     function manuallySelectWorldEvent(eventId) {
@@ -5213,6 +5357,33 @@
       }
 
       resolveWorldEvent(selectedEvent, "manual match");
+    }
+
+    function manuallyRecordOracleNegation(eventId) {
+      if (!canManuallyMatchWorldEvent()) {
+        return;
+      }
+
+      const selectedEvent = worldEvents.find(event => event.id === Number(eventId));
+
+      if (!selectedEvent) {
+        return;
+      }
+
+      const confirmed = window.confirm(`Record "${selectedEvent.name}" as NEGATED by the initiating player's Oracle? No World Event effect will be applied on this tracker.`);
+
+      if (!confirmed) {
+        return;
+      }
+
+      ensureWorldEventState();
+      const roundKey = String(state.turnOrder.round);
+      state.turnOrder.worldEventsByRound[roundKey] = selectedEvent.id;
+      state.turnOrder.worldEventsNegatedByRound[roundKey] = true;
+      state.turnOrder.worldEventsResolvedByTurnKey[getCurrentTurnKey()] = true;
+      logRoundEvent(`World Event (manual match) — ${selectedEvent.name} was negated by the initiating player's Oracle. No effect applied.`);
+      saveState();
+      render();
     }
 
     function logRoundEvent(message) {
@@ -5611,12 +5782,8 @@
       render();
     }
 
-    function getLivingRitualCasterCount() {
-      return state.activePieces.filter(piece => piece.typeId === 17 && piece.currentHp > 0).length;
-    }
-
     function getAllowedSummonsThisTurn() {
-      return 1 + getLivingRitualCasterCount();
+      return 1;
     }
 
     function getSummonsUsedThisTurn() {
@@ -6701,6 +6868,11 @@
         return;
       }
 
+      if (canMakeOracleDecision()) {
+        window.alert("Choose Allow Event or invoke the Oracle before advancing.");
+        return;
+      }
+
       if (state.turnOrder.teamIndex === 0) {
         state.turnOrder.teamIndex = 1;
       } else {
@@ -6929,8 +7101,11 @@
         farmersUsedByTurnKey: {},
         actionsUsedByTurnKey: {},
         worldEventsByRound: {},
+        pendingWorldEventsByRound: {},
+        worldEventsNegatedByRound: {},
         worldEventsResolvedByTurnKey: {},
         babyBoomUsedByRound: {},
+        initiativeOrderVersion: 2,
         reversePieceOrder: false,
         freeTradeActive: false
       };
@@ -7076,7 +7251,7 @@
         // Priest, Medic, Necromancer, Farmer
         case "support": return "linear-gradient(160deg, #3f7a56, #1f4c35)";
 
-        // Artillerist, Mechanist, Ritual Caster, Thief, Strategist, Shopkeeper
+        // Artillerist, Mechanist, Oracle, Thief, Strategist, Shopkeeper
         case "special": return "linear-gradient(160deg, #244d78, #132c47)";
 
         default: return "linear-gradient(160deg, #244d78, #122f4e)";
@@ -7428,8 +7603,10 @@
         ? (currentStep.kind === "roundEnd" ? "End of round! Claim your reward and review what happened before advancing." : currentStep.instructions)
         : getPregameInstructions();
 
+      const oracleDecisionPending = isStarted && canMakeOracleDecision();
       previousTurn.disabled = !isStarted || isFlipping;
-      nextTurn.disabled = !isStarted || isFlipping;
+      nextTurn.disabled = !isStarted || isFlipping || oracleDecisionPending;
+      nextTurn.title = oracleDecisionPending ? "Resolve the Oracle decision before advancing." : "Advance to the next initiative step.";
       firstPlayerControls.classList.toggle("hidden", isStarted && !isFlipping);
       coinFlipButton.disabled = isFlipping || !canStartTurnOrder();
       coinFlipButton.textContent = isFlipping ? "Flipping..." : "Flip Coin for First Player";
@@ -7497,6 +7674,18 @@
               </button>
             `).join("")}
           </div>
+          <div class="world-event-manual-panel">
+            <div class="world-event-manual-heading">
+              <div>Opponent Oracle</div>
+              <span>Use only if the revealing player negated the event</span>
+            </div>
+            <div class="world-event-actions">
+              <select class="baby-boom-select" id="manualOracleNegatedEvent" ${canChooseManualEvent ? "" : "disabled"}>
+                ${worldEvents.map(event => `<option value="${event.id}">#${event.id} — ${event.name}</option>`).join("")}
+              </select>
+              <button class="world-event-btn" type="button" data-action="record-manual-oracle-negation" ${canChooseManualEvent ? "" : "disabled"}>Record Event as Negated</button>
+            </div>
+          </div>
         </div>
       `;
     }
@@ -7546,19 +7735,41 @@
       }
 
       const isDue = isWorldEventDueThisRound();
+      const pendingEvent = getPendingWorldEventForRound(state.turnOrder.round);
       const revealedEvent = getWorldEventForRound(state.turnOrder.round);
       const canReveal = canRevealWorldEvent();
       const canManualMatch = canManuallyMatchWorldEvent();
       const revealTeam = getWorldEventRevealTeam();
 
-      if (revealedEvent) {
+      if (pendingEvent && canMakeOracleDecision()) {
+        const livingOracles = getLivingOraclePieces();
         return `
           <div class="world-event-box">
-            <div class="world-event-title">World Event Revealed</div>
+            <div class="world-event-title">World Event Revealed — Oracle Decision</div>
+            <div class="world-event-name">${pendingEvent.name}</div>
+            <div class="world-event-text">${pendingEvent.description}</div>
+            <div class="world-event-note">The event has been randomly chosen but has NOT resolved yet. Choose whether to allow it or invoke an Oracle. Negating it affects BOTH players.</div>
+            <div class="world-event-actions">
+              <button class="world-event-btn" type="button" data-action="allow-pending-world-event">Allow Event</button>
+              <select class="baby-boom-select" id="oracleNegatePieceSelect">
+                ${livingOracles.map(piece => `<option value="${piece.pieceId}">Oracle #${getCopyNumber(piece)}</option>`).join("")}
+              </select>
+              <button class="world-event-btn" type="button" data-action="negate-world-event-with-oracle" ${livingOracles.length > 0 ? "" : "disabled"}>Invoke Oracle — Negate for Both</button>
+            </div>
+            <div class="world-event-note">If invoked, the selected Oracle Ascends to the heavens and is removed from the board.</div>
+          </div>
+        `;
+      }
+
+      if (revealedEvent) {
+        const negated = wasWorldEventNegated(state.turnOrder.round);
+        return `
+          <div class="world-event-box${negated ? " waiting" : ""}">
+            <div class="world-event-title">${negated ? "World Event Negated" : "World Event Revealed"}</div>
             <div class="world-event-name">${revealedEvent.name}</div>
             <div class="world-event-text">${revealedEvent.description}</div>
-            <div class="world-event-note">Apply any board movement, wall damage, swapping, discarding, or player-choice effects manually on the physical board.</div>
-            ${getBabyBoomPanelHtml()}
+            <div class="world-event-note">${negated ? "An Oracle negated this World Event for both players. No effect is applied." : "Apply any board movement, wall damage, swapping, discarding, or player-choice effects manually on the physical board."}</div>
+            ${negated ? "" : getBabyBoomPanelHtml()}
           </div>
         `;
       }
@@ -7568,11 +7779,11 @@
           <div class="world-event-box">
             <div class="world-event-title">World Event Due!</div>
             <div class="world-event-name">${getTeamLabel(revealTeam)} Generates the Event</div>
-            <div class="world-event-text">The first player of Round ${state.turnOrder.round} reveals one random World Event. The other player then selects the same event from their Manual Match deck.</div>
+            <div class="world-event-text">The first player of Round ${state.turnOrder.round} reveals one random World Event. If that player has a living Oracle, they decide whether to negate it after seeing the event. Otherwise the event resolves normally.</div>
             <div class="world-event-actions">
               <button class="world-event-btn" type="button" data-action="reveal-world-event" ${canReveal ? "" : "disabled"}>Reveal World Event</button>
             </div>
-            <div class="world-event-note">Only the first player of the round should use the random reveal button.</div>
+            <div class="world-event-note">Only the first player of the round may reveal the random event or invoke an Oracle against it.</div>
           </div>
         `;
       }
@@ -7581,7 +7792,7 @@
         <div class="world-event-box">
           <div class="world-event-title">World Event Due!</div>
           <div class="world-event-name">Waiting for ${getTeamLabel(revealTeam)}</div>
-          <div class="world-event-text">${getTeamLabel(revealTeam)} is responsible for generating the random World Event for Round ${state.turnOrder.round}. After it is revealed, select the matching event below on this tracker.</div>
+          <div class="world-event-text">${getTeamLabel(revealTeam)} is responsible for generating the random World Event for Round ${state.turnOrder.round}. If they allow it, select the matching event below. If their Oracle negates it, use the Opponent Oracle control to record the same event as negated.</div>
           <div class="world-event-note">This keeps both local iPads matched without online syncing.</div>
           ${getWorldEventChoiceGridHtml(canManualMatch)}
         </div>
@@ -7704,7 +7915,7 @@
         add("HP", "Full HP");
 
         if (unitType.id === 13) {
-          add("Eligible", "Mage, Priest, Medic, Ritual Caster", true);
+          add("Eligible", "Mage, Priest, Medic, Oracle", true);
         } else if (unitType.id === 11) {
           add("Eligible", "Base Builder, Workers, Warriors, Farmer, Artillerist, Mechanist, Thief, Shopkeeper", true);
         } else {
@@ -7760,10 +7971,11 @@
         return data;
       }
 
-      if (unitType.name === "Ritual Caster") {
-        add("Passive", "+1 Summon", false, true);
-        add("When", "Summoning Unit phase", true);
-        add("Note", "Costs still apply", true);
+      if (unitType.name === "Oracle") {
+        add("Action", "Negate World Event", false, true);
+        add("When", "After your random reveal", true);
+        add("Effect", "Negates for both players", true);
+        add("Cost", "Oracle Ascends", true);
         return data;
       }
 
@@ -7842,10 +8054,10 @@
 
       const referenceText = {
         giving: "Each occupied Giving Tile gives one random resource each round. Gem and Iron are excluded from the random pool.",
-        summon: "Summon one unit, plus one extra summon for each living Ritual Caster. Ritual costs still apply.",
+        summon: "Summon one unit. The full Summoning Cost still applies.",
         crafting: "Craft items from resources. Recipes require the full cost and enough item space.",
         shopping: "Shop only during your Shopping step, and only with a living Shopkeeper.",
-        roundEnd: "Claim 1 free Bronze, then choose Wood, Stone, Bread, or a second Bronze. Reveal and resolve one World Event before advancing."
+        roundEnd: "Claim 1 free Bronze, then choose Wood, Stone, Bread, or a second Bronze. Reveal the World Event; the revealing player may invoke an Oracle before it resolves."
       };
 
       currentReferenceTitle.textContent = currentStep.title;
@@ -7949,9 +8161,9 @@
       const notes = {
         summon: state.setupComplete
           ? (getCurrentTurnTeam() === state.team
-            ? `You may summon ${getSummonsRemainingThisTurn()} more unit${getSummonsRemainingThisTurn() === 1 ? "" : "s"} this turn. Base summon: 1. Living Ritual Casters: ${getLivingRitualCasterCount()}.`
+            ? `You may summon ${getSummonsRemainingThisTurn()} more unit${getSummonsRemainingThisTurn() === 1 ? "" : "s"} this turn. Base summon: 1.`
             : `Wait for ${getTeamLabel(getCurrentTurnTeam())} to finish their summoning step.`)
-          : "Finish setup before ritual summoning begins."
+          : "Finish setup before summoning begins."
       };
 
       if (currentStep.kind === "crafting") {
@@ -8397,11 +8609,10 @@
       } else {
         const allowedSummons = getAllowedSummonsThisTurn();
         const remainingSummons = isYourSummoningTurn() ? getSummonsRemainingThisTurn() : 0;
-        const ritualCasters = getLivingRitualCasterCount();
 
         setupStatusText.textContent = isYourSummoningTurn()
-          ? `Summoning Unit: ${remainingSummons} of ${allowedSummons} summon${allowedSummons === 1 ? "" : "s"} remaining. Living Ritual Casters: ${ritualCasters}.`
-          : `Summoning is only available during your Summoning Unit turn. Living Ritual Casters: ${ritualCasters}.`;
+          ? `Summoning Unit: ${remainingSummons} of ${allowedSummons} summon${allowedSummons === 1 ? "" : "s"} remaining.`
+          : `Summoning is only available during your Summoning Unit turn.`;
 
         finishSetup.style.display = "none";
         finishSetup.disabled = true;
@@ -9177,10 +9388,33 @@
         return;
       }
 
+      const allowPendingWorldEventButton = event.target.closest('[data-action="allow-pending-world-event"]');
+
+      if (allowPendingWorldEventButton) {
+        allowPendingWorldEvent();
+        return;
+      }
+
+      const negateWorldEventButton = event.target.closest('[data-action="negate-world-event-with-oracle"]');
+
+      if (negateWorldEventButton) {
+        const oracleSelect = document.getElementById("oracleNegatePieceSelect");
+        negatePendingWorldEventWithOracle(oracleSelect ? Number(oracleSelect.value) : 0);
+        return;
+      }
+
       const manualWorldEventButton = event.target.closest('[data-action="manual-world-event"]');
 
       if (manualWorldEventButton) {
         manuallySelectWorldEvent(Number(manualWorldEventButton.dataset.worldEventId));
+        return;
+      }
+
+      const manualOracleNegationButton = event.target.closest('[data-action="record-manual-oracle-negation"]');
+
+      if (manualOracleNegationButton) {
+        const negatedEventSelect = document.getElementById("manualOracleNegatedEvent");
+        manuallyRecordOracleNegation(negatedEventSelect ? Number(negatedEventSelect.value) : 0);
         return;
       }
 
