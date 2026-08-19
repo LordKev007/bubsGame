@@ -80,7 +80,6 @@
 
     .title-card,
     .currency-panel,
-    .stardust-panel,
     .giving-tiles-panel,
     .cannon-panel,
     .turn-panel,
@@ -247,7 +246,7 @@
 
     .utility-panels-row {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
       align-items: stretch;
     }
@@ -256,7 +255,6 @@
       min-width: 0;
     }
 
-    .stardust-panel,
     .giving-tiles-panel {
       padding: 10px;
     }
@@ -1689,7 +1687,7 @@
       .current-reference-actions { grid-template-columns: 1fr; }
     }
 
-    .stardust-controls,
+    .bread-controls,
     .giving-tiles-controls {
       display: grid;
       grid-template-columns: 1fr 48px 48px 48px;
@@ -1697,7 +1695,7 @@
       align-items: center;
     }
 
-    .stardust-label,
+    .bread-label,
     .giving-tiles-label {
       font-weight: 900;
       color: var(--team-accent-dark);
@@ -1705,7 +1703,7 @@
       letter-spacing: 0.4px;
     }
 
-    .stardust-note,
+    .bread-note,
     .giving-tiles-note {
       color: var(--muted);
       font-size: 13px;
@@ -3199,7 +3197,7 @@
     <section class="shop-panel hidden" id="shopPanel" aria-label="Shop">
       <div class="panel-header">
         <h2>Shop</h2>
-        <div class="panel-note">Buy, convert currency, or sell any 3 Resources for 1 Bronze.</div>
+        <div class="panel-note">Buy, convert currency, or sell Resources for Bronze. Merchant District bonuses apply automatically.</div>
       </div>
       <div class="shop-content" id="shopGrid"></div>
     </section>
@@ -3263,10 +3261,10 @@
         <button class="collapse-btn" id="toggleBreadPanel" type="button" aria-expanded="true">Collapse</button>
       </div>
       <div class="panel-content" id="breadContent">
-        <div class="stardust-controls">
+        <div class="bread-controls">
           <div>
-            <div class="stardust-label">Stored Bread</div>
-            <div class="stardust-note">Maximum 3. Bread does not use resource or item slots.</div>
+            <div class="bread-label">Stored Bread</div>
+            <div class="bread-note">Maximum 3. Bread does not use resource or item slots.</div>
           </div>
           <button class="small-btn" data-bread-change="-1" aria-label="Decrease Bread">−</button>
           <div class="count" id="breadPanelCount">0</div>
@@ -3287,27 +3285,6 @@
     </section>
 
     <div class="utility-panels-row" id="specialSystemsPanel">
-      <section class="stardust-panel" id="stardustPanel" aria-label="Stardust tracker">
-        <div class="panel-header">
-          <div>
-            <h2>Stardust</h2>
-            <div class="panel-note">Special resource · separate from inventory</div>
-          </div>
-          <button class="collapse-btn" id="toggleStardustPanel" type="button" aria-expanded="true">Collapse</button>
-        </div>
-        <div class="panel-content" id="stardustContent">
-          <div class="stardust-controls">
-            <div>
-              <div class="stardust-label">Stored</div>
-              <div class="stardust-note">Track from 0 to 5. Does not use resource slots.</div>
-            </div>
-            <button class="small-btn" data-stardust-change="-1" aria-label="Decrease Stardust">−</button>
-            <div class="count" id="stardustCount">0</div>
-            <button class="small-btn" data-stardust-change="1" aria-label="Increase Stardust">+</button>
-          </div>
-        </div>
-      </section>
-
       <section class="cannon-panel" id="cannonPanel" aria-label="Cannon tracker">
         <div class="panel-header">
           <div>
@@ -3397,7 +3374,7 @@
         <div>
           <h3 class="section-title">Action / Passive</h3>
           <div class="detail-text" id="detailAction">None</div>
-          <h3 class="section-title" style="margin-top:12px;">Ritual Cost</h3>
+          <h3 class="section-title" style="margin-top:12px;">Summoning Cost</h3>
           <div class="ritual-cost" id="detailRitual">N/A</div>
           <div class="shield-status" id="detailShieldStatus">No shield equipped</div>
         </div>
@@ -3414,7 +3391,7 @@
       </aside>
     </section>
 
-    <div class="footer-note">Tip: In Safari on iPad, use Share → Add to Home Screen to make this feel like a little boardgame app. <span id="appVersionLabel">v0.2.2</span></div>
+    <div class="footer-note">Tip: In Safari on iPad, use Share → Add to Home Screen to make this feel like a little boardgame app. <span id="appVersionLabel">v0.2.15</span></div>
   </main>
 
   <div class="giving-results-overlay" id="givingResultsOverlay">
@@ -3447,7 +3424,7 @@
     const MAX_ITEM_SLOTS = 11;
     const MAX_BREAD = 3;
     const STARTING_TOTAL_PIECES = 8;
-    const APP_VERSION = "v0.2.7";
+    const APP_VERSION = "v0.2.15";
 
     const turnSteps = [
       { kind: "unit", typeId: 1, title: "King", instructions: "Each team may move/action all active Kings." },
@@ -3470,7 +3447,7 @@
       { kind: "unit", typeId: 19, title: "Strategist", instructions: "Each team may move/action all active Strategists." },
       { kind: "unit", typeId: 17, title: "Oracle", instructions: "Each team may move all active Oracles. Negate is used only after this team reveals a World Event at the end of the round." },
       { kind: "unit", typeId: 20, title: "Shopkeeper", instructions: "Each team may move/action all active Shopkeepers." },
-      { kind: "giving", title: "Giving Tile Random Item Pickup", instructions: "Each round, resolve one random resource pickup per Giving Tile occupied." },
+      { kind: "giving", title: "Giving Tile Random Reward", instructions: "Each round, resolve one random Resource/Bread reward per Giving Tile occupied." },
       { kind: "summon", title: "Summoning Unit", instructions: "Summon a unit if you have the needed resources, items, and currency." },
       { kind: "crafting", title: "Crafting", instructions: "Craft items if you have the full recipe and enough item space." },
       { kind: "shopping", title: "Shopping", instructions: "Shopping is available only if that team has an active living Shopkeeper." },
@@ -3480,7 +3457,7 @@
     const startingSetupTypeIds = [3, 6, 7, 8, 12, 11, 16, 18, 19];
 
     const worldEvents = [
-      { id: 1, name: "Meteor Showers", description: "Each player gains 1 Stardust for each Giving Tile they are occupying.", effect: "meteor" },
+      { id: 1, name: "Meteor Showers", description: "Each player may optionally change one base that was already specialized when this event occurred to a different specialization for free. Normal specialization costs and active-unit requirements are waived.", effect: "meteor" },
       { id: 2, name: "Market Crash", description: "Each player loses 1 Gold, if they have Gold.", effect: "market-crash" },
       { id: 3, name: "Market Boom", description: "Each player gains 1 Gold.", effect: "market-boom" },
       { id: 4, name: "Heavy Wind", description: "Each player's pieces are pushed 2 tiles right from that player's perspective. Movement is stopped by the board border or existing walls.", effect: "note" },
@@ -3495,11 +3472,11 @@
       { id: 13, name: "Disease", description: "Each player must deal 4 points of damage among their pieces.", effect: "note" },
       { id: 14, name: "Pestilence", description: "Insects eat all crops. All players lose all Bread.", effect: "pestilence" },
       { id: 15, name: "Uno Reverso", description: "Piece turn order inverts. Player order does not change.", effect: "reverse-turn-order" },
-      { id: 16, name: "Free Trade Economy", description: "All shop items are 50% off until this effect is cleared. Round up if necessary, so 3 becomes 2.", effect: "free-trade" },
+      { id: 16, name: "Free Trade Economy", description: "Normal shop purchases are 50% off during the following round only. Round up if necessary, so 3 becomes 2. Currency conversions and Resource selling are unchanged.", effect: "free-trade" },
       { id: 17, name: "God's Blessing", description: "Each player immediately receives 5 random Giving Tile rewards.", effect: "gods-blessing" },
       { id: 18, name: "Medical Breakthrough", description: "Each player may heal 4 points of damage among their pieces.", effect: "note" },
       { id: 19, name: "War Support", description: "Each player gains 3 Shields.", effect: "shields" },
-      { id: 20, name: "The Odyssey", description: "Each player loses all but one Warrior or Mage. The player chooses who to keep. All non-Warrior pieces remain.", effect: "note" }
+      { id: 20, name: "The Odyssey", description: "Each player chooses one Warrior or Mage to keep, if they have any. All of that player's other Warriors and Mages are lost. All other unit types remain.", effect: "note" }
     ];
 
     const givingTileRewardPool = [
@@ -3528,7 +3505,8 @@
       "Shield",
       "Cannon Ball",
       "Cannon",
-      "Artifact"
+      "Sacred Artifact",
+      "Demonic Totem"
     ];
 
     const MAX_BASES = 4;
@@ -3541,7 +3519,8 @@
         id: "none",
         name: "None",
         costs: [],
-        requirements: []
+        requirements: [],
+        bonus: "No specialization bonus."
       },
       {
         id: "chapel",
@@ -3551,7 +3530,8 @@
           { type: "resource", name: "Glass", quantity: 2 },
           { type: "currency", name: "gold", quantity: 1 }
         ],
-        requirements: [{ typeId: 12, quantity: 2, label: "2 active Medics" }]
+        requirements: [{ typeId: 11, quantity: 1, label: "1 active Priest" }],
+        bonus: "Priest revival range increases from 3 tiles to 6 tiles."
       },
       {
         id: "graveyard",
@@ -3561,7 +3541,8 @@
           { type: "resource", name: "Rope", quantity: 5 },
           { type: "currency", name: "gold", quantity: 1 }
         ],
-        requirements: [{ typeId: 13, quantity: 1, label: "1 active Necromancer" }]
+        requirements: [{ typeId: 13, quantity: 1, label: "1 active Necromancer" }],
+        bonus: "Necromancer revival range increases from 3 tiles to 6 tiles."
       },
       {
         id: "recruitment-center",
@@ -3571,7 +3552,8 @@
           { type: "resource", name: "Iron", quantity: 3 },
           { type: "currency", name: "gold", quantity: 1 }
         ],
-        requirements: [{ typeId: 19, quantity: 2, label: "2 active Strategists" }]
+        requirements: [{ typeId: 19, quantity: 2, label: "2 active Strategists" }],
+        bonus: "Warrior and Mage summon recipes keep every listed cost type, but every quantity becomes 1."
       },
       {
         id: "hospital",
@@ -3582,7 +3564,8 @@
           { type: "resource", name: "Iron", quantity: 3 },
           { type: "currency", name: "gold", quantity: 1 }
         ],
-        requirements: [{ typeId: 11, quantity: 1, label: "1 active Priest" }]
+        requirements: [{ typeId: 12, quantity: 1, label: "1 active Medic" }],
+        bonus: "All friendly Medics have Move 6 and Max HP 3 while this base is controlled."
       },
       {
         id: "merchant-district",
@@ -3593,7 +3576,8 @@
           { type: "bread", name: "Bread", quantity: 2 },
           { type: "currency", name: "gold", quantity: 1 }
         ],
-        requirements: [{ typeId: 20, quantity: 3, label: "3 active Shopkeepers" }]
+        requirements: [{ typeId: 20, quantity: 3, label: "3 active Shopkeepers" }],
+        bonus: "Convert 2 Silver into 1 Gold, and sell any 2 Resources for 1 Bronze."
       }
     ];
 
@@ -3611,7 +3595,8 @@
       Shield: { singular: "Shield", plural: "Shields" },
       "Cannon Ball": { singular: "Cannon Ball", plural: "Cannon Balls" },
       Cannon: { singular: "Cannon", plural: "Cannons" },
-      Artifact: { singular: "Artifact", plural: "Artifacts" }
+      "Sacred Artifact": { singular: "Sacred Artifact", plural: "Sacred Artifacts" },
+      "Demonic Totem": { singular: "Demonic Totem", plural: "Demonic Totems" }
     };
 
     const craftingRecipes = [
@@ -3654,13 +3639,22 @@
         ]
       },
       {
-        id: "craft-artifact",
-        resultName: "Artifact",
+        id: "craft-sacred-artifact",
+        resultName: "Sacred Artifact",
         resultQuantity: 1,
         costs: [
-          { type: "resource", name: "Glass", quantity: 3 },
-          { type: "resource", name: "Stone", quantity: 8 },
-          { type: "resource", name: "Iron", quantity: 1 }
+          { type: "currency", name: "silver", quantity: 1 },
+          { type: "resource", name: "Rope", quantity: 1 },
+          { type: "resource", name: "Wood", quantity: 1 }
+        ]
+      },
+      {
+        id: "craft-demonic-totem",
+        resultName: "Demonic Totem",
+        resultQuantity: 1,
+        costs: [
+          { type: "currency", name: "gold", quantity: 1 },
+          { type: "resource", name: "Sulphur", quantity: 1 }
         ]
       }
     ];
@@ -3706,7 +3700,7 @@
 
     const unitTypes = [
       { id: 1, name: "King", move: 3, maxHp: 6, action: "Passive — Empower: Any friendly piece that starts its turn within 3 tiles of the King gains +1 movement for that turn.", ritual: "Cannot be summoned", category: "royal", ritualCosts: [] },
-      { id: 2, name: "Base Builder", move: 2, maxHp: 1, action: "Build Base — Choose a location within 1 tile that has at least 3 adjacent Base Keepers. That tile becomes a Base tile.", ritual: "1 Silver, 2 Bronze, 2 Stone, 2 Rope", category: "worker", ritualCosts: [{ type: "currency", name: "silver", quantity: 1 }, { type: "currency", name: "bronze", quantity: 2 }, { type: "resource", name: "Stone", quantity: 2 }, { type: "resource", name: "Rope", quantity: 2 }] },
+      { id: 2, name: "Base Builder", move: 2, maxHp: 1, action: "Build Base — Choose a location within 1 tile that has at least 3 adjacent Base Builders. That tile becomes a Base tile.", ritual: "1 Silver, 2 Bronze, 2 Stone, 2 Rope", category: "worker", ritualCosts: [{ type: "currency", name: "silver", quantity: 1 }, { type: "currency", name: "bronze", quantity: 2 }, { type: "resource", name: "Stone", quantity: 2 }, { type: "resource", name: "Rope", quantity: 2 }] },
       { id: 3, name: "Wood Worker", move: 2, maxHp: 6, action: "Build Wooden Defence — Place a wooden defence within 1 tile. Cost: 2 Wood.", ritual: "3 Wood, 1 Sulphur", category: "worker", ritualCosts: [{ type: "resource", name: "Wood", quantity: 3 }, { type: "resource", name: "Sulphur", quantity: 1 }] },
       { id: 4, name: "Stone Worker", move: 2, maxHp: 6, action: "Build Stone Defence — Place a stone defence within 1 tile. Cost: 2 Stone.", ritual: "3 Stone, 2 Sulphur", category: "worker", ritualCosts: [{ type: "resource", name: "Stone", quantity: 3 }, { type: "resource", name: "Sulphur", quantity: 2 }] },
       { id: 5, name: "Iron Worker", move: 2, maxHp: 6, action: "Build Iron Defence — Place an iron defence within 1 tile. Cost: 2 Iron.", ritual: "3 Iron, 3 Sulphur", category: "worker", ritualCosts: [{ type: "resource", name: "Iron", quantity: 3 }, { type: "resource", name: "Sulphur", quantity: 3 }] },
@@ -3715,14 +3709,14 @@
       { id: 8, name: "Warrior (Bow)", move: 1, maxHp: 2, action: "Ranged Attack — Range 7, Damage 1. Cost: 1 Arrow.", ritual: "1 Silver, 2 Wood, 1 Rope, 1 Sulphur", category: "fighter", ritualCosts: [{ type: "currency", name: "silver", quantity: 1 }, { type: "resource", name: "Wood", quantity: 2 }, { type: "resource", name: "Rope", quantity: 1 }, { type: "resource", name: "Sulphur", quantity: 1 }] },
       { id: 9, name: "Warrior (Lance & Horse)", move: 4, maxHp: 3, action: "Melee Attack — Range 2, Damage 1.", ritual: "1 Wood, 1 Stone, 1 Rope, 3 Leather", category: "fighter", ritualCosts: [{ type: "resource", name: "Wood", quantity: 1 }, { type: "resource", name: "Stone", quantity: 1 }, { type: "resource", name: "Rope", quantity: 1 }, { type: "resource", name: "Leather", quantity: 3 }] },
       { id: 10, name: "Mage", move: 3, maxHp: 1, action: "Magic Attack — Range 7, Damage 1, targets 3 different units. Cost: delete 1 ally unit, not Mage.", ritual: "1 Gem, 6 Bronze", category: "fighter", ritualCosts: [{ type: "resource", name: "Gem", quantity: 1 }, { type: "currency", name: "bronze", quantity: 6 }] },
-      { id: 11, name: "Priest", move: 3, maxHp: 1, action: "Heal — Must be within 3 tiles of an eligible dead ally to revive them with full HP.", ritual: "2 Glass, 1 Sulphur", category: "support", ritualCosts: [{ type: "resource", name: "Glass", quantity: 2 }, { type: "resource", name: "Sulphur", quantity: 1 }] },
+      { id: 11, name: "Priest", move: 3, maxHp: 1, action: "Revive — Spend 1 Sacred Artifact. Revive an eligible defeated ally within 3 tiles (6 with a controlled Chapel) at full HP, placing the revived unit beside the Priest.", ritual: "2 Glass, 1 Sulphur", category: "support", ritualCosts: [{ type: "resource", name: "Glass", quantity: 2 }, { type: "resource", name: "Sulphur", quantity: 1 }] },
       { id: 12, name: "Medic", move: 4, maxHp: 2, action: "Heal — Must be within 3 tiles of a damaged allied unit to heal it by 1 HP. Cannot heal a Medic.", ritual: "1 Iron, 6 Leather, 3 Bronze", category: "support", ritualCosts: [{ type: "resource", name: "Iron", quantity: 1 }, { type: "resource", name: "Leather", quantity: 6 }, { type: "currency", name: "bronze", quantity: 3 }] },
-      { id: 13, name: "Necromancer", move: 3, maxHp: 1, action: "Heal — Must be within 3 tiles of an eligible dead ally unit to revive it with full HP.", ritual: "1 Gem, 7 Leather, 1 Silver, 2 Bronze", category: "support", ritualCosts: [{ type: "resource", name: "Gem", quantity: 1 }, { type: "resource", name: "Leather", quantity: 7 }, { type: "currency", name: "silver", quantity: 1 }, { type: "currency", name: "bronze", quantity: 2 }] },
+      { id: 13, name: "Necromancer", move: 3, maxHp: 1, action: "Revive — Spend 1 Demonic Totem. Revive an eligible defeated ally within 3 tiles (6 with a controlled Graveyard) at full HP, placing the revived unit beside the Necromancer.", ritual: "1 Gem, 7 Leather, 1 Silver, 2 Bronze", category: "support", ritualCosts: [{ type: "resource", name: "Gem", quantity: 1 }, { type: "resource", name: "Leather", quantity: 7 }, { type: "currency", name: "silver", quantity: 1 }, { type: "currency", name: "bronze", quantity: 2 }] },
       { id: 14, name: "Farmer", move: 1, maxHp: 6, action: "Farm — Gain 1 Bread, up to the 3 Bread storage limit.", ritual: "1 Gold, 6 Leather", category: "support", ritualCosts: [{ type: "currency", name: "gold", quantity: 1 }, { type: "resource", name: "Leather", quantity: 6 }] },
       { id: 15, name: "Artillerist", move: 2, maxHp: 2, action: "May load and fire a cannon as one action. Must be adjacent to the cannon. Passive — May push the cannon 1 tile in any direction to an unoccupied tile.", ritual: "3 Sulphur", category: "special", ritualCosts: [{ type: "resource", name: "Sulphur", quantity: 3 }] },
       { id: 16, name: "Mechanist", move: 4, maxHp: 2, action: "Repair — Repair a built item, such as a wall, base, or cannon. Passive — May push the cannon 1 tile in any direction to an unoccupied tile.", ritual: "1 Shield, 2 Sulphur", category: "special", ritualCosts: [{ type: "item", name: "Shield", quantity: 1 }, { type: "resource", name: "Sulphur", quantity: 2 }] },
-      { id: 17, name: "Oracle", move: 1, maxHp: 1, action: "Negate — When your team is responsible for revealing the World Event, after the random event is revealed but before it resolves, you may invoke an Oracle to negate that event for both players. The Oracle then Ascends to the heavens and is removed from the board.", ritual: "3 Glass", category: "special", ritualCosts: [{ type: "resource", name: "Glass", quantity: 3 }] },
-      { id: 18, name: "Thief", move: 4, maxHp: 1, action: "If within 5 tiles of the opponent's King, steal 1 Bronze from the opponent's hand. May go over the 5 Bronze limit with this effect.", ritual: "2 Bronze, 1 Rope", category: "special", ritualCosts: [{ type: "currency", name: "bronze", quantity: 2 }, { type: "resource", name: "Rope", quantity: 1 }] },
+      { id: 17, name: "Oracle", move: 1, maxHp: 1, action: "Negate — When your team is responsible for revealing the World Event, after the random event is revealed but before it resolves, you may invoke an Oracle to negate that event for both players. The Oracle then Ascends to the heavens and is removed from the board. The negated World Event cannot occur again for the next 15 rounds.", ritual: "3 Glass", category: "special", ritualCosts: [{ type: "resource", name: "Glass", quantity: 3 }] },
+      { id: 18, name: "Thief", move: 4, maxHp: 1, action: "If within 5 tiles of the opponent's King, steal 1 Bronze from the opponent's hand.", ritual: "2 Bronze, 1 Rope", category: "special", ritualCosts: [{ type: "currency", name: "bronze", quantity: 2 }, { type: "resource", name: "Rope", quantity: 1 }] },
       { id: 19, name: "Strategist", move: 1, maxHp: 1, action: "Delete this unit on any ally unit's turn to grant that ally a second action for the round.", ritual: "3 Sulphur, 1 Iron", category: "special", ritualCosts: [{ type: "resource", name: "Sulphur", quantity: 3 }, { type: "resource", name: "Iron", quantity: 1 }] },
       { id: 20, name: "Shopkeeper", move: 2, maxHp: 3, action: "Passive — Allows the Shop feature during the Shopping step.", ritual: "5 Bronze", category: "special", ritualCosts: [{ type: "currency", name: "bronze", quantity: 5 }] }
     ];
@@ -3750,8 +3744,7 @@
         bread: false,
         items: false,
         cannon: false,
-        giving: false,
-        stardust: false
+        giving: false
       },
       coach: {
         active: false,
@@ -3783,8 +3776,10 @@
         worldEventsNegatedByRound: {},
         worldEventsResolvedByTurnKey: {},
         babyBoomUsedByRound: {},
+        meteorRespecializationByRound: {},
         initiativeOrderVersion: 2,
         reversePieceOrder: false,
+        freeTradeRound: null,
         freeTradeActive: false
       },
       currency: {
@@ -3793,7 +3788,6 @@
         bronze: 0
       },
       givingTiles: 0,
-      stardust: 0,
       bread: 0,
       resources: Object.fromEntries(resourceTypes.map(resourceName => [resourceName, 0])),
       items: Object.fromEntries(itemTypes.map(itemName => [itemName, 0])),
@@ -3827,9 +3821,6 @@
     const toggleShop = null;
     const toggleCrafting = null;
     const shopLockNote = null;
-    const stardustContent = document.getElementById("stardustContent");
-    const toggleStardustPanel = document.getElementById("toggleStardustPanel");
-    const stardustCount = document.getElementById("stardustCount");
     const cannonContent = document.getElementById("cannonContent");
     const toggleCannonPanel = document.getElementById("toggleCannonPanel");
     const givingContent = document.getElementById("givingContent");
@@ -4044,7 +4035,15 @@
           MAX_BREAD
         );
 
-        return {
+        // v0.2.8 Artifact migration: the old generic Artifact has been
+        // replaced by Sacred Artifact and Demonic Totem. Preserve any Artifact
+        // already held in an in-progress game by converting it to Sacred Artifact.
+        const savedItems = { ...(saved.items || {}) };
+        const legacyArtifactCount = Math.max(0, Number(savedItems.Artifact || 0));
+        delete savedItems.Artifact;
+        savedItems["Sacred Artifact"] = Math.max(0, Number(savedItems["Sacred Artifact"] || 0)) + legacyArtifactCount;
+
+        const loadedState = {
           ...cloneDefaultState(),
           ...saved,
           bread: migratedBread,
@@ -4058,7 +4057,7 @@
           },
           items: {
             ...defaultState.items,
-            ...(saved.items || {})
+            ...savedItems
           },
           turnOrder: migrateInitiativeOrder(saved.turnOrder),
           pendingBaseSpecializations: saved.pendingBaseSpecializations || {},
@@ -4075,6 +4074,53 @@
           nextBaseId: Number.isInteger(saved.nextBaseId) ? saved.nextBaseId : defaultState.nextBaseId,
           activePieces: Array.isArray(saved.activePieces) ? assignMissingCopyNumbers(saved.activePieces) : []
         };
+
+        // v0.2.14 Stardust removal: discard the retired unfinished Stardust
+        // counter from older saves rather than carrying dead state forward.
+        delete loadedState.stardust;
+        if (loadedState.collapsedPanels) {
+          delete loadedState.collapsedPanels.stardust;
+        }
+
+        // v0.2.10 Free Trade Economy migration: this World Event is revealed
+        // at the end of a round, so its discount applies to the following full
+        // round only. Older saves used a permanent boolean flag. Recover the
+        // intended active round from the saved World Event history when possible.
+        if (!Number.isInteger(loadedState.turnOrder.freeTradeRound)) {
+          const freeTradeEventRounds = Object.entries(loadedState.turnOrder.worldEventsByRound || {})
+            .filter(([roundNumber, eventId]) =>
+              Number(eventId) === 16 &&
+              !(loadedState.turnOrder.worldEventsNegatedByRound || {})[String(roundNumber)]
+            )
+            .map(([roundNumber]) => Number(roundNumber))
+            .filter(roundNumber => Number.isInteger(roundNumber) && roundNumber > 0);
+
+          if (freeTradeEventRounds.length > 0) {
+            loadedState.turnOrder.freeTradeRound = Math.max(...freeTradeEventRounds) + 1;
+          } else if (loadedState.turnOrder.freeTradeActive) {
+            // Fallback for an old save lacking event history: preserve the
+            // discount for the currently loaded round, but never beyond it.
+            loadedState.turnOrder.freeTradeRound = loadedState.turnOrder.round;
+          } else {
+            loadedState.turnOrder.freeTradeRound = null;
+          }
+        }
+        loadedState.turnOrder.freeTradeActive = false;
+
+        const controlsHospital = loadedState.bases.some(base =>
+          base.owner === loadedState.team && base.currentHp > 0 && base.specializationId === "hospital"
+        );
+        loadedState.activePieces.forEach(piece => {
+          if (piece.typeId === 12) {
+            if (controlsHospital && piece.currentHp === 2) {
+              piece.currentHp = 3;
+            } else if (!controlsHospital) {
+              piece.currentHp = Math.min(piece.currentHp, 2);
+            }
+          }
+        });
+
+        return loadedState;
       } catch (error) {
         return createFreshGameState();
       }
@@ -4114,28 +4160,104 @@
 
 
     function buildRulesWindowHtml() {
-      // This is a self-contained rulebook page so it can be opened in a new
-      // tab/window without relying on the tracker layout. It uses system fonts
-      // only, so it remains cottage/offline friendly once the page is loaded.
+      const escapeRulesHtml = value => String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+      const titleCaseCurrency = name => name.charAt(0).toUpperCase() + name.slice(1);
+
+      const formatRulesCost = costs => {
+        if (!costs || costs.length === 0) return "None";
+        return costs.map(cost => {
+          const name = cost.type === "currency" ? titleCaseCurrency(cost.name) : cost.name;
+          return `${cost.quantity} ${escapeRulesHtml(name)}`;
+        }).join(", ");
+      };
+
+      const startingArmyTags = startingSetupTypeIds
+        .map(typeId => `<span class="tag">${escapeRulesHtml(getUnitType(typeId).name)}</span>`)
+        .join("");
+
+      const initiativeRows = turnSteps.map((step, index) => {
+        const type = step.kind === "unit" ? "Unit" : "Phase";
+        return `<tr><td>${index + 1}</td><td><strong>${escapeRulesHtml(step.title)}</strong></td><td>${type}</td><td>${escapeRulesHtml(step.instructions)}</td></tr>`;
+      }).join("");
+
+      const unitRows = unitTypes.map(unit => {
+        const moveText = unit.id === 12 ? `${unit.move} (6 with Hospital)` : String(unit.move);
+        const hpText = unit.id === 1 ? "∞" : (unit.id === 12 ? `${unit.maxHp} (3 with Hospital)` : String(unit.maxHp));
+        const summonText = unit.id === 1 ? "Cannot be summoned" : formatRulesCost(unit.ritualCosts);
+        return `<tr><td>${unit.id}</td><td><strong>${escapeRulesHtml(unit.name)}</strong></td><td>${escapeRulesHtml(moveText)}</td><td>${escapeRulesHtml(hpText)}</td><td>${escapeRulesHtml(unit.action)}</td><td>${summonText}</td></tr>`;
+      }).join("");
+
+      const specializationRows = baseSpecializations
+        .filter(specialization => specialization.id !== "none")
+        .map(specialization => `<tr><td><strong>${escapeRulesHtml(specialization.name)}</strong></td><td>${formatRulesCost(specialization.costs)}</td><td>${escapeRulesHtml(specialization.requirements.map(requirement => requirement.label).join(", ") || "None")}</td><td>${escapeRulesHtml(specialization.bonus)}</td></tr>`)
+        .join("");
+
+      const craftingRows = craftingRecipes.map(recipe => {
+        const resultLabel = `${recipe.resultQuantity} ${recipe.resultName}${recipe.resultQuantity === 1 ? "" : (recipe.resultName === "Arrow" ? "s" : "")}`;
+        return `<tr><td><strong>${escapeRulesHtml(recipe.resultName)}</strong></td><td>${escapeRulesHtml(resultLabel)}</td><td>${formatRulesCost(recipe.costs)}</td></tr>`;
+      }).join("");
+
+      const shopRows = ["bronze", "silver", "gold"].flatMap(currency =>
+        shopPurchases
+          .filter(purchase => purchase.costCurrency === currency)
+          .map(purchase => `<tr><td>${purchase.costAmount} ${escapeRulesHtml(titleCaseCurrency(currency))}</td><td>${purchase.quantity} ${escapeRulesHtml(purchase.targetName)}${purchase.quantity > 1 && purchase.targetName === "Shield" ? "s" : ""}</td></tr>`)
+      ).join("");
+
+      const givingTags = givingTileRewardPool
+        .map(reward => `<span class="tag">${escapeRulesHtml(reward.name)}</span>`)
+        .join("");
+
+      const worldEventRulings = {
+        1: "Optional. Choose at most one base you controlled that was already specialized when Meteor Showers resolved. Change it to a different specialization for free; normal specialization costs and active-unit requirements are waived. An unspecialized base is not eligible, and Meteor Showers cannot remove a specialization. Resolve the change or explicitly decline before leaving that round-end.",
+        4: "Move each of your pieces 2 tiles to the right from your own perspective. The board edge and existing walls stop this forced movement.",
+        5: "Each player chooses one non-King unit they control; the chosen units exchange owners.",
+        6: "Bread storage still has a maximum of 3. Any Bread that cannot fit is lost.",
+        8: "Only Wooden and Stone Defences take the 2 damage. Iron Defences are unaffected.",
+        9: "A three-of-a-kind group means three copies of the same unit type. For each such group, remove one copy so only two remain.",
+        10: "Each player may add up to 2 Warriors for free. Normal copy limits and the 15-piece roster limit still apply. A free Bow Warrior receives no setup Arrows.",
+        11: "A player who already owns a Cannon, whether stored or placed, gains nothing. The normal one-Cannon limit and item-space requirement apply.",
+        12: "Only standard Resources count toward the seven. Bread, Items, and Currency are not discarded by Famine.",
+        13: "Distribute 4 total damage among your damageable pieces. The King remains immune to damage.",
+        15: "This toggles the order of the 20 unit initiative steps. If the unit order is normal, it becomes reversed; if already reversed, it returns to normal. Player order and the five non-unit phases remain unchanged.",
+        16: "The discount applies during the following round only. Normal shop-purchase prices are halved and rounded up, with a minimum price of 1. Currency conversion rates and Resource-selling rates are not discounted.",
+        17: "Roll five rewards from the normal Giving Tile pool. Resource/Bread storage limits still apply; blocked rewards are lost and are not rerolled.",
+        18: "Distribute up to 4 points of healing among damaged non-King pieces, never above each piece's current maximum HP.",
+        19: "Add up to 3 Shields, limited by available Item slots. Any Shields that do not fit are lost.",
+        20: "Of all Warriors and Mages you control, choose exactly one of those units to keep if you have any. All of your other Warriors and Mages are lost. Every other unit type remains."
+      };
+
+      const worldEventRows = worldEvents.map(event => {
+        const ruling = worldEventRulings[event.id] || event.description;
+        return `<tr><td>${event.id}</td><td><strong>${escapeRulesHtml(event.name)}</strong></td><td>${escapeRulesHtml(event.description)}</td><td>${escapeRulesHtml(ruling)}</td></tr>`;
+      }).join("");
+
       return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>King's Grid - Rules</title>
+  <title>King's Grid - Complete Rules ${APP_VERSION}</title>
   <style>
     :root {
       --paper: #fff8e9;
       --ink: #2b2118;
       --muted: #6c5d4a;
       --blue: #244d78;
-      --red: #a12b24;
+      --blue-dark: #17314e;
       --border: #9b845f;
       --shadow: rgba(48, 31, 12, 0.22);
+      --gold: #c89d45;
+      --warning: #8b3f26;
+      --green: #386347;
     }
-
     * { box-sizing: border-box; }
-
+    html { scroll-behavior: smooth; }
     body {
       margin: 0;
       padding: 20px;
@@ -4145,189 +4267,74 @@
         radial-gradient(circle at top left, rgba(255,255,255,0.55), transparent 30%),
         linear-gradient(135deg, #e7d3aa, #f8efd9 45%, #d3b982);
     }
-
-    .rules-page {
-      width: min(980px, 100%);
-      margin: 0 auto;
-      display: grid;
-      gap: 14px;
+    .rules-page { width: min(1180px, 100%); margin: 0 auto; display: grid; gap: 14px; }
+    .page-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .back-to-tracker-btn, .print-btn {
+      border: 1px solid #17314e; border-radius: 10px; padding: 10px 14px; cursor: pointer;
+      font: 800 15px/1 Georgia, "Times New Roman", serif; color: white;
+      background: linear-gradient(180deg, var(--blue), var(--blue-dark));
+      box-shadow: 0 4px 10px rgba(0,0,0,.15);
     }
-
-    .page-actions {
-      display: flex;
-      justify-content: flex-start;
-      align-items: center;
-    }
-
-    .back-to-tracker-btn {
-      border: 1px solid rgba(43, 33, 24, 0.3);
-      border-radius: 999px;
-      min-height: 42px;
-      padding: 0 16px;
-      color: var(--ink);
-      background: linear-gradient(180deg, #fff9eb, #ead7af);
-      box-shadow: 0 2px 0 rgba(0,0,0,0.18);
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: 15px;
-      font-weight: 900;
-      cursor: pointer;
-    }
-
-    .back-to-tracker-btn:active {
-      transform: translateY(1px);
-      box-shadow: 0 1px 0 rgba(0,0,0,0.18);
-    }
-
-    header,
-    section {
-      border: 2px solid var(--border);
-      background: rgba(255, 248, 233, 0.94);
+    .print-btn { background: linear-gradient(180deg, #6f5a36, #4d3d24); border-color: #4d3d24; }
+    header, section, nav {
+      border: 1px solid rgba(43, 33, 24, 0.2);
+      background: rgba(255,248,233,0.94);
+      border-radius: 16px;
       box-shadow: 0 6px 18px var(--shadow);
-      border-radius: 18px;
       padding: 18px;
     }
-
-    header {
-      text-align: center;
+    header { text-align: center; border: 2px solid var(--border); }
+    header h1 { margin: 0; font-size: clamp(32px, 6vw, 54px); line-height: .95; }
+    header .subtitle { margin-top: 8px; color: var(--muted); font-weight: 900; letter-spacing: .7px; text-transform: uppercase; }
+    header .version { margin-top: 7px; font-size: 14px; color: var(--blue); font-weight: 900; }
+    h2 { margin: 0 0 10px; color: var(--blue-dark); font-size: 26px; }
+    h3 { margin: 17px 0 8px; color: #3d3023; font-size: 20px; }
+    p { line-height: 1.5; margin: 8px 0; }
+    ul, ol { margin: 8px 0; padding-left: 25px; line-height: 1.52; }
+    li + li { margin-top: 5px; }
+    nav h2 { margin-bottom: 8px; }
+    .toc { columns: 2; column-gap: 28px; margin: 0; padding-left: 22px; }
+    .toc li { break-inside: avoid; margin: 5px 0; }
+    .toc a { color: var(--blue-dark); font-weight: 800; text-decoration-thickness: 1px; text-underline-offset: 2px; }
+    .callout, .ruling, .warning, .tracker-note {
+      margin: 12px 0 0; border-radius: 12px; padding: 12px 14px; line-height: 1.45;
+      border: 1px solid rgba(36,77,120,.28); background: rgba(36,77,120,.08);
     }
-
-    h1 {
-      margin: 0;
-      font-size: clamp(36px, 7vw, 68px);
-      line-height: 0.95;
-      color: #24160e;
-      text-shadow: 0 2px 0 rgba(255,255,255,0.55);
-    }
-
-    .subtitle {
-      margin-top: 8px;
-      color: var(--muted);
-      font-size: 16px;
-      font-weight: 800;
-    }
-
-    h2 {
-      margin: 0 0 10px;
-      padding-bottom: 6px;
-      color: var(--blue);
-      border-bottom: 1px solid rgba(43, 33, 24, 0.18);
-      font-size: 26px;
-    }
-
-    h3 {
-      margin: 12px 0 6px;
-      color: #3b2411;
-      font-size: 19px;
-    }
-
-    p {
-      margin: 8px 0;
-      line-height: 1.45;
-      font-size: 17px;
-    }
-
-    ul,
-    ol {
-      margin: 8px 0 8px 22px;
-      padding: 0;
-      line-height: 1.45;
-      font-size: 17px;
-    }
-
-    li { margin: 6px 0; }
-
-    .note {
-      color: var(--muted);
-      font-weight: 800;
-    }
-
-    .callout {
-      margin-top: 10px;
-      padding: 10px 12px;
-      border-radius: 14px;
-      background: rgba(36, 77, 120, 0.10);
-      border: 1px solid rgba(36, 77, 120, 0.18);
-      color: #17314e;
-      font-weight: 900;
-      line-height: 1.35;
-    }
-
-    .table-wrap {
-      overflow-x: auto;
-      border-radius: 14px;
-      border: 1px solid rgba(43, 33, 24, 0.18);
-      background: rgba(255,255,255,0.48);
-      margin-top: 10px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 720px;
-    }
-
-    th,
-    td {
-      padding: 10px 12px;
-      text-align: left;
-      vertical-align: top;
-      border-bottom: 1px solid rgba(43, 33, 24, 0.14);
-      line-height: 1.35;
-      font-size: 16px;
-    }
-
-    th {
-      color: white;
-      background: linear-gradient(180deg, var(--blue), #17314e);
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-      white-space: nowrap;
-    }
-
-    tr:last-child td { border-bottom: 0; }
-
-    .tag-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 7px;
-      margin-top: 8px;
-    }
-
-    .tag {
-      border: 1px solid rgba(43, 33, 24, 0.18);
-      background: rgba(255,255,255,0.68);
-      border-radius: 999px;
-      padding: 6px 10px;
-      font-size: 14px;
-      font-weight: 900;
-      white-space: nowrap;
-    }
-
-    .two-column {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-    }
-
-    .mini-card {
-      border: 1px solid rgba(43, 33, 24, 0.18);
-      background: rgba(255,255,255,0.52);
-      border-radius: 14px;
-      padding: 12px;
-    }
-
+    .ruling { border-color: rgba(56,99,71,.35); background: rgba(56,99,71,.09); }
+    .warning { border-color: rgba(139,63,38,.4); background: rgba(139,63,38,.09); }
+    .tracker-note { border-color: rgba(111,90,54,.35); background: rgba(111,90,54,.08); }
+    .callout strong:first-child, .ruling strong:first-child, .warning strong:first-child, .tracker-note strong:first-child { color: var(--blue-dark); }
+    .two-column { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .three-column { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .mini-card { border: 1px solid rgba(43,33,24,.18); background: rgba(255,255,255,.52); border-radius: 14px; padding: 12px; }
     .mini-card h3 { margin-top: 0; }
-
+    .tag-list { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 8px; }
+    .tag { border: 1px solid rgba(43,33,24,.18); background: rgba(255,255,255,.68); border-radius: 999px; padding: 6px 10px; font-size: 14px; font-weight: 900; }
+    .table-wrap { overflow-x: auto; border: 1px solid rgba(43,33,24,.16); border-radius: 12px; background: rgba(255,255,255,.45); }
+    table { width: 100%; border-collapse: collapse; min-width: 760px; }
+    th, td { padding: 9px 11px; text-align: left; vertical-align: top; border-bottom: 1px solid rgba(43,33,24,.14); line-height: 1.38; font-size: 15px; }
+    th { color: white; background: linear-gradient(180deg, var(--blue), var(--blue-dark)); font-weight: 900; text-transform: uppercase; letter-spacing: .35px; white-space: nowrap; }
+    tr:last-child td { border-bottom: 0; }
+    tbody tr:nth-child(even) td { background: rgba(255,255,255,.25); }
+    .small { font-size: 13px; color: var(--muted); }
+    .rule-number { display: inline-grid; place-items: center; min-width: 30px; height: 30px; padding: 0 8px; margin-right: 7px; border-radius: 999px; background: var(--blue-dark); color: white; font-weight: 900; }
+    .phase-strip { display: flex; flex-wrap: wrap; gap: 7px; margin: 10px 0; }
+    .phase-strip span { border-radius: 9px; background: #efe1bf; border: 1px solid #bba273; padding: 7px 9px; font-weight: 900; }
+    .undefined { border-left: 5px solid var(--warning); }
     @media print {
       body { background: white; padding: 0; }
-      header, section { box-shadow: none; break-inside: avoid; }
+      .page-actions, nav { display: none !important; }
+      header, section { box-shadow: none; break-inside: auto; }
+      .table-wrap { overflow: visible; }
+      table { min-width: 0; }
+      tr, .mini-card { break-inside: avoid; }
     }
-
-    @media (max-width: 760px) {
+    @media (max-width: 780px) {
       body { padding: 10px; }
-      header, section { padding: 14px; }
-      .two-column { grid-template-columns: 1fr; }
+      header, section, nav { padding: 14px; }
+      .two-column, .three-column { grid-template-columns: 1fr; }
+      .toc { columns: 1; }
+      h2 { font-size: 23px; }
     }
   </style>
 </head>
@@ -4335,303 +4342,407 @@
   <main class="rules-page">
     <div class="page-actions">
       <button class="back-to-tracker-btn" type="button" onclick="window.close();">← Back to Tracker</button>
+      <button class="print-btn" type="button" onclick="window.print();">Print Rules</button>
     </div>
 
     <header>
       <h1>King's Grid</h1>
-      <div class="subtitle">Player Rules</div>
+      <div class="subtitle">Complete Player Rules &amp; Rulings Reference</div>
+      <div class="version">Rules synchronized with tracker ${APP_VERSION}</div>
     </header>
 
-    <section>
-      <h2>Game Objective</h2>
-      <p>The goal of <strong>King's Grid</strong> is to capture the enemy King and bring that King to a base tile you own.</p>
-      <div class="callout">The King cannot be killed. The King has infinite HP and is a capture-only objective.</div>
-    </section>
-
-    <section>
-      <h2>Starting the Game</h2>
+    <section id="authority">
+      <h2>1. Rules Authority &amp; How to Resolve a Call</h2>
+      <p>This page is the current rules reference for <strong>King's Grid</strong>. It is intended to be used during play when either player needs a ruling. Older printouts, older tracker versions, and superseded terminology do not override this page.</p>
       <ol>
-        <li>Each player chooses a team: <strong>Red</strong> or <strong>Blue</strong>. Once the game has started, players may not switch teams in the tracker.</li>
-        <li>Each player builds a starting army of <strong>8 total pieces</strong>: the King plus 7 starting units.</li>
-        <li>Each individual non-King unit type has a limit of <strong>3 copies</strong>.</li>
-        <li>Press <strong>Finish Setup</strong> after the starting army is confirmed.</li>
-        <li>The game officially starts only after a player flips the coin or manually sets Red or Blue as the first player.</li>
-        <li>The first-player order switches after each full round.</li>
+        <li>Use the rule stated on this page first.</li>
+        <li>Unit position, range, adjacency, walls, captures, and other physical-board facts are decided from the board itself; the tracker does not measure them.</li>
+        <li>The tracker is authoritative for the state it explicitly manages: HP, inventories, Bread, Currency, active bases and specializations, turn sequence, World Event history, Oracle cooldowns, and logged actions.</li>
+        <li>If a rule is explicitly identified here as <strong>not yet numerically defined</strong>, do not invent a number from an older draft. That point requires a separate design ruling.</li>
       </ol>
-      <h3>Starting Army Choices</h3>
-      <div class="tag-list">
-        <span class="tag">Wood Worker</span>
-        <span class="tag">Warrior (Sword)</span>
-        <span class="tag">Warrior (Spear)</span>
-        <span class="tag">Warrior (Bow)</span>
-        <span class="tag">Medic</span>
-        <span class="tag">Priest</span>
-        <span class="tag">Mechanist</span>
-        <span class="tag">Thief</span>
-        <span class="tag">Strategist</span>
-      </div>
-      <p class="note">Choosing units during setup bypasses Summoning Cost. This is the only way to bypass Summoning Cost.</p>
+      <div class="ruling"><strong>Terminology:</strong> “living” or “active living” means a unit currently on that player's roster with HP above 0. “Defeated” means a non-King unit at 0 HP. “Owned” or “controlled” means belonging to that team at the time the rule is checked.</div>
     </section>
 
-    <section>
-      <h2>The King</h2>
+    <nav aria-label="Rules contents">
+      <h2>Contents</h2>
+      <ol class="toc">
+        <li><a href="#objective">Objective</a></li>
+        <li><a href="#setup">Setup</a></li>
+        <li><a href="#round">Round &amp; initiative order</a></li>
+        <li><a href="#unit-turns">Unit turns &amp; actions</a></li>
+        <li><a href="#roster">Complete unit roster</a></li>
+        <li><a href="#king">King, capture &amp; victory</a></li>
+        <li><a href="#hp">HP, defeat, Shields &amp; Bread</a></li>
+        <li><a href="#revival">Healing &amp; revival</a></li>
+        <li><a href="#bases">Bases</a></li>
+        <li><a href="#specializations">Base specializations</a></li>
+        <li><a href="#defences">Defences / walls</a></li>
+        <li><a href="#cannons">Cannons</a></li>
+        <li><a href="#inventory">Resources, Items &amp; Currency</a></li>
+        <li><a href="#giving">Giving Tiles</a></li>
+        <li><a href="#summoning">Summoning</a></li>
+        <li><a href="#crafting">Crafting</a></li>
+        <li><a href="#shopping">Shopping</a></li>
+        <li><a href="#round-end">End of round</a></li>
+        <li><a href="#world-events">World Events &amp; Oracle</a></li>
+        <li><a href="#event-table">World Event rulings table</a></li>
+        <li><a href="#two-trackers">Two-tracker bookkeeping</a></li>
+        <li><a href="#open-design">Open design point</a></li>
+      </ol>
+    </nav>
+
+    <section id="objective">
+      <h2>2. Game Objective</h2>
+      <p>Capture the enemy King and bring that captured King to <strong>a base tile you own</strong>.</p>
+      <div class="callout"><strong>Victory:</strong> The moment the captured enemy King reaches a base tile owned by the capturing player, that player wins.</div>
+    </section>
+
+    <section id="setup">
+      <h2>3. Setup</h2>
+      <ol>
+        <li>Choose teams: <strong>Red</strong> and <strong>Blue</strong>. Once turn tracking has started, the selected team cannot be changed on that tracker.</li>
+        <li>Each player begins with one King plus <strong>7 starting units</strong>, for <strong>8 starting pieces total</strong>.</li>
+        <li>The King is mandatory and limited to one copy. Each individual non-King unit type is limited to <strong>${MAX_COPIES_PER_UNIT} copies</strong>.</li>
+        <li>The game roster limit is <strong>${MAX_ACTIVE_PIECES} pieces per player in the tracker</strong>. Defeated pieces remain on the roster until removed and therefore continue to occupy a roster slot.</li>
+        <li>Starting-unit selections are free; Summoning Costs do not apply during setup.</li>
+        <li>Each Bow Warrior selected during setup grants <strong>3 Arrows</strong>. Bow Warriors gained or summoned later do not receive those free setup Arrows.</li>
+        <li>Each player's starting base is placed <strong>two rows from that player's back rank, in the centre column</strong>.</li>
+        <li>Finish setup, then determine the Round 1 first player by coin flip or manual first-player selection.</li>
+      </ol>
+      <h3>Eligible starting units</h3>
+      <div class="tag-list">${startingArmyTags}</div>
+      <div class="tracker-note"><strong>Setup note:</strong> Units not listed above may still be summoned later during the Summoning phase if their costs can be paid.</div>
+    </section>
+
+    <section id="round">
+      <h2>4. Round Structure &amp; Initiative</h2>
+      <p>Each round has a first player and a second player. On every initiative step, the first player completes that step for their matching pieces, then the second player completes the same step. If a player has no applicable piece or action, that player passes.</p>
+      <p>After the complete round is finished, first-player order switches for the next round.</p>
+      <div class="phase-strip"><span>20 Unit Steps</span><span>Giving Tiles</span><span>Summoning</span><span>Crafting</span><span>Shopping</span><span>End of Round</span></div>
+      <h3>Exact normal initiative order</h3>
+      <div class="table-wrap"><table><thead><tr><th>#</th><th>Step</th><th>Type</th><th>Rule</th></tr></thead><tbody>${initiativeRows}</tbody></table></div>
+      <h3>Uno Reverso</h3>
+      <p><strong>Uno Reverso</strong> reverses only the 20 unit steps. The player who is first in the round still acts first on every step, and the five non-unit phases remain in their normal order. A later Uno Reverso toggles the unit order back to normal.</p>
+    </section>
+
+    <section id="unit-turns">
+      <h2>5. Unit Turns, Movement &amp; Actions</h2>
       <ul>
-        <li>The King has <strong>Movement 3</strong>.</li>
-        <li>The King has <strong>infinite HP</strong>.</li>
-        <li>The King cannot take damage, be defeated, eat Bread, heal, or equip Shields.</li>
-        <li>The King is captured, not killed.</li>
-      </ul>
-      <h3>Empower</h3>
-      <p><strong>Empower</strong> is the King's passive ability. Any friendly piece that starts its turn within <strong>3 tiles</strong> of its King gains <strong>+1 movement</strong> for that turn.</p>
-      <p class="note">The tracker does not check board distance. Players confirm Empower positioning on the physical board.</p>
-    </section>
-
-    <section>
-      <h2>Winning and Capturing the King</h2>
-      <ul>
-        <li>Any unit can use its action to <strong>Capture</strong> the opponent's King if that unit is adjacent to the King.</li>
-        <li>While carrying the King, the capturing unit can move a maximum of <strong>2 tiles per turn</strong>.</li>
-        <li>If the capturing unit's normal maximum movement is only 1, it still moves only <strong>1 tile</strong>.</li>
-        <li>The captured King moves with the unit that is carrying him.</li>
-        <li>Only one of your units may use the Capture action per round.</li>
-      </ul>
-      <div class="callout">You win when the captured enemy King reaches a base tile you own.</div>
-    </section>
-
-    <section>
-      <h2>Turn Order</h2>
-      <p>Each initiative step gives both players a chance to act with matching pieces. If a player has no matching pieces, that player simply passes that step.</p>
-      <ul>
-        <li>The first player of the round acts first on each step.</li>
-        <li>The other player acts second on that same step.</li>
-        <li>After a full round, the first-player order switches.</li>
-        <li><strong>Uno Reverso</strong> can invert the piece order, but it does not change player order.</li>
+        <li>When a unit type's initiative step occurs, every living piece of that type may take its turn for that player.</li>
+        <li>A piece may move up to its listed <strong>Move</strong> value and may use its listed action when legal. Passive abilities apply according to their own wording.</li>
+        <li>Unless a special rule says otherwise, each piece may use its action once during its own initiative step.</li>
+        <li>Board distance, adjacency, targets, line-of-effect, and physical movement are verified by the players on the board. The tracker records the bookkeeping but does not validate geometry.</li>
+        <li>The King's Empower bonus adds +1 movement only when the friendly piece <strong>starts its turn</strong> within 3 tiles of its King.</li>
+        <li>The Strategist is an exception to normal timing: it may sacrifice itself on <strong>any ally unit's turn</strong> to give that ally a second action for the round.</li>
+        <li>The Oracle's Negate ability is not used during the Oracle initiative step; it is used only during the World Event reveal window described later.</li>
+        <li>The Shopkeeper's Shop Access is passive and is checked during Shopping.</li>
       </ul>
     </section>
 
-    <section>
-      <h2>Resources, Bread, Items, Currency, and Stardust</h2>
+    <section id="roster">
+      <h2>6. Complete Unit Roster</h2>
+      <p>The table below is generated from the tracker's current unit definitions so Move, HP, actions, and normal Summoning Costs stay synchronized with the game data.</p>
+      <div class="table-wrap"><table><thead><tr><th>#</th><th>Unit</th><th>Move</th><th>Max HP</th><th>Action / Passive</th><th>Normal Summoning Cost</th></tr></thead><tbody>${unitRows}</tbody></table></div>
+      <div class="ruling"><strong>Mage sacrifice:</strong> The Mage pays its attack cost by removing one allied non-Mage unit. The King cannot be used as that cost because the King is capture-only and cannot be killed or sacrificed.</div>
+    </section>
+
+    <section id="king">
+      <h2>7. The King, Capture &amp; Victory</h2>
       <div class="two-column">
         <div class="mini-card">
-          <h3>Resources</h3>
-          <p>Resources use the standard resource inventory. A player may hold up to <strong>11 resource slots</strong>.</p>
-          <div class="tag-list">
-            <span class="tag">Wood</span><span class="tag">Stone</span><span class="tag">Iron</span><span class="tag">Sulphur</span><span class="tag">Rope</span><span class="tag">Leather</span><span class="tag">Glass</span><span class="tag">Gem</span>
-          </div>
+          <h3>King</h3>
+          <ul>
+            <li>Move: <strong>3</strong>.</li>
+            <li>HP: <strong>infinite</strong>.</li>
+            <li>The King cannot take damage, be defeated, be healed, eat Bread, or equip a Shield.</li>
+            <li>The King cannot be summoned.</li>
+            <li><strong>Empower:</strong> a friendly piece that starts its turn within 3 tiles of its King gets +1 Move for that turn.</li>
+          </ul>
         </div>
         <div class="mini-card">
-          <h3>Items</h3>
-          <p>Items use the item inventory. A player may hold up to <strong>11 item slots</strong>.</p>
-          <div class="tag-list">
-            <span class="tag">Arrow</span><span class="tag">Shield</span><span class="tag">Cannon Ball</span><span class="tag">Cannon</span><span class="tag">Artifact</span>
-          </div>
+          <h3>Capture</h3>
+          <ul>
+            <li>Any unit may use its action to Capture an adjacent enemy King.</li>
+            <li>Only <strong>one</strong> of your units may use the Capture action in a round.</li>
+            <li>The captured King travels with the carrier.</li>
+            <li>A carrier's movement is capped at <strong>2</strong> while carrying the King. A unit whose normal Move is only 1 remains limited to 1.</li>
+            <li>Deliver the captured King to any base tile you own to win.</li>
+          </ul>
         </div>
       </div>
+    </section>
+
+    <section id="hp">
+      <h2>8. HP, Defeat, Shields &amp; Bread</h2>
+      <h3>Damage and defeat</h3>
+      <ul>
+        <li>A non-King unit is defeated when its HP reaches 0.</li>
+        <li>A defeated piece should remain in the tracker at 0 HP if it may later be revived. Removing it from the tracker removes that saved defeated piece.</li>
+        <li>Healing cannot raise a piece above its current maximum HP.</li>
+      </ul>
+      <h3>Shields</h3>
+      <ul>
+        <li>A non-King unit may equip one Shield from Item inventory.</li>
+        <li>An equipped Shield absorbs <strong>one complete hit of any strength</strong>: the Shield is destroyed and the unit loses no HP from that hit.</li>
+        <li>An equipped Shield may be unequipped and returned to Item inventory only if an Item slot is available.</li>
+        <li>The King cannot equip a Shield.</li>
+      </ul>
       <h3>Bread</h3>
-      <p><strong>Bread</strong> is tracked separately from Resources and Items. It does not use inventory slots. A player may hold a maximum of <strong>3 Bread</strong>.</p>
-      <h3>Currency</h3>
-      <p>Currency is tracked separately as Gold, Silver, and Bronze. During setup and Test Mode, currency can be adjusted manually. After setup, manual economy additions are locked, and changes should come from rewards, actions, shopping, crafting, or World Events.</p>
-      <h3>Stardust</h3>
-      <p><strong>Stardust</strong> is a special resource tracked separately from the resource inventory. It does not count against the 11 resource slots. A player may hold from <strong>0 to 5 Stardust</strong>.</p>
-    </section>
-
-    <section>
-      <h2>Giving Tiles</h2>
-      <p>Giving Tiles are special spaces on the board. Track the number of Giving Tiles occupied, from <strong>0 to 5</strong>.</p>
       <ul>
-        <li>During the Giving Tile step, each occupied Giving Tile gives one random reward from the resource/Bread reward pool.</li>
-        <li>Gem and Iron are excluded from the random Giving Tile reward pool.</li>
-        <li>Normal resource rewards require open resource slots. Bread uses its separate 3-Bread storage instead.</li>
-        <li>Gaining or losing Giving Tiles is recorded in the round news.</li>
+        <li>Bread is stored separately from Resources and Items, with a maximum of <strong>${MAX_BREAD}</strong>.</li>
+        <li>A living, damaged, non-King unit may consume 1 Bread to heal <strong>2 HP</strong>, never above its current maximum HP.</li>
+        <li>Bread does not occupy Resource or Item slots.</li>
       </ul>
     </section>
 
-    <section>
-      <h2>End of Round Rewards</h2>
-      <p>At the end of each round, each player receives <strong>1 free Bronze</strong>, then chooses one bonus:</p>
-      <div class="tag-list">
-        <span class="tag">Wood</span>
-        <span class="tag">Stone</span>
-        <span class="tag">Bread</span>
-        <span class="tag">Second Bronze</span>
-      </div>
-    </section>
-
-    <section>
-      <h2>Summoning</h2>
-      <p>During the <strong>Summoning Unit</strong> phase, a player may summon <strong>one unit</strong>.</p>
+    <section id="revival">
+      <h2>9. Healing &amp; Revival</h2>
+      <h3>Medic</h3>
       <ul>
-        <li>Summoning requires the full listed Summoning Cost.</li>
-        <li>The King cannot be summoned.</li>
-        <li>Summoned Bow Warriors do not receive the free setup Arrows.</li>
+        <li>Normal Medic: Move 4, Max HP 2.</li>
+        <li>Heal a damaged allied non-Medic unit by <strong>1 HP</strong> when within <strong>3 tiles</strong>.</li>
+        <li>A Medic cannot heal another Medic.</li>
+        <li>While the Medic's team controls a living Hospital base, all friendly Medics become <strong>Move 6 / Max HP 3</strong>.</li>
       </ul>
-    </section>
-
-    <section>
-      <h2>Crafting</h2>
-      <p>Crafting happens during the Crafting step. The full recipe cost must be paid, and the player must have enough item space for the result.</p>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>Crafted Item</th><th>Result</th><th>Cost</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>Cannon</td><td>1 Cannon</td><td>6 Iron, 2 Rope, 2 Sulphur</td></tr>
-            <tr><td>Cannon Ball</td><td>1 Cannon Ball</td><td>2 Iron</td></tr>
-            <tr><td>Arrows</td><td>5 Arrows</td><td>1 Wood, 1 Stone, 1 Rope</td></tr>
-            <tr><td>Shield</td><td>1 Shield</td><td>3 Wood, 1 Iron, 1 Rope</td></tr>
-            <tr><td>Artifact</td><td>1 Artifact</td><td>3 Glass, 8 Stone, 1 Iron</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <section>
-      <h2>Shopping</h2>
-      <p>Shopping is available only during a player's Shopping step and only if that player has an active living <strong>Shopkeeper</strong>.</p>
+      <h3>Priest</h3>
       <ul>
-        <li>Currency can be converted upward: 3 Bronze to 1 Silver, or 3 Silver to 1 Gold.</li>
-        <li>Arrows may be bought in the shop for <strong>1 Bronze each</strong>.</li>
-        <li><strong>Sell Resources:</strong> During the Shopping step, a player with an active living Shopkeeper may sell any <strong>3 Resources</strong> for <strong>1 Bronze</strong>. The three Resources may be mixed and do not have to match.</li>
-        <li>Resources must be sold in complete groups of 3. Bread and Items are not Resources and cannot be included in a sale.</li>
-        <li>Resources may still be discarded at any time to free inventory space, but discarded Resources give no Bronze or other benefit.</li>
-        <li><strong>Free Trade Economy</strong> makes all shop items 50% off while active, rounding up when necessary. It does not change the 3 Resources → 1 Bronze sale rate.</li>
+        <li>Revival range is normally 3 tiles; a controlled Chapel increases it to 6.</li>
+        <li>Each revival consumes <strong>1 Sacred Artifact</strong>.</li>
+        <li>Eligible defeated units: <strong>Base Builder, Wood Worker, Stone Worker, Iron Worker, Warrior (Sword), Warrior (Spear), Warrior (Bow), Warrior (Lance &amp; Horse), Farmer, Artillerist, Mechanist, Thief, Shopkeeper</strong>.</li>
       </ul>
-    </section>
-
-    <section>
-      <h2>Actions Tracked by the App</h2>
+      <h3>Necromancer</h3>
       <ul>
-        <li><strong>Bow Warrior - Fire:</strong> spends 1 Arrow.</li>
-        <li><strong>Farmer - Farm:</strong> gains 1 Bread if Bread storage is below 3.</li>
-        <li><strong>Thief - Steal:</strong> adds 1 Bronze after players confirm the Thief is within 5 tiles of the enemy King.</li>
-        <li><strong>Wood Worker - Build:</strong> spends 2 Wood.</li>
-        <li><strong>Stone Worker - Build:</strong> spends 2 Stone.</li>
-        <li><strong>Iron Worker - Build:</strong> spends 2 Iron.</li>
+        <li>Revival range is normally 3 tiles; a controlled Graveyard increases it to 6.</li>
+        <li>Each revival consumes <strong>1 Demonic Totem</strong>.</li>
+        <li>Eligible defeated units: <strong>Mage, Priest, Medic, Oracle</strong>.</li>
       </ul>
-      <p class="note">The app tracks costs and logs the action, but board position and target validity are confirmed by the players.</p>
+      <div class="ruling"><strong>Revival placement:</strong> A revived unit returns at full HP on a tile beside the Priest or Necromancer performing the revival; it does not return to the tile where it was defeated. Any unit type not listed in the relevant eligible list cannot be revived by that caster.</div>
+      <div class="tracker-note"><strong>Oracle distinction:</strong> An Oracle defeated normally can be revived by a Necromancer. An Oracle that was invoked to negate a World Event <em>Ascends</em> and is removed rather than defeated, so that copy is not a revival target.</div>
     </section>
 
-    <section>
-      <h2>Bases</h2>
-      <p>Every player starts with one base. Each base has <strong>6 HP</strong>. Players may establish additional bases, up to a maximum of <strong>4 bases</strong> tracked in the app.</p>
+    <section id="bases">
+      <h2>10. Bases</h2>
       <ul>
-        <li>A secondary Base Tile can be created by using the Base Builder rules.</li>
-        <li>If a unit is standing on a base tile, that unit takes damage instead of the base, unless that unit is a King.</li>
-        <li>Damage does not overflow from a unit to the base.</li>
+        <li>There may be a maximum of <strong>${MAX_BASES} bases total</strong> in the game.</li>
+        <li>Every base has <strong>${BASE_MAX_HP} HP</strong>.</li>
+        <li>Each player begins with one base, placed two rows from that player's back rank in the centre column.</li>
+        <li>A secondary base is created by a Base Builder action: choose a tile within 1 tile of the acting Base Builder that has at least <strong>3 adjacent Base Builders</strong>; that tile becomes a Base tile.</li>
+        <li>A secondary base may be created only on that player's <strong>starting-side half</strong> of the board. The centre Giving Tile marks the halfway point.</li>
+        <li>If a non-King unit is standing on a base tile when that base would take damage, the unit takes the damage instead.</li>
+        <li>Damage absorbed by the unit does <strong>not</strong> overflow to the base.</li>
+        <li>A King standing on a base does not absorb damage for the base.</li>
+        <li>A base at 0 HP provides no specialization bonus. Its specialization remains recorded unless removed by another rule.</li>
       </ul>
-    </section>
-
-    <section>
-      <h2>Base Specialization</h2>
-      <p>Each base can have one specialization. A base can be re-specialized later if the player can pay the new cost and meet the active-unit requirement.</p>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>Specialization</th><th>Cost</th><th>Required Active Units</th></tr>
-          </thead>
-          <tbody>
-            <tr><td><strong>Chapel</strong></td><td>5 Stone, 2 Glass, 1 Gold</td><td>2 active Medics</td></tr>
-            <tr><td><strong>Graveyard</strong></td><td>5 Stone, 5 Rope, 1 Gold</td><td>1 active Necromancer</td></tr>
-            <tr><td><strong>Recruitment Center</strong></td><td>5 Wood, 3 Iron, 1 Gold</td><td>2 active Strategists</td></tr>
-            <tr><td><strong>Hospital</strong></td><td>5 Glass, 2 Wood, 3 Iron, 1 Gold</td><td>1 active Priest</td></tr>
-            <tr><td><strong>Merchant District</strong></td><td>3 Rope, 3 Wood, 2 Bread, 1 Gold</td><td>3 active Shopkeepers</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <section>
-      <h2>Base Capturing</h2>
-      <p>When capturing a base, the capturing player chooses what happens to it:</p>
+      <h3>Capturing a base</h3>
+      <p>When a base is captured, the capturing player chooses one of the following outcomes:</p>
       <ul>
         <li>Destroy the base.</li>
         <li>Keep the base with its current specialization.</li>
         <li>Keep the base but remove its specialization.</li>
-        <li>If the base is unspecialized, keep the base as it is.</li>
+        <li>If it is unspecialized, keep it as an unspecialized base.</li>
       </ul>
+      <p>If a specialized base changes controller and its specialization is kept, the specialization bonus belongs to the new controller as soon as the base is above 0 HP.</p>
     </section>
 
-    <section>
-      <h2>Defences</h2>
-      <p>Defences, often called walls, are <strong>5-by-1 tile</strong> structures. They protect adjacent units, friend or foe, from ranged attacks by Warrior (Bow), magic attacks by Mage, and cannon balls.</p>
-      <div class="two-column">
-        <div class="mini-card">
-          <h3>Wall Types</h3>
-          <ul>
-            <li><strong>Wooden Defence:</strong> 3 HP</li>
-            <li><strong>Stone Defence:</strong> 6 HP</li>
-            <li><strong>Iron Wall:</strong> needs a cannon to destroy</li>
-          </ul>
-        </div>
-        <div class="mini-card">
-          <h3>Wall Limits</h3>
-          <p>A player can have up to <strong>3 of each type</strong> of wall on the field at any time.</p>
-        </div>
-      </div>
-      <p>Any World Event that causes movement is stopped by the game border or existing walls.</p>
-    </section>
-
-    <section>
-      <h2>Cannons</h2>
+    <section id="specializations">
+      <h2>11. Base Specializations</h2>
       <ul>
-        <li>A player may have <strong>one cannon</strong> total.</li>
-        <li>Cannons have <strong>2 HP</strong>.</li>
-        <li>A Cannon Ball must be spent to load the cannon.</li>
-        <li>Cannon balls instantly destroy walls when they hit.</li>
-        <li>Cannon balls can be shot over walls if the player wishes.</li>
-        <li>A Cannon Ball deals <strong>2 damage</strong> to a unit or another cannon.</li>
-        <li>A player may use a cannon to destroy their own wall.</li>
-        <li>A cannon cannot move unless a <strong>Mechanist</strong> or an <strong>Artillerist</strong> pushes it.</li>
-        <li>Any unit may use its action to <strong>place</strong> a cannon on its turn.</li>
+        <li>Each base can have at most one specialization.</li>
+        <li>To apply or normally change a specialization, pay the full listed cost and have the required number of <strong>living</strong> units of the required type. Those units are not consumed.</li>
+        <li>Changing from one specialization to another costs the full new specialization cost; there is no refund for the old specialization.</li>
+        <li>A specialization may be removed by setting the base to None; removing it gives no refund.</li>
+        <li>A specialization bonus applies only while that team controls at least one base of that specialization with HP above 0.</li>
+        <li>Multiple bases with the same specialization do not multiply a bonus unless a rule explicitly says they do.</li>
+      </ul>
+      <div class="table-wrap"><table><thead><tr><th>Specialization</th><th>Cost</th><th>Required Living Units</th><th>Bonus</th></tr></thead><tbody>${specializationRows}</tbody></table></div>
+      <h3>Hospital HP transition</h3>
+      <p>When a Hospital bonus first becomes active, a Medic sitting at its normal full 2 HP becomes 3/3. If the Hospital bonus is lost, any Medic above 2 HP is reduced to the normal 2-HP maximum.</p>
+      <h3>Meteor Showers exception</h3>
+      <p>Meteor Showers may change one base that was already specialized when that World Event resolved to a <strong>different</strong> specialization for free. The normal cost and active-unit requirement are waived. The change is optional; an unspecialized base is not eligible and the event cannot be used simply to remove a specialization.</p>
+    </section>
+
+    <section id="defences">
+      <h2>12. Defences / Walls</h2>
+      <ul>
+        <li>Defences are <strong>5-by-1 tile</strong> structures.</li>
+        <li>A player may have up to <strong>3 Wooden, 3 Stone, and 3 Iron</strong> Defences on the field.</li>
+        <li>A Wood Worker may place a Wooden Defence within 1 tile by spending 2 Wood.</li>
+        <li>A Stone Worker may place a Stone Defence within 1 tile by spending 2 Stone.</li>
+        <li>An Iron Worker may place an Iron Defence within 1 tile by spending 2 Iron.</li>
+        <li><strong>Wooden Defence:</strong> 3 HP.</li>
+        <li><strong>Stone Defence:</strong> 6 HP.</li>
+        <li><strong>Iron Defence:</strong> cannot be destroyed by basic attacks; a Cannon is required.</li>
+        <li>Basic attacks may damage Wooden and Stone Defences.</li>
+        <li>A wall protects units adjacent to it, friendly or enemy, from Bow ranged attacks, Mage magic attacks, and Cannon Balls.</li>
+        <li>Forced movement from a World Event stops at the board edge or an existing wall.</li>
+      </ul>
+      <div class="ruling"><strong>Cannon interaction:</strong> Cannon Balls may travel over intervening walls, but the normal protection granted by a wall to units adjacent to that wall still applies.</div>
+    </section>
+
+    <section id="cannons">
+      <h2>13. Cannons</h2>
+      <ul>
+        <li>A player may own <strong>one Cannon total</strong>, counting both stored and placed Cannons.</li>
+        <li>A placed Cannon has <strong>${CANNON_MAX_HP} HP</strong>.</li>
+        <li>Any unit may use its action to place a stored Cannon. Place it on any owned base, or beside a friendly Mechanist or Artillerist.</li>
+        <li>Normally, one unit uses its action to spend 1 Cannon Ball and load the Cannon; another unit uses its action to fire it.</li>
+        <li>An adjacent <strong>Artillerist</strong> may load and fire the Cannon as a single action.</li>
+        <li>Each shot consumes one loaded Cannon Ball.</li>
+        <li>A Cannon Ball instantly destroys a wall it hits, including an Iron Defence.</li>
+        <li>A Cannon Ball deals <strong>2 damage</strong> when fired at a unit or another Cannon.</li>
+        <li>Cannon Balls may be fired over walls.</li>
+        <li>You may deliberately use your Cannon to destroy one of your own walls.</li>
+        <li>A Cannon does not move normally. A Mechanist or Artillerist may passively push it <strong>1 tile</strong> in any direction to an unoccupied tile.</li>
+      </ul>
+      <div class="tracker-note"><strong>Range:</strong> The current game data does not give a numeric Cannon firing range. Do not infer one from Bow or Mage range.</div>
+    </section>
+
+    <section id="inventory">
+      <h2>14. Resources, Bread, Items &amp; Currency</h2>
+      <div class="three-column">
+        <div class="mini-card"><h3>Resources</h3><p>Maximum <strong>${MAX_RESOURCE_SLOTS} total Resource units</strong>.</p><div class="tag-list">${resourceTypes.map(name => `<span class="tag">${escapeRulesHtml(name)}</span>`).join("")}</div></div>
+        <div class="mini-card"><h3>Items</h3><p>Maximum <strong>${MAX_ITEM_SLOTS} total Item units</strong>.</p><div class="tag-list">${itemTypes.map(name => `<span class="tag">${escapeRulesHtml(name)}</span>`).join("")}</div></div>
+        <div class="mini-card"><h3>Separate Tracks</h3><p><strong>Bread:</strong> 0–${MAX_BREAD}.</p><p><strong>Currency:</strong> Bronze, Silver, Gold; does not occupy Resource or Item slots.</p></div>
+      </div>
+      <ul>
+        <li>Resources and Items use separate 11-slot inventories.</li>
+        <li>Bread is neither a Resource nor an Item unless a specific rule explicitly names Bread.</li>
+        <li>Normal Resources may be discarded to free space with no reward. Selling Resources for Bronze is a separate Shopping action.</li>
+        <li>After setup, new Resources, Items, Bread, and Currency should come from game effects rather than manual additions; Test Mode is the bookkeeping exception.</li>
       </ul>
     </section>
 
-    <section>
-      <h2>World Events</h2>
-      <p>World Events are shared events that affect both players. One World Event occurs at the end of every round.</p>
+    <section id="giving">
+      <h2>15. Giving Tiles</h2>
+      <p>Each player tracks how many Giving Tiles they currently occupy, from 0 to 5.</p>
+      <ul>
+        <li>During that player's Giving Tile phase, roll <strong>one random reward per occupied Giving Tile</strong>.</li>
+        <li>The reward pool is:</li>
+      </ul>
+      <div class="tag-list">${givingTags}</div>
+      <ul>
+        <li><strong>Iron and Gem are not in the Giving Tile pool.</strong></li>
+        <li>Resource rewards require an open Resource slot. Bread uses its separate Bread storage.</li>
+        <li>If a rolled reward cannot fit, that reward is lost; it is not rerolled.</li>
+        <li>God's Blessing uses this exact same reward pool and capacity rules for five rolls.</li>
+      </ul>
+    </section>
+
+    <section id="summoning">
+      <h2>16. Summoning</h2>
+      <ul>
+        <li>During your Summoning phase, you may summon <strong>one unit</strong>.</li>
+        <li>You must pay the complete Summoning Cost and remain within the 3-copy-per-type and ${MAX_ACTIVE_PIECES}-piece roster limits.</li>
+        <li>The King cannot be summoned.</li>
+        <li>A Bow Warrior summoned after setup receives no free Arrows.</li>
+        <li>If you control an active Recruitment Center, Warrior and Mage recipes keep every listed <strong>cost type</strong>, but each listed quantity becomes <strong>1</strong>.</li>
+      </ul>
+      <div class="ruling"><strong>Recruitment Center examples:</strong> Sword becomes 1 Bronze + 1 Stone + 1 Wood; Spear becomes 1 Silver + 1 Wood + 1 Stone; Bow becomes 1 Silver + 1 Wood + 1 Rope + 1 Sulphur; Lance &amp; Horse becomes 1 Wood + 1 Stone + 1 Rope + 1 Leather; Mage becomes 1 Gem + 1 Bronze.</div>
+      <h3>Baby Boom</h3>
+      <p>Baby Boom is a World Event exception: it allows up to two free Warriors at round-end. It does not consume the normal Summoning phase, but normal copy and roster limits still apply.</p>
+    </section>
+
+    <section id="crafting">
+      <h2>17. Crafting</h2>
+      <p>Crafting is available during your Crafting phase. You may craft repeatedly while you can pay each complete recipe and have enough Item slots for the complete result.</p>
+      <div class="table-wrap"><table><thead><tr><th>Crafted Item</th><th>Result</th><th>Cost</th></tr></thead><tbody>${craftingRows}</tbody></table></div>
+      <ul>
+        <li>Crafting a Cannon is also subject to the one-Cannon ownership limit.</li>
+        <li>Sacred Artifacts are consumed by Priest revivals.</li>
+        <li>Demonic Totems are consumed by Necromancer revivals.</li>
+      </ul>
+    </section>
+
+    <section id="shopping">
+      <h2>18. Shopping, Currency Conversion &amp; Resource Selling</h2>
+      <p>Shopping is available only during your Shopping phase and only while you have at least one <strong>living Shopkeeper</strong>.</p>
+      <h3>Shop catalogue</h3>
+      <div class="table-wrap"><table><thead><tr><th>Price</th><th>Receive</th></tr></thead><tbody>${shopRows}</tbody></table></div>
+      <div class="tracker-note"><strong>Bundle capacity:</strong> The current tracker allows a shop bundle to fill only the open slots you have while charging the full listed price. Check available space before buying large bundles if you want the full quantity.</div>
+      <h3>Currency conversion</h3>
+      <ul>
+        <li>Normal: <strong>3 Bronze → 1 Silver</strong>.</li>
+        <li>Normal: <strong>3 Silver → 1 Gold</strong>.</li>
+        <li>With a controlled Merchant District: <strong>2 Silver → 1 Gold</strong>.</li>
+        <li>Free Trade Economy does not discount currency conversions.</li>
+      </ul>
+      <h3>Sell Resources</h3>
+      <ul>
+        <li>Normal: sell any <strong>3 Resources → 1 Bronze</strong>.</li>
+        <li>With a controlled Merchant District: sell any <strong>2 Resources → 1 Bronze</strong>.</li>
+        <li>Resources in a sale may be mixed; they do not need to match.</li>
+        <li>Bread and Items cannot be sold as Resources.</li>
+        <li>Discarding Resources outside a sale gives no Bronze.</li>
+      </ul>
+      <h3>Free Trade Economy</h3>
+      <p>If Free Trade Economy resolves at the end of Round R, normal shop purchases cost 50% during <strong>Round R+1 only</strong>, rounded up with a minimum cost of 1. It does not alter conversion rates or Resource-selling rates.</p>
+    </section>
+
+    <section id="round-end">
+      <h2>19. End of Round</h2>
+      <p>Each player's Round End segment contains that player's reward bookkeeping. One shared World Event is also resolved per full round.</p>
+      <h3>Player reward</h3>
+      <p>Each player receives <strong>1 free Bronze</strong>, then chooses exactly one bonus:</p>
+      <div class="tag-list"><span class="tag">+1 Wood</span><span class="tag">+1 Stone</span><span class="tag">+1 Bread</span><span class="tag">+1 additional Bronze</span></div>
+      <ul>
+        <li>Wood and Stone require an open Resource slot.</li>
+        <li>Bread requires room below the 3-Bread maximum.</li>
+        <li>If the chosen physical reward cannot fit, choose another legal bonus before claiming.</li>
+      </ul>
+    </section>
+
+    <section id="world-events">
+      <h2>20. World Events &amp; the Oracle</h2>
+      <ul>
+        <li>Exactly <strong>one World Event</strong> occurs per round.</li>
+        <li>The team that is <strong>first player for that round</strong> is responsible for the random World Event reveal.</li>
+        <li>World Events are shared: both players resolve the same event.</li>
+        <li>Events involving physical movement, target choices, damage distribution, discarding, or ownership changes are resolved manually on the board and reflected in each tracker as necessary.</li>
+      </ul>
       <h3>Oracle — Negate</h3>
-      <ul>
-        <li>Only the player responsible for randomly revealing the World Event may invoke an Oracle.</li>
-        <li>The choice is made <strong>after</strong> the random World Event has been revealed, but <strong>before</strong> its effect is resolved.</li>
-        <li>If invoked, the Oracle negates that World Event for <strong>both players</strong>.</li>
-        <li>The Oracle then <strong>Ascends to the heavens</strong> and is removed from the board.</li>
-      </ul>
-      <h3>Local iPad Rule</h3>
       <ol>
-        <li>The first player of the World Event round clicks <strong>Reveal World Event</strong>.</li>
-        <li>After the event is revealed, the revealing player may invoke an Oracle if one is alive.</li>
-        <li>If the event is allowed, the other player selects the same event from the <strong>Manual Match Event Deck</strong> on their own iPad.</li>
-        <li>If an Oracle negates it, the other player records the same event as <strong>negated</strong> instead of applying its effect.</li>
-        <li>Both trackers therefore record the same World Event result.</li>
+        <li>Only the player responsible for the random reveal may invoke one of <strong>their own living Oracles</strong>.</li>
+        <li>The event is revealed first. The Oracle decision occurs <strong>after the event is known but before it resolves</strong>.</li>
+        <li>If the player allows the event, it resolves normally for both players.</li>
+        <li>If the player invokes an Oracle, that event is negated for <strong>both players</strong>.</li>
+        <li>The chosen Oracle <strong>Ascends to the heavens</strong> and is removed from the board.</li>
+        <li>If more than one Oracle is available, the invoking player chooses which Oracle Ascends.</li>
+        <li>The negated World Event is then excluded from the random event pool for the <strong>next 15 rounds</strong>. If negated in Round R, it is ineligible in R+1 through R+15 and becomes eligible again in R+16.</li>
       </ol>
-      <p class="note">Some World Events are applied automatically by the tracker. Events involving board position, walls, player choices, or discarding are resolved manually by the players.</p>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>#</th><th>World Event</th><th>Effect</th></tr>
-          </thead>
-          <tbody>
-            ${worldEvents.map(event => `<tr><td>${event.id}</td><td><strong>${event.name}</strong></td><td>${event.description}</td></tr>`).join("")}
-          </tbody>
-        </table>
-      </div>
+      <div class="ruling"><strong>Oracle cooldown example:</strong> An event negated in Round 5 cannot be drawn in Rounds 6–20 and returns to the pool in Round 21.</div>
     </section>
 
-    <section>
-      <h2>Round News</h2>
-      <p>The tracker records important events in the round news, including actions, damage, rewards, Giving Tile changes, Stardust changes, and World Events.</p>
-      <p>The <strong>All Round News</strong> window shows the full saved news history grouped by round.</p>
+    <section id="event-table">
+      <h2>21. World Event Rulings Table</h2>
+      <div class="table-wrap"><table><thead><tr><th>#</th><th>Event</th><th>Card Effect</th><th>Ruling / Clarification</th></tr></thead><tbody>${worldEventRows}</tbody></table></div>
     </section>
 
-    <section>
-      <h2>Test Mode</h2>
-      <p>Test Mode is for playtesting and debugging. It allows manual economy edits after setup. World Events occur at the end of every round in normal play as well.</p>
+    <section id="two-trackers">
+      <h2>22. Two-Tracker Bookkeeping &amp; Round News</h2>
+      <ul>
+        <li>Each player's device tracks that player's own roster, inventory, Bread, Currency, and local consequences of shared events.</li>
+        <li>The revealing player uses the random World Event control. The other player records the same revealed event manually on their own tracker.</li>
+        <li>If the revealing player invokes an Oracle, the other player must use the <strong>Opponent Oracle / Record Event as Negated</strong> control instead of applying the event.</li>
+        <li>Recording an opponent's Oracle negation also records that event's 15-round cooldown on the second tracker.</li>
+        <li>Round News is a bookkeeping history. It helps reconstruct what happened but does not override the rules or the current board state.</li>
+      </ul>
+    </section>
+
+    <section id="open-design" class="undefined">
+      <h2>23. Rules / Implementation Points Still Requiring a Definition</h2>
+      <p>The audit found the following points for which the current design history does not supply a complete ruling. They are listed here so an older draft or an assumption is not accidentally treated as law.</p>
+      <div class="warning"><strong>Mechanist Repair amount:</strong> The Mechanist may Repair a wall, base, or cannon, but no current rule assigns a numeric number of HP restored by one Repair action.</div>
+      <div class="warning"><strong>How an enemy base is captured:</strong> The consequences of a successful base capture are defined, but the current rules do not define the unit, position, action, HP threshold, or other condition that makes the capture itself legal. In particular, no current rule says that a base must be at 0 HP before capture.</div>
+      <div class="warning"><strong>Cannon firing range:</strong> Cannon damage, loading, wall interaction, and firing are defined, but no numeric maximum firing range is currently specified.</div>
+      <div class="warning"><strong>How grid distance is counted:</strong> Movement and abilities use distances such as “within 3 tiles,” but the current design does not explicitly state whether diagonal steps count as one tile or specify another formal distance metric.</div>
+      <div class="tracker-note"><strong>Tracker mismatch — base capture outcomes:</strong> The game rules allow a captured base to be destroyed, kept with its specialization, or kept with the specialization removed. The current Capture button only changes ownership; it does not implement all three outcomes automatically. Players must therefore make the additional base-state adjustment manually until that control is expanded.</div>
+      <p class="small">No missing value or condition has been inferred. That is deliberate: an authoritative reference should distinguish an unresolved rule from a made-up ruling.</p>
     </section>
   </main>
 </body>
 </html>`;
     }
+
 
     function openRulesWindow() {
       const rulesWindow = window.open("", "_blank");
@@ -4973,12 +5084,17 @@
       if (!state.turnOrder.worldEventsResolvedByTurnKey) {
         state.turnOrder.worldEventsResolvedByTurnKey = {};
       }
+
+      if (!state.turnOrder.meteorRespecializationByRound) {
+        state.turnOrder.meteorRespecializationByRound = {};
+      }
     }
 
     function getPendingWorldEventForRound(roundNumber) {
       ensureWorldEventState();
       const eventId = state.turnOrder.pendingWorldEventsByRound[String(roundNumber)];
-      return worldEvents.find(event => event.id === eventId) || null;
+      const event = worldEvents.find(candidate => candidate.id === eventId) || null;
+      return isWorldEventEligibleForRound(event, roundNumber) ? event : null;
     }
 
     function wasWorldEventNegated(roundNumber) {
@@ -4990,6 +5106,48 @@
       ensureWorldEventState();
       const eventId = state.turnOrder.worldEventsByRound[String(roundNumber)];
       return worldEvents.find(event => event.id === eventId) || null;
+    }
+
+    const ORACLE_WORLD_EVENT_COOLDOWN_ROUNDS = 15;
+
+    function getOracleNegatedEventIdsOnCooldown(roundNumber) {
+      ensureWorldEventState();
+      const currentRound = Number(roundNumber);
+
+      if (!Number.isFinite(currentRound)) {
+        return new Set();
+      }
+
+      const cooldownEventIds = new Set();
+
+      Object.entries(state.turnOrder.worldEventsNegatedByRound || {}).forEach(([negatedRoundKey, wasNegated]) => {
+        if (!wasNegated) {
+          return;
+        }
+
+        const negatedRound = Number(negatedRoundKey);
+        const roundsSinceNegation = currentRound - negatedRound;
+
+        if (roundsSinceNegation < 1 || roundsSinceNegation > ORACLE_WORLD_EVENT_COOLDOWN_ROUNDS) {
+          return;
+        }
+
+        const eventId = Number((state.turnOrder.worldEventsByRound || {})[negatedRoundKey]);
+        if (Number.isFinite(eventId)) {
+          cooldownEventIds.add(eventId);
+        }
+      });
+
+      return cooldownEventIds;
+    }
+
+    function getEligibleWorldEventsForRound(roundNumber) {
+      const cooldownEventIds = getOracleNegatedEventIdsOnCooldown(roundNumber);
+      return worldEvents.filter(event => !cooldownEventIds.has(event.id));
+    }
+
+    function isWorldEventEligibleForRound(event, roundNumber) {
+      return Boolean(event && getEligibleWorldEventsForRound(roundNumber).some(candidate => candidate.id === event.id));
     }
 
     function isWorldEventDueThisRound() {
@@ -5057,8 +5215,16 @@
       return quantityAdded;
     }
 
+    function isFreeTradeActive() {
+      return Boolean(
+        state.turnOrder &&
+        Number.isInteger(state.turnOrder.freeTradeRound) &&
+        state.turnOrder.round === state.turnOrder.freeTradeRound
+      );
+    }
+
     function getPurchaseCostAmount(purchase) {
-      if (state.turnOrder && state.turnOrder.freeTradeActive) {
+      if (isFreeTradeActive()) {
         return Math.max(1, Math.ceil(purchase.costAmount / 2));
       }
 
@@ -5072,9 +5238,20 @@
 
       switch (event.effect) {
         case "meteor": {
-          const gained = Math.min(5 - (state.stardust || 0), state.givingTiles || 0);
-          state.stardust = clamp((state.stardust || 0) + gained, 0, 5);
-          return gained > 0 ? `Gained ${gained} Stardust.` : "No Stardust gained.";
+          ensureWorldEventState();
+          const roundKey = String(state.turnOrder.round);
+          const eligibleBaseIds = state.bases
+            .filter(base => base.owner === state.team && base.specializationId && base.specializationId !== "none")
+            .map(base => base.baseId);
+
+          state.turnOrder.meteorRespecializationByRound[roundKey] = {
+            eligibleBaseIds,
+            status: eligibleBaseIds.length > 0 ? "available" : "unavailable"
+          };
+
+          return eligibleBaseIds.length > 0
+            ? `Meteor Showers allows one optional free specialization change for a base that was already specialized when the event occurred.`
+            : "Meteor Showers offers no specialization change because this player had no specialized base when the event occurred.";
         }
         case "market-crash": {
           const lostGold = (state.currency.gold || 0) > 0 ? 1 : 0;
@@ -5102,9 +5279,12 @@
         case "reverse-turn-order":
           state.turnOrder.reversePieceOrder = !state.turnOrder.reversePieceOrder;
           return state.turnOrder.reversePieceOrder ? "Piece turn order is now inverted." : "Piece turn order returned to normal.";
-        case "free-trade":
-          state.turnOrder.freeTradeActive = true;
-          return "Free Trade Economy is active. Shop prices are 50% off, rounded up.";
+        case "free-trade": {
+          const discountedRound = state.turnOrder.round + 1;
+          state.turnOrder.freeTradeRound = discountedRound;
+          state.turnOrder.freeTradeActive = false; // Legacy flag retained only for save compatibility.
+          return `Free Trade Economy will be active during Round ${discountedRound} only. Shop prices are 50% off, rounded up.`;
+        }
         case "gods-blessing": {
           const rolledRewards = getRandomGivingTileRewards(5);
           const gainedRewards = applyGivingTileRewardsWithCapacity(rolledRewards);
@@ -5122,6 +5302,183 @@
         default:
           return "Resolve this event on the board.";
       }
+    }
+
+    function getMeteorRespecializationState(roundNumber = state.turnOrder.round) {
+      ensureWorldEventState();
+      return state.turnOrder.meteorRespecializationByRound[String(roundNumber)] || null;
+    }
+
+    function isMeteorRespecializationActiveThisRound() {
+      const revealedEvent = getWorldEventForRound(state.turnOrder.round);
+      const meteorState = getMeteorRespecializationState();
+      return Boolean(
+        revealedEvent &&
+        !wasWorldEventNegated(state.turnOrder.round) &&
+        revealedEvent.effect === "meteor" &&
+        meteorState &&
+        meteorState.status === "available"
+      );
+    }
+
+    function getMeteorEligibleBases() {
+      const meteorState = getMeteorRespecializationState();
+      const eligibleIds = meteorState && Array.isArray(meteorState.eligibleBaseIds)
+        ? new Set(meteorState.eligibleBaseIds.map(Number))
+        : new Set();
+
+      return state.bases.filter(base =>
+        eligibleIds.has(Number(base.baseId)) &&
+        base.owner === state.team &&
+        base.specializationId &&
+        base.specializationId !== "none"
+      );
+    }
+
+    function applyMeteorRespecialization(baseId, specializationId) {
+      if (!isMeteorRespecializationActiveThisRound()) {
+        return;
+      }
+
+      const base = getBase(Number(baseId));
+      const specialization = getBaseSpecialization(specializationId);
+      const eligibleBaseIds = new Set(getMeteorEligibleBases().map(candidate => Number(candidate.baseId)));
+
+      if (!base || !eligibleBaseIds.has(Number(base.baseId))) {
+        window.alert("Choose a base that was already specialized when Meteor Showers occurred.");
+        return;
+      }
+
+      if (!specialization || specialization.id === "none") {
+        window.alert("Meteor Showers changes one specialization into another; choose a specialized base type.");
+        return;
+      }
+
+      if (base.specializationId === specialization.id) {
+        window.alert("Choose a different specialization for this base.");
+        return;
+      }
+
+      const previousSpecialization = getBaseSpecialization(base.specializationId);
+      const hadHospitalBefore = hasControlledBaseSpecialization("hospital");
+      base.specializationId = specialization.id;
+      reconcileMedicHospitalHp(hadHospitalBefore);
+
+      const meteorState = getMeteorRespecializationState();
+      meteorState.status = "used";
+      meteorState.baseId = base.baseId;
+      meteorState.fromSpecializationId = previousSpecialization.id;
+      meteorState.toSpecializationId = specialization.id;
+
+      if (state.pendingBaseSpecializations) {
+        delete state.pendingBaseSpecializations[String(base.baseId)];
+      }
+
+      logRoundEvent(`Meteor Showers changed ${base.name} from ${previousSpecialization.name} to ${specialization.name} for free.`);
+      saveState();
+      render();
+    }
+
+    function skipMeteorRespecialization() {
+      const meteorState = getMeteorRespecializationState();
+
+      if (!meteorState || meteorState.status !== "available") {
+        return;
+      }
+
+      meteorState.status = "skipped";
+      logRoundEvent("Meteor Showers specialization change was declined.");
+      saveState();
+      render();
+    }
+
+    function getMeteorRespecializationPanelHtml() {
+      const revealedEvent = getWorldEventForRound(state.turnOrder.round);
+
+      if (!revealedEvent || revealedEvent.effect !== "meteor" || wasWorldEventNegated(state.turnOrder.round)) {
+        return "";
+      }
+
+      const meteorState = getMeteorRespecializationState();
+
+      if (!meteorState) {
+        return "";
+      }
+
+      if (meteorState.status === "unavailable") {
+        return `
+          <div class="baby-boom-panel">
+            <div class="baby-boom-heading">
+              <div class="baby-boom-title">Meteor Showers — No Eligible Base</div>
+              <div class="baby-boom-note">No base on this team was already specialized when Meteor Showers occurred, so there is nothing to change.</div>
+            </div>
+          </div>
+        `;
+      }
+
+      if (meteorState.status === "used") {
+        const base = getBase(meteorState.baseId);
+        const fromSpecialization = getBaseSpecialization(meteorState.fromSpecializationId);
+        const toSpecialization = getBaseSpecialization(meteorState.toSpecializationId);
+        return `
+          <div class="baby-boom-panel">
+            <div class="baby-boom-heading">
+              <div class="baby-boom-title">Meteor Showers — Specialization Changed</div>
+              <div class="baby-boom-note">${base ? base.name : "Base"}: ${fromSpecialization.name} → ${toSpecialization.name}. No specialization cost or active-unit requirement was paid.</div>
+            </div>
+          </div>
+        `;
+      }
+
+      if (meteorState.status === "skipped") {
+        return `
+          <div class="baby-boom-panel">
+            <div class="baby-boom-heading">
+              <div class="baby-boom-title">Meteor Showers — Change Declined</div>
+              <div class="baby-boom-note">The optional specialization change was not used.</div>
+            </div>
+          </div>
+        `;
+      }
+
+      const eligibleBases = getMeteorEligibleBases();
+      const canUse = Boolean(
+        state.turnOrder.started &&
+        getCurrentTurnStep().kind === "roundEnd" &&
+        getCurrentTurnTeam() === state.team &&
+        eligibleBases.length > 0
+      );
+      const baseOptions = eligibleBases.map(base => {
+        const currentSpecialization = getBaseSpecialization(base.specializationId);
+        return `<option value="${base.baseId}">${base.name} — ${currentSpecialization.name}</option>`;
+      }).join("");
+      const specializationOptions = [
+        `<option value="">Choose a different specialization...</option>`,
+        ...baseSpecializations
+          .filter(specialization => specialization.id !== "none")
+          .map(specialization => `<option value="${specialization.id}">${specialization.name}</option>`)
+      ].join("");
+
+      return `
+        <div class="baby-boom-panel">
+          <div class="baby-boom-heading">
+            <div class="baby-boom-title">Meteor Showers — Optional Base Change</div>
+            <div class="baby-boom-note">You may change ONE base that was already specialized when this event occurred to a different specialization. This change is free and ignores the normal active-unit requirement. You may also keep all bases exactly as they are.</div>
+          </div>
+          <div class="baby-boom-grid">
+            <label class="baby-boom-field">
+              <span class="baby-boom-label">Eligible Base</span>
+              <select class="baby-boom-select" id="meteorBaseSelect" ${canUse ? "" : "disabled"}>${baseOptions}</select>
+            </label>
+            <label class="baby-boom-field">
+              <span class="baby-boom-label">New Specialization</span>
+              <select class="baby-boom-select" id="meteorSpecializationSelect" ${canUse ? "" : "disabled"}>${specializationOptions}</select>
+            </label>
+            <button class="baby-boom-btn" type="button" data-action="apply-meteor-respecialization" ${canUse ? "" : "disabled"}>Change Specialization</button>
+            <button class="world-event-btn" type="button" data-action="skip-meteor-respecialization" ${canUse ? "" : "disabled"}>Keep Current Bases</button>
+          </div>
+        </div>
+      `;
     }
 
     function ensureBabyBoomState() {
@@ -5279,7 +5636,8 @@
         return;
       }
 
-      const randomEvent = worldEvents[Math.floor(Math.random() * worldEvents.length)];
+      const eligibleEvents = getEligibleWorldEventsForRound(state.turnOrder.round);
+      const randomEvent = eligibleEvents[Math.floor(Math.random() * eligibleEvents.length)];
 
       if (!hasLivingOracle()) {
         resolveWorldEvent(randomEvent, "revealed");
@@ -5315,7 +5673,7 @@
       }
 
       const oracleNumber = getCopyNumber(oracle);
-      const confirmed = window.confirm(`Invoke Oracle #${oracleNumber} to negate "${pendingEvent.name}" for BOTH players? The Oracle will Ascend to the heavens and be removed from the board.`);
+      const confirmed = window.confirm(`Invoke Oracle #${oracleNumber} to negate "${pendingEvent.name}" for BOTH players? The Oracle will Ascend to the heavens, and this World Event will be unable to occur again for the next 15 rounds.`);
 
       if (!confirmed) {
         return;
@@ -5334,7 +5692,7 @@
       state.turnOrder.worldEventsNegatedByRound[roundKey] = true;
       delete state.turnOrder.pendingWorldEventsByRound[roundKey];
       state.turnOrder.worldEventsResolvedByTurnKey[getCurrentTurnKey()] = true;
-      logRoundEvent(`Oracle #${oracleNumber} Ascended to the heavens and negated World Event — ${pendingEvent.name} — for both players. No World Event effect was applied.`);
+      logRoundEvent(`Oracle #${oracleNumber} Ascended to the heavens and negated World Event — ${pendingEvent.name} — for both players. No World Event effect was applied, and this event is excluded for the next 15 rounds.`);
       saveState();
       render();
     }
@@ -5346,7 +5704,7 @@
 
       const selectedEvent = worldEvents.find(event => event.id === Number(eventId));
 
-      if (!selectedEvent) {
+      if (!selectedEvent || !isWorldEventEligibleForRound(selectedEvent, state.turnOrder.round)) {
         return;
       }
 
@@ -5366,11 +5724,11 @@
 
       const selectedEvent = worldEvents.find(event => event.id === Number(eventId));
 
-      if (!selectedEvent) {
+      if (!selectedEvent || !isWorldEventEligibleForRound(selectedEvent, state.turnOrder.round)) {
         return;
       }
 
-      const confirmed = window.confirm(`Record "${selectedEvent.name}" as NEGATED by the initiating player's Oracle? No World Event effect will be applied on this tracker.`);
+      const confirmed = window.confirm(`Record "${selectedEvent.name}" as NEGATED by the initiating player's Oracle? No World Event effect will be applied, and this event will be excluded from this tracker for the next 15 rounds.`);
 
       if (!confirmed) {
         return;
@@ -5381,7 +5739,7 @@
       state.turnOrder.worldEventsByRound[roundKey] = selectedEvent.id;
       state.turnOrder.worldEventsNegatedByRound[roundKey] = true;
       state.turnOrder.worldEventsResolvedByTurnKey[getCurrentTurnKey()] = true;
-      logRoundEvent(`World Event (manual match) — ${selectedEvent.name} was negated by the initiating player's Oracle. No effect applied.`);
+      logRoundEvent(`World Event (manual match) — ${selectedEvent.name} was negated by the initiating player's Oracle. No effect applied; this event is excluded for the next 15 rounds.`);
       saveState();
       render();
     }
@@ -5421,8 +5779,8 @@
       return Number(typeId) === 1;
     }
 
-    function getMaxHpDisplay(unitType) {
-      return isKingType(unitType) ? "∞" : String(unitType.maxHp);
+    function getMaxHpDisplay(unitType, team = state.team) {
+      return isKingType(unitType) ? "∞" : String(getEffectiveUnitMaxHp(unitType, team));
     }
 
     function getPieceHpDisplay(piece) {
@@ -5432,7 +5790,7 @@
 
       const unitType = getUnitType(piece.typeId);
 
-      return isKingType(unitType) ? "∞ / ∞" : `${piece.currentHp} / ${unitType.maxHp}`;
+      return isKingType(unitType) ? "∞ / ∞" : `${piece.currentHp} / ${getEffectiveUnitMaxHp(unitType)}`;
     }
 
     function getPieceHpLabel(piece) {
@@ -5519,6 +5877,114 @@
 
     function getBase(baseId) {
       return state.bases.find(base => base.baseId === baseId);
+    }
+
+    function hasControlledBaseSpecialization(specializationId, team = state.team) {
+      return Boolean(
+        state &&
+        Array.isArray(state.bases) &&
+        (team === "red" || team === "blue") &&
+        state.bases.some(base => base.owner === team && base.currentHp > 0 && base.specializationId === specializationId)
+      );
+    }
+
+    function getEffectiveUnitMove(unitType, team = state.team) {
+      if (unitType && unitType.id === 12 && hasControlledBaseSpecialization("hospital", team)) {
+        return 6;
+      }
+      return unitType ? unitType.move : 0;
+    }
+
+    function getEffectiveUnitMaxHp(unitType, team = state.team) {
+      if (unitType && unitType.id === 12 && hasControlledBaseSpecialization("hospital", team)) {
+        return 3;
+      }
+      return unitType ? unitType.maxHp : 0;
+    }
+
+    function getEffectiveRevivalRange(unitType, team = state.team) {
+      if (unitType && unitType.id === 11 && hasControlledBaseSpecialization("chapel", team)) {
+        return 6;
+      }
+      if (unitType && unitType.id === 13 && hasControlledBaseSpecialization("graveyard", team)) {
+        return 6;
+      }
+      return 3;
+    }
+
+    function getRequiredRevivalItem(unitType) {
+      if (unitType && unitType.id === 11) return "Sacred Artifact";
+      if (unitType && unitType.id === 13) return "Demonic Totem";
+      return "";
+    }
+
+    function getEffectiveActionText(unitType, team = state.team) {
+      if (!unitType) return "";
+
+      if (unitType.id === 11 || unitType.id === 13) {
+        const range = getEffectiveRevivalRange(unitType, team);
+        const itemName = getRequiredRevivalItem(unitType);
+        return `Revive — Spend 1 ${itemName}. Revive an eligible defeated ally within ${range} tiles at full HP. Place the revived unit beside the ${unitType.name}.`;
+      }
+
+      if (unitType.id === 12 && hasControlledBaseSpecialization("hospital", team)) {
+        return `${unitType.action} Hospital bonus active: Move 6, Max HP 3.`;
+      }
+
+      return unitType.action;
+    }
+
+    function getEffectiveSummonCosts(unitType) {
+      const costs = (unitType && unitType.ritualCosts ? unitType.ritualCosts : []).map(cost => ({ ...cost }));
+      if (
+        unitType &&
+        [6, 7, 8, 9, 10].includes(unitType.id) &&
+        hasControlledBaseSpecialization("recruitment-center")
+      ) {
+        return costs.map(cost => ({ ...cost, quantity: 1 }));
+      }
+      return costs;
+    }
+
+    function formatCostList(costs) {
+      return (costs || []).map(cost => {
+        const displayName = cost.type === "currency"
+          ? cost.name.charAt(0).toUpperCase() + cost.name.slice(1)
+          : cost.name;
+        return `${cost.quantity} ${displayName}`;
+      }).join(", ");
+    }
+
+    function getEffectiveSummonText(unitType) {
+      if (!unitType || unitType.id === 1) {
+        return unitType ? unitType.ritual : "";
+      }
+      const suffix = [6, 7, 8, 9, 10].includes(unitType.id) && hasControlledBaseSpecialization("recruitment-center")
+        ? " (Recruitment Center)"
+        : "";
+      return `${formatCostList(getEffectiveSummonCosts(unitType))}${suffix}`;
+    }
+
+    function getEffectiveSilverToGoldCost() {
+      return hasControlledBaseSpecialization("merchant-district") ? 2 : 3;
+    }
+
+    function getShopSaleGroupSize() {
+      return hasControlledBaseSpecialization("merchant-district") ? 2 : 3;
+    }
+
+    function reconcileMedicHospitalHp(hadHospitalBefore) {
+      const hasHospitalNow = hasControlledBaseSpecialization("hospital");
+      if (hadHospitalBefore === hasHospitalNow) return;
+
+      state.activePieces.forEach(piece => {
+        if (piece.typeId !== 12) return;
+        if (hasHospitalNow) {
+          if (piece.currentHp === 2) piece.currentHp = 3;
+        } else {
+          piece.currentHp = Math.min(piece.currentHp, 2);
+        }
+      });
     }
 
     function getLivingPieceCountForType(typeId) {
@@ -5634,6 +6100,10 @@
               <div class="base-preview-label">Requires</div>
               <div class="base-preview-pills"><span class="base-preview-pill">No requirement</span></div>
             </div>
+            <div class="base-preview-row">
+              <div class="base-preview-label">Bonus</div>
+              <div class="base-preview-pills"><span class="base-preview-pill">No bonus</span></div>
+            </div>
           </div>
         `;
       }
@@ -5659,6 +6129,10 @@
           <div class="base-preview-row">
             <div class="base-preview-label">Requires</div>
             <div class="base-preview-pills">${requirementPills || `<span class="base-preview-pill">No requirement</span>`}</div>
+          </div>
+          <div class="base-preview-row">
+            <div class="base-preview-label">Bonus</div>
+            <div class="base-preview-pills"><span class="base-preview-pill">${specialization.bonus || "No bonus"}</span></div>
           </div>
         </div>
       `;
@@ -5699,8 +6173,10 @@
         return;
       }
 
+      const hadHospitalBefore = hasControlledBaseSpecialization("hospital");
       const previousHp = base.currentHp;
       base.currentHp = clamp(base.currentHp + amount, 0, base.maxHp || BASE_MAX_HP);
+      reconcileMedicHospitalHp(hadHospitalBefore);
 
       if (base.currentHp !== previousHp) {
         logRoundEvent(`${base.name} HP changed: ${previousHp} → ${base.currentHp}.`);
@@ -5737,8 +6213,10 @@
         return;
       }
 
+      const hadHospitalBefore = hasControlledBaseSpecialization("hospital");
       const previousOwner = base.owner;
       base.owner = previousOwner === "red" ? "blue" : "red";
+      reconcileMedicHospitalHp(hadHospitalBefore);
       logRoundEvent(`${base.name} was captured by ${getTeamLabel(base.owner)}.`);
       saveState();
       render();
@@ -5771,7 +6249,9 @@
         payCosts(specialization.costs);
       }
 
+      const hadHospitalBefore = hasControlledBaseSpecialization("hospital");
       base.specializationId = specialization.id;
+      reconcileMedicHospitalHp(hadHospitalBefore);
 
       if (state.pendingBaseSpecializations) {
         delete state.pendingBaseSpecializations[String(baseId)];
@@ -5839,7 +6319,7 @@
         return false;
       }
 
-      return canPayCosts(unitType.ritualCosts || []);
+      return canPayCosts(getEffectiveSummonCosts(unitType));
     }
 
     function getSummonCostHtml(unitType) {
@@ -5851,7 +6331,7 @@
         return `<span class="summon-cost-line">Cannot summon</span>`;
       }
 
-      const costs = unitType.ritualCosts || [];
+      const costs = getEffectiveSummonCosts(unitType);
 
       if (costs.length === 0) {
         return `<span class="summon-cost-line">No cost</span>`;
@@ -5867,7 +6347,10 @@
         })
         .join("");
 
-      return `<span class="summon-cost-heading">Cost:</span>${costLines}`;
+      const discountNote = [6, 7, 8, 9, 10].includes(unitType.id) && hasControlledBaseSpecialization("recruitment-center")
+        ? `<span class="summon-cost-line">⚔ Recruitment Center discount</span>`
+        : "";
+      return `<span class="summon-cost-heading">Cost:</span>${costLines}${discountNote}`;
     }
 
     function getAddPieceStatus(unitType) {
@@ -5910,7 +6393,7 @@
         return "No summons remaining this turn";
       }
 
-      const missingCosts = getMissingCosts(unitType.ritualCosts || []);
+      const missingCosts = getMissingCosts(getEffectiveSummonCosts(unitType));
       return missingCosts.length > 0 ? `Need ${missingCosts.join(", ")}` : "Summon";
     }
 
@@ -5934,7 +6417,7 @@
       const unitType = getUnitType(typeId);
 
       if (state.setupComplete) {
-        payCosts(unitType.ritualCosts || []);
+        payCosts(getEffectiveSummonCosts(unitType));
         recordSummonUsed();
       }
 
@@ -5942,7 +6425,7 @@
         pieceId: state.nextPieceId,
         typeId: unitType.id,
         copyNumber: getNextCopyNumberForType(unitType.id),
-        currentHp: unitType.maxHp,
+        currentHp: getEffectiveUnitMaxHp(unitType),
         hasShield: false
       };
 
@@ -6014,7 +6497,7 @@
       }
 
       const previousHp = piece.currentHp;
-      piece.currentHp = clamp(newHp, 0, unitType.maxHp);
+      piece.currentHp = clamp(newHp, 0, getEffectiveUnitMaxHp(unitType));
 
       if (piece.currentHp < previousHp) {
         logRoundEvent(`${unitType.name} #${getCopyNumber(piece)} took a hit: HP ${previousHp} → ${piece.currentHp}.`);
@@ -6077,7 +6560,7 @@
         return;
       }
 
-      piece.currentHp = unitType.maxHp;
+      piece.currentHp = getEffectiveUnitMaxHp(unitType);
       saveState();
       render();
     }
@@ -6121,7 +6604,7 @@
         return false;
       }
 
-      return (state.bread || 0) > 0 && piece.currentHp < unitType.maxHp;
+      return (state.bread || 0) > 0 && piece.currentHp < getEffectiveUnitMaxHp(unitType);
     }
 
     function eatBreadWithPiece(pieceId) {
@@ -6135,7 +6618,7 @@
       const previousHp = piece.currentHp;
 
       state.bread -= 1;
-      piece.currentHp = clamp(piece.currentHp + 2, 0, unitType.maxHp);
+      piece.currentHp = clamp(piece.currentHp + 2, 0, getEffectiveUnitMaxHp(unitType));
 
       logRoundEvent(`${unitType.name} #${getCopyNumber(piece)} ate Bread: HP ${previousHp} → ${piece.currentHp}. 1 Bread used.`);
       saveState();
@@ -6153,26 +6636,6 @@
 
       const current = state.currency[currencyName] || 0;
       state.currency[currencyName] = clamp(current + amount, 0, 99);
-      saveState();
-      render();
-    }
-
-    function changeStardust(amount) {
-      const previousCount = state.stardust || 0;
-      const newCount = clamp(previousCount + amount, 0, 5);
-
-      if (newCount === previousCount) {
-        return;
-      }
-
-      state.stardust = newCount;
-
-      if (newCount > previousCount) {
-        logRoundEvent(`Gained ${newCount - previousCount} Stardust. Now holding ${newCount}/5.`);
-      } else {
-        logRoundEvent(`Lost ${previousCount - newCount} Stardust. Now holding ${newCount}/5.`);
-      }
-
       saveState();
       render();
     }
@@ -6265,7 +6728,7 @@
     }
 
     function sanitizeShopSaleSelection() {
-      let remainingSlots = 3;
+      let remainingSlots = getShopSaleGroupSize();
       const sanitized = {};
 
       resourceTypes.forEach(resourceName => {
@@ -6296,9 +6759,10 @@
       const currentSelected = shopSaleSelection[resourceName] || 0;
       const owned = state.resources[resourceName] || 0;
       const selectedTotal = getShopSaleSelectedTotal();
+      const saleGroupSize = getShopSaleGroupSize();
 
       if (amount > 0) {
-        if (selectedTotal >= 3 || currentSelected >= owned) {
+        if (selectedTotal >= saleGroupSize || currentSelected >= owned) {
           return;
         }
         shopSaleSelection[resourceName] = currentSelected + 1;
@@ -6324,7 +6788,9 @@
 
       sanitizeShopSaleSelection();
 
-      if (getShopSaleSelectedTotal() !== 3) {
+      const saleGroupSize = getShopSaleGroupSize();
+
+      if (getShopSaleSelectedTotal() !== saleGroupSize) {
         return;
       }
 
@@ -6345,12 +6811,12 @@
       });
 
       const soldCount = resourceTypes.reduce((total, resourceName) => total + (shopSaleSelection[resourceName] || 0), 0);
-      if (soldCount !== 3) {
+      if (soldCount !== saleGroupSize) {
         return;
       }
 
       state.currency.bronze = (state.currency.bronze || 0) + 1;
-      logRoundEvent(`Sold 3 Resources for 1 Bronze: ${soldParts.join(", ")}.`);
+      logRoundEvent(`Sold ${saleGroupSize} Resources for 1 Bronze${saleGroupSize === 2 ? " using Merchant District" : ""}: ${soldParts.join(", ")}.`);
       shopSaleSelection = {};
       saveState();
       render();
@@ -6363,6 +6829,8 @@
       section.className = "resource-sale-panel";
 
       const selectedTotal = getShopSaleSelectedTotal();
+      const saleGroupSize = getShopSaleGroupSize();
+      const merchantBonus = saleGroupSize === 2;
       const selectedParts = resourceTypes
         .filter(resourceName => (shopSaleSelection[resourceName] || 0) > 0)
         .map(resourceName => `${shopSaleSelection[resourceName]} ${resourceName}`);
@@ -6371,7 +6839,7 @@
       heading.className = "resource-sale-heading";
       heading.innerHTML = `
         <div class="resource-sale-title">Sell Resources</div>
-        <div class="resource-sale-note">Any 3 Resources → 1 Bronze · mixed groups allowed</div>
+        <div class="resource-sale-note">Any ${saleGroupSize} Resources → 1 Bronze · mixed groups allowed${merchantBonus ? " · Merchant District bonus active" : ""}</div>
       `;
       section.appendChild(heading);
 
@@ -6386,7 +6854,7 @@
         card.innerHTML = `
           <button class="resource-sale-step" type="button" data-sale-resource="${resourceName}" data-sale-change="-1" ${selected <= 0 ? "disabled" : ""} aria-label="Remove ${resourceName} from sale">−</button>
           <div class="resource-sale-name">${resourceName}<span>Owned ${owned} · Selling ${selected}</span></div>
-          <button class="resource-sale-step" type="button" data-sale-resource="${resourceName}" data-sale-change="1" ${owned <= selected || selectedTotal >= 3 ? "disabled" : ""} aria-label="Add ${resourceName} to sale">+</button>
+          <button class="resource-sale-step" type="button" data-sale-resource="${resourceName}" data-sale-change="1" ${owned <= selected || selectedTotal >= saleGroupSize ? "disabled" : ""} aria-label="Add ${resourceName} to sale">+</button>
         `;
         grid.appendChild(card);
       });
@@ -6396,8 +6864,8 @@
       const footer = document.createElement("div");
       footer.className = "resource-sale-footer";
       footer.innerHTML = `
-        <div class="resource-sale-summary"><strong>${selectedTotal}/3 selected.</strong> ${selectedParts.length > 0 ? selectedParts.join(" + ") : "Choose resources above."}</div>
-        <button class="resource-sale-button" type="button" data-sell-selected-resources ${selectedTotal === 3 ? "" : "disabled"}>Sell 3 → +1 Bronze</button>
+        <div class="resource-sale-summary"><strong>${selectedTotal}/${saleGroupSize} selected.</strong> ${selectedParts.length > 0 ? selectedParts.join(" + ") : "Choose resources above."}</div>
+        <button class="resource-sale-button" type="button" data-sell-selected-resources ${selectedTotal === saleGroupSize ? "" : "disabled"}>Sell ${saleGroupSize} → +1 Bronze</button>
       `;
       section.appendChild(footer);
 
@@ -6718,6 +7186,19 @@
       return (state.resources[resourceName] || 0) >= 2;
     }
 
+    function canPayGenericActionCost(unitType) {
+      if (!canPayWorkerBuildCost(unitType)) {
+        return false;
+      }
+
+      const revivalItem = getRequiredRevivalItem(unitType);
+      if (revivalItem) {
+        return (state.items[revivalItem] || 0) >= 1;
+      }
+
+      return true;
+    }
+
     function payWorkerBuildCost(unitType) {
       const resourceName = getWorkerBuildResource(unitType);
 
@@ -6736,6 +7217,12 @@
     function resolveGenericActionEffect(unitType) {
       if (!unitType) {
         return "";
+      }
+
+      const revivalItem = getRequiredRevivalItem(unitType);
+      if (revivalItem) {
+        state.items[revivalItem] = Math.max(0, (state.items[revivalItem] || 0) - 1);
+        return ` Spent 1 ${revivalItem}. Revived unit returns at full HP beside the ${unitType.name}.`;
       }
 
       if (unitType.id === 18) {
@@ -6764,7 +7251,7 @@
         currentStep.kind === "unit" &&
         currentStep.typeId === unitType.id &&
         currentTeam === state.team &&
-        canPayWorkerBuildCost(unitType) &&
+        canPayGenericActionCost(unitType) &&
         !hasGenericActionBeenUsedThisTurn(piece.pieceId)
       );
     }
@@ -7105,8 +7592,10 @@
         worldEventsNegatedByRound: {},
         worldEventsResolvedByTurnKey: {},
         babyBoomUsedByRound: {},
+        meteorRespecializationByRound: {},
         initiativeOrderVersion: 2,
         reversePieceOrder: false,
+        freeTradeRound: null,
         freeTradeActive: false
       };
 
@@ -7142,13 +7631,17 @@
         return;
       }
 
-      if ((state.currency[conversion.fromCurrency] || 0) < conversion.fromAmount) {
+      const effectiveFromAmount = conversion.id === "silver-to-gold"
+        ? getEffectiveSilverToGoldCost()
+        : conversion.fromAmount;
+
+      if ((state.currency[conversion.fromCurrency] || 0) < effectiveFromAmount) {
         return;
       }
 
-      state.currency[conversion.fromCurrency] -= conversion.fromAmount;
+      state.currency[conversion.fromCurrency] -= effectiveFromAmount;
       state.currency[conversion.toCurrency] += conversion.toAmount;
-      logRoundEvent(`Converted ${conversion.fromAmount} ${conversion.fromCurrency} into ${conversion.toAmount} ${conversion.toCurrency}.`);
+      logRoundEvent(`Converted ${effectiveFromAmount} ${conversion.fromCurrency} into ${conversion.toAmount} ${conversion.toCurrency}${conversion.id === "silver-to-gold" && effectiveFromAmount === 2 ? " using Merchant District" : ""}.`);
       saveState();
       render();
     }
@@ -7162,22 +7655,13 @@
         return false;
       }
 
-      const hasResources = recipe.costs.every(cost => {
-        if (cost.type !== "resource") {
-          return false;
-        }
-
-        return (state.resources[cost.name] || 0) >= cost.quantity;
-      });
-
+      const hasCosts = canPayCosts(recipe.costs);
       const hasItemSpace = getAvailableSpaceForTargetType("item") >= recipe.resultQuantity;
-      return hasResources && hasItemSpace;
+      return hasCosts && hasItemSpace;
     }
 
     function getRecipeStatus(recipe) {
-      const missingCosts = recipe.costs
-        .filter(cost => (state.resources[cost.name] || 0) < cost.quantity)
-        .map(cost => `${cost.quantity - (state.resources[cost.name] || 0)} more ${cost.name}`);
+      const missingCosts = getMissingCosts(recipe.costs);
 
       if (missingCosts.length > 0) {
         return `Need ${missingCosts.join(", ")}`;
@@ -7201,10 +7685,7 @@
         return;
       }
 
-      recipe.costs.forEach(cost => {
-        state.resources[cost.name] -= cost.quantity;
-      });
-
+      payCosts(recipe.costs);
       state.items[recipe.resultName] += recipe.resultQuantity;
       logRoundEvent(`Crafted ${recipe.resultQuantity} ${recipe.resultName}.`);
       saveState();
@@ -7232,7 +7713,7 @@
       const effectiveCost = getPurchaseCostAmount(purchase);
       state.currency[purchase.costCurrency] -= effectiveCost;
       state[collectionName][purchase.targetName] += quantityToBuy;
-      logRoundEvent(`Purchased ${quantityToBuy} ${purchase.targetName} for ${effectiveCost} ${purchase.costCurrency}${state.turnOrder.freeTradeActive ? " under Free Trade Economy" : ""}.`);
+      logRoundEvent(`Purchased ${quantityToBuy} ${purchase.targetName} for ${effectiveCost} ${purchase.costCurrency}${isFreeTradeActive() ? " under Free Trade Economy" : ""}.`);
       saveState();
       render();
     }
@@ -7276,7 +7757,7 @@
             (state.filter === "alive" && isPieceAlive(piece)) ||
             (state.filter === "defeated" && isPieceDefeated(piece));
 
-          const haystack = `${displayName} ${unitType.name} ${unitType.action} ${unitType.ritual} ${unitType.move} ${getMaxHpDisplay(unitType)}`.toLowerCase();
+          const haystack = `${displayName} ${unitType.name} ${getEffectiveActionText(unitType)} ${getEffectiveSummonText(unitType)} ${getEffectiveUnitMove(unitType)} ${getMaxHpDisplay(unitType)}`.toLowerCase();
           const matchesSearch = query === "" || haystack.includes(query);
 
           return matchesFilter && matchesSearch;
@@ -7294,7 +7775,7 @@
       const query = state.search.trim().toLowerCase();
 
       return unitTypes.filter(unitType => {
-        const haystack = `${unitType.name} ${unitType.action} ${unitType.ritual} ${unitType.move} ${getMaxHpDisplay(unitType)}`.toLowerCase();
+        const haystack = `${unitType.name} ${getEffectiveActionText(unitType)} ${getEffectiveSummonText(unitType)} ${getEffectiveUnitMove(unitType)} ${getMaxHpDisplay(unitType)}`.toLowerCase();
         return query === "" || haystack.includes(query);
       });
     }
@@ -7333,7 +7814,7 @@
             }
 
             if (priestCount > 0) {
-              tips.push("Priests can revive eligible defeated allies within 3 tiles with full HP.");
+              tips.push("Priests spend 1 Sacred Artifact to revive eligible defeated allies within 3 tiles (6 with a Chapel), returning them at full HP beside the Priest.");
             }
 
             if (shopkeeperCount > 0) {
@@ -7528,7 +8009,6 @@
       const itemsCollapsed = isPanelCollapsed("items");
       const cannonCollapsed = isPanelCollapsed("cannon");
       const givingCollapsed = isPanelCollapsed("giving");
-      const stardustCollapsed = isPanelCollapsed("stardust");
 
       turnContent.classList.toggle("hidden", turnCollapsed);
       resourceGrid.classList.toggle("hidden", resourcesCollapsed);
@@ -7536,7 +8016,6 @@
       itemGrid.classList.toggle("hidden", itemsCollapsed);
       cannonContent.classList.toggle("hidden", cannonCollapsed);
       givingContent.classList.toggle("hidden", givingCollapsed);
-      stardustContent.classList.toggle("hidden", stardustCollapsed);
 
       updatePanelToggle(toggleTurnPanel, turnCollapsed);
       updatePanelToggle(toggleResourcesPanel, resourcesCollapsed);
@@ -7544,7 +8023,6 @@
       updatePanelToggle(toggleItemsPanel, itemsCollapsed);
       updatePanelToggle(toggleCannonPanel, cannonCollapsed);
       updatePanelToggle(toggleGivingPanel, givingCollapsed);
-      updatePanelToggle(toggleStardustPanel, stardustCollapsed);
     }
 
     function renderWalkthrough() {
@@ -7656,10 +8134,10 @@
         <div class="world-event-manual-panel">
           <div class="world-event-manual-heading">
             <div>Manual Match Event Deck</div>
-            <span>Select the event revealed on the other iPad</span>
+            <span>Select the event revealed on the other iPad · Oracle-banished events are hidden during their 15-round cooldown</span>
           </div>
           <div class="world-event-choice-grid" aria-label="Choose the revealed World Event manually">
-            ${worldEvents.map(event => `
+            ${getEligibleWorldEventsForRound(state.turnOrder.round).map(event => `
               <button
                 class="world-event-choice-card"
                 type="button"
@@ -7681,7 +8159,7 @@
             </div>
             <div class="world-event-actions">
               <select class="baby-boom-select" id="manualOracleNegatedEvent" ${canChooseManualEvent ? "" : "disabled"}>
-                ${worldEvents.map(event => `<option value="${event.id}">#${event.id} — ${event.name}</option>`).join("")}
+                ${getEligibleWorldEventsForRound(state.turnOrder.round).map(event => `<option value="${event.id}">#${event.id} — ${event.name}</option>`).join("")}
               </select>
               <button class="world-event-btn" type="button" data-action="record-manual-oracle-negation" ${canChooseManualEvent ? "" : "disabled"}>Record Event as Negated</button>
             </div>
@@ -7748,7 +8226,7 @@
             <div class="world-event-title">World Event Revealed — Oracle Decision</div>
             <div class="world-event-name">${pendingEvent.name}</div>
             <div class="world-event-text">${pendingEvent.description}</div>
-            <div class="world-event-note">The event has been randomly chosen but has NOT resolved yet. Choose whether to allow it or invoke an Oracle. Negating it affects BOTH players.</div>
+            <div class="world-event-note">The event has been randomly chosen but has NOT resolved yet. Choose whether to allow it or invoke an Oracle. Negating it affects BOTH players and removes this event from the deck for the next 15 rounds.</div>
             <div class="world-event-actions">
               <button class="world-event-btn" type="button" data-action="allow-pending-world-event">Allow Event</button>
               <select class="baby-boom-select" id="oracleNegatePieceSelect">
@@ -7756,7 +8234,7 @@
               </select>
               <button class="world-event-btn" type="button" data-action="negate-world-event-with-oracle" ${livingOracles.length > 0 ? "" : "disabled"}>Invoke Oracle — Negate for Both</button>
             </div>
-            <div class="world-event-note">If invoked, the selected Oracle Ascends to the heavens and is removed from the board.</div>
+            <div class="world-event-note">If invoked, the selected Oracle Ascends to the heavens and is removed from the board. The negated event returns to the eligible deck in the 16th round after this one.</div>
           </div>
         `;
       }
@@ -7768,8 +8246,9 @@
             <div class="world-event-title">${negated ? "World Event Negated" : "World Event Revealed"}</div>
             <div class="world-event-name">${revealedEvent.name}</div>
             <div class="world-event-text">${revealedEvent.description}</div>
-            <div class="world-event-note">${negated ? "An Oracle negated this World Event for both players. No effect is applied." : "Apply any board movement, wall damage, swapping, discarding, or player-choice effects manually on the physical board."}</div>
+            <div class="world-event-note">${negated ? "An Oracle negated this World Event for both players. No effect is applied, and this event is excluded for the next 15 rounds." : "Apply any board movement, wall damage, swapping, discarding, or player-choice effects manually on the physical board."}</div>
             ${negated ? "" : getBabyBoomPanelHtml()}
+            ${negated ? "" : getMeteorRespecializationPanelHtml()}
           </div>
         `;
       }
@@ -7799,7 +8278,7 @@
       `;
     }
 
-    function getActionReferenceData(unitType) {
+    function getActionReferenceData(unitType, team = state.team) {
       const action = unitType.action || "";
       const lowerAction = action.toLowerCase();
       const data = [];
@@ -7881,7 +8360,7 @@
       if (lowerAction.includes("build base")) {
         add("Action", "Build Base", false, true);
         add("Range", "Within 1 tile");
-        add("Needs", "3 adjacent Base Keepers", true);
+        add("Needs", "3 adjacent Base Builders", true);
         return data;
       }
 
@@ -7911,8 +8390,9 @@
 
       if (lowerAction.includes("revive") || lowerAction.includes("eligible dead")) {
         add("Action", "Revive", false, true);
-        add("Range", "Within 3 tiles");
-        add("HP", "Full HP");
+        add("Range", `Within ${getEffectiveRevivalRange(unitType, team)} tiles`);
+        add("Cost", `1 ${getRequiredRevivalItem(unitType)}`);
+        add("Return", `Full HP beside ${unitType.name}`, true);
 
         if (unitType.id === 13) {
           add("Eligible", "Mage, Priest, Medic, Oracle", true);
@@ -7927,8 +8407,12 @@
 
       if (lowerAction.includes("heal a damaged unit")) {
         add("Action", "Heal", false, true);
+        add("Range", "Within 3 tiles");
         add("Amount", "+1 HP");
         add("Limit", "Cannot heal Medic", true);
+        if (unitType.id === 12 && hasControlledBaseSpecialization("hospital", team)) {
+          add("Hospital", "Move 6 · Max HP 3", true);
+        }
         return data;
       }
 
@@ -8026,11 +8510,12 @@
 
       if (currentStep.kind === "unit") {
         const unitType = getUnitType(currentStep.typeId);
+        const currentTeam = getCurrentTurnTeam();
         currentReferenceTitle.innerHTML = `
           <span>${unitType.name}</span>
           <span class="copy-label">#${unitType.id}</span>
         `;
-        const actionReferenceData = getActionReferenceData(unitType);
+        const actionReferenceData = getActionReferenceData(unitType, currentTeam);
         const actionReferenceHtml = actionReferenceData.length > 0
           ? `<div class="current-reference-actions">
               ${actionReferenceData.map(item => `<div class="current-reference-pill${item.wide ? " wide" : ""}${item.primary ? " action-primary" : ""}"><span>${item.label}</span><strong>${item.value}</strong></div>`).join("")}
@@ -8039,12 +8524,12 @@
 
         const fullActionTextHtml = actionReferenceData.length > 0
           ? ""
-          : `<div class="current-reference-action">${unitType.action}</div>`;
+          : `<div class="current-reference-action">${getEffectiveActionText(unitType, currentTeam)}</div>`;
 
         currentReferenceAction.innerHTML = `
           <div class="current-reference-stats">
-            <div class="current-reference-pill"><span>Move</span><strong>${unitType.move}</strong></div>
-            <div class="current-reference-pill"><span>Max HP</span><strong>${getMaxHpDisplay(unitType)}</strong></div>
+            <div class="current-reference-pill"><span>Move</span><strong>${getEffectiveUnitMove(unitType, currentTeam)}</strong></div>
+            <div class="current-reference-pill"><span>Max HP</span><strong>${getMaxHpDisplay(unitType, currentTeam)}</strong></div>
           </div>
           ${actionReferenceHtml}
           ${fullActionTextHtml}
@@ -8109,7 +8594,7 @@
           row.innerHTML = `
             <div class="badge" style="background:${getBadgeColour(unitType.category)}">${unitType.id}</div>
             <div class="current-piece-name">${unitType.name} #${copyNumber}${piece.hasShield ? " · 🛡" : ""}</div>
-            <div class="current-piece-stat">Move ${unitType.move}</div>
+            <div class="current-piece-stat">Move ${getEffectiveUnitMove(unitType)}</div>
             <div class="current-piece-stat">${getPieceHpLabel(piece)}</div>
             ${fireButtonHtml}${farmButtonHtml}${genericActionButtonHtml}
           `;
@@ -8295,6 +8780,13 @@
             <div class="base-stat-pill"><span>HP</span><strong>${base.currentHp}/${base.maxHp || BASE_MAX_HP}</strong></div>
             <div class="base-stat-pill"><span>Specialization</span><strong>${appliedSpecialization.name}</strong></div>
           </div>
+          <div class="base-requirement-note ${base.owner === state.team && base.currentHp > 0 && appliedSpecialization.id !== "none" ? "ready" : "neutral"}">
+            ${appliedSpecialization.id === "none"
+              ? "No active specialization bonus."
+              : (base.currentHp <= 0
+                ? `Specialization inactive while ${base.name} is at 0 HP.`
+                : `Active bonus for ${getTeamLabel(base.owner)}: ${appliedSpecialization.bonus}`)}
+          </div>
           <div class="base-controls">
             <button class="base-btn danger" data-base-hp="-1" data-base-id="${base.baseId}">− HP</button>
             <button class="base-btn primary" data-base-hp="1" data-base-id="${base.baseId}">+ HP</button>
@@ -8362,7 +8854,6 @@
       document.getElementById("silverCount").textContent = state.currency.silver;
       document.getElementById("bronzeCount").textContent = state.currency.bronze;
       givingTilesCount.textContent = state.givingTiles || 0;
-      stardustCount.textContent = state.stardust || 0;
       breadCount.textContent = state.bread || 0;
       breadPanelCount.textContent = state.bread || 0;
 
@@ -8402,7 +8893,10 @@
       grid.className = "conversion-grid";
 
       currencyConversions.forEach(conversion => {
-        const canConvert = (state.currency[conversion.fromCurrency] || 0) >= conversion.fromAmount;
+        const effectiveFromAmount = conversion.id === "silver-to-gold"
+          ? getEffectiveSilverToGoldCost()
+          : conversion.fromAmount;
+        const canConvert = (state.currency[conversion.fromCurrency] || 0) >= effectiveFromAmount;
         const fromLabel = conversion.fromCurrency.charAt(0).toUpperCase() + conversion.fromCurrency.slice(1);
         const toLabel = conversion.toCurrency.charAt(0).toUpperCase() + conversion.toCurrency.slice(1);
 
@@ -8410,8 +8904,8 @@
         card.className = `conversion-card${canConvert ? "" : " disabled"}`;
         card.innerHTML = `
           <div>
-            <div class="conversion-title">${conversion.fromAmount} ${fromLabel} → ${conversion.toAmount} ${toLabel}</div>
-            <div class="conversion-note">Upward conversion only</div>
+            <div class="conversion-title">${effectiveFromAmount} ${fromLabel} → ${conversion.toAmount} ${toLabel}</div>
+            <div class="conversion-note">Upward conversion only${conversion.id === "silver-to-gold" && effectiveFromAmount === 2 ? " · Merchant District bonus active" : ""}</div>
           </div>
           <button class="buy-btn" data-convert-id="${conversion.id}" ${canConvert ? "" : "disabled"}>Convert</button>
         `;
@@ -8439,7 +8933,8 @@
         "Shield",
         "Cannon Ball",
         "Cannon",
-        "Artifact"
+        "Sacred Artifact",
+        "Demonic Totem"
       ];
 
       return desiredOrder
@@ -8485,7 +8980,7 @@
 
       craftingRecipes.forEach(recipe => {
         const canCraft = canCraftRecipe(recipe);
-        const costText = recipe.costs.map(cost => `${cost.quantity} ${cost.name}`).join(", ");
+        const costText = formatCostList(recipe.costs);
         const card = document.createElement("div");
         card.className = `craft-card${canCraft ? "" : " disabled"}`;
         card.innerHTML = `
@@ -8672,7 +9167,7 @@
         card.dataset.pieceId = piece.pieceId;
         card.setAttribute("role", "button");
         card.setAttribute("tabindex", "0");
-        card.setAttribute("aria-label", `${unitType.name} copy ${copyNumber}, movement ${unitType.move}, ${getPieceHpLabel(piece)}`);
+        card.setAttribute("aria-label", `${unitType.name} copy ${copyNumber}, movement ${getEffectiveUnitMove(unitType)}, ${getPieceHpLabel(piece)}`);
 
         card.innerHTML = `
           ${hasShield ? `<div class="shield-ribbon">🛡 Shield</div>` : ""}
@@ -8682,7 +9177,7 @@
             <div class="copy-label">#${copyNumber}</div>
           </div>
           <div class="stats">
-            <div class="stat-pill"><span>Move</span><strong class="move-value">${unitType.move}</strong></div>
+            <div class="stat-pill"><span>Move</span><strong class="move-value">${getEffectiveUnitMove(unitType)}</strong></div>
             <div class="stat-pill"><span>HP</span><strong class="hp-value">${getPieceHpDisplay(piece)}</strong></div>
           </div>
           <div class="hp-controls">
@@ -8690,7 +9185,7 @@
             <div class="hp-readout">${getPieceHpLabel(piece)}</div>
             <button class="hp-btn" data-hp-change="1" data-piece-id="${piece.pieceId}" aria-label="Increase ${unitType.name} copy ${copyNumber} HP" ${isKingType(unitType) ? "disabled" : ""}>+</button>
           </div>
-          <div class="quick-action">${unitType.action}</div>
+          <div class="quick-action">${getEffectiveActionText(unitType)}</div>
         `;
 
         card.addEventListener("click", event => {
@@ -8729,7 +9224,7 @@
         card.dataset.typeId = unitType.id;
         card.setAttribute("role", "button");
         card.setAttribute("tabindex", "0");
-        card.setAttribute("aria-label", `${unitType.name} rules, movement ${unitType.move}, max HP ${getMaxHpDisplay(unitType)}`);
+        card.setAttribute("aria-label", `${unitType.name} rules, movement ${getEffectiveUnitMove(unitType)}, max HP ${getMaxHpDisplay(unitType)}`);
 
         card.innerHTML = `
           <div class="unit-top">
@@ -8738,11 +9233,11 @@
             <div class="copy-label">${activeCount}/${maxCopies}</div>
           </div>
           <div class="stats">
-            <div class="stat-pill"><span>Move</span><strong class="move-value">${unitType.move}</strong></div>
+            <div class="stat-pill"><span>Move</span><strong class="move-value">${getEffectiveUnitMove(unitType)}</strong></div>
             <div class="stat-pill"><span>Max HP</span><strong class="hp-value">${getMaxHpDisplay(unitType)}</strong></div>
           </div>
           <button class="add-btn" data-add-type-id="${unitType.id}" title="${getAddPieceStatus(unitType)}" ${canAddPieceType(unitType.id) ? "" : "disabled"}>${state.setupComplete ? "Summon" : "Add to Board"}</button>
-          <div class="quick-action">${unitType.action}</div>
+          <div class="quick-action">${getEffectiveActionText(unitType)}</div>
         `;
 
         card.addEventListener("click", event => {
@@ -8770,11 +9265,11 @@
         detailBadge.textContent = unitType.id;
         detailBadge.style.background = getBadgeColour(unitType.category);
         detailName.textContent = `${unitType.name} #${copyNumber}`;
-        detailMove.textContent = unitType.move;
+        detailMove.textContent = getEffectiveUnitMove(unitType);
         detailHp.textContent = getPieceHpDisplay(selectedPiece);
         detailHpReadout.textContent = getPieceHpLabel(selectedPiece);
-        detailAction.textContent = unitType.action;
-        detailRitual.textContent = unitType.ritual;
+        detailAction.textContent = getEffectiveActionText(unitType);
+        detailRitual.textContent = getEffectiveSummonText(unitType);
         detailShieldStatus.textContent = selectedPiece.hasShield ? "🛡 Shield equipped — next hit breaks it" : "No shield equipped";
         setDetailButtonsEnabled(true);
         setShieldButtons(selectedPiece);
@@ -8785,11 +9280,11 @@
       detailBadge.textContent = unitType.id;
       detailBadge.style.background = getBadgeColour(unitType.category);
       detailName.textContent = unitType.name;
-      detailMove.textContent = unitType.move;
-      detailHp.textContent = isKingType(unitType) ? "∞ / ∞" : `0 active / ${unitType.maxHp} max`;
+      detailMove.textContent = getEffectiveUnitMove(unitType);
+      detailHp.textContent = isKingType(unitType) ? "∞ / ∞" : `0 active / ${getEffectiveUnitMaxHp(unitType)} max`;
       detailHpReadout.textContent = "No active copy selected";
-      detailAction.textContent = unitType.action;
-      detailRitual.textContent = unitType.ritual;
+      detailAction.textContent = getEffectiveActionText(unitType);
+      detailRitual.textContent = getEffectiveSummonText(unitType);
       detailShieldStatus.textContent = "No active copy selected";
       setDetailButtonsEnabled(false);
       setShieldButtons(null);
@@ -8976,12 +9471,6 @@
       render();
     });
 
-    toggleStardustPanel.addEventListener("click", () => {
-      setManualPanelCollapsed("stardust", !isPanelCollapsed("stardust"));
-      saveState();
-      render();
-    });
-
     toggleGivingPanel.addEventListener("click", () => {
       setManualPanelCollapsed("giving", !isPanelCollapsed("giving"));
       saveState();
@@ -9032,12 +9521,6 @@
     document.querySelectorAll("[data-giving-tiles-change]").forEach(button => {
       button.addEventListener("click", () => {
         changeGivingTiles(Number(button.dataset.givingTilesChange));
-      });
-    });
-
-    document.querySelectorAll("[data-stardust-change]").forEach(button => {
-      button.addEventListener("click", () => {
-        changeStardust(Number(button.dataset.stardustChange));
       });
     });
 
@@ -9230,7 +9713,7 @@
           const unitType = getUnitType(piece.typeId);
 
           if (!isKingType(unitType)) {
-            piece.currentHp = unitType.maxHp;
+            piece.currentHp = getEffectiveUnitMaxHp(unitType);
           }
         });
         saveState();
@@ -9415,6 +9898,25 @@
       if (manualOracleNegationButton) {
         const negatedEventSelect = document.getElementById("manualOracleNegatedEvent");
         manuallyRecordOracleNegation(negatedEventSelect ? Number(negatedEventSelect.value) : 0);
+        return;
+      }
+
+      const meteorRespecializationButton = event.target.closest('[data-action="apply-meteor-respecialization"]');
+
+      if (meteorRespecializationButton) {
+        const baseSelect = document.getElementById("meteorBaseSelect");
+        const specializationSelect = document.getElementById("meteorSpecializationSelect");
+        applyMeteorRespecialization(
+          baseSelect ? Number(baseSelect.value) : 0,
+          specializationSelect ? specializationSelect.value : ""
+        );
+        return;
+      }
+
+      const skipMeteorRespecializationButton = event.target.closest('[data-action="skip-meteor-respecialization"]');
+
+      if (skipMeteorRespecializationButton) {
+        skipMeteorRespecialization();
         return;
       }
 
