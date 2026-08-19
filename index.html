@@ -3447,7 +3447,7 @@
     const MAX_ITEM_SLOTS = 11;
     const MAX_BREAD = 3;
     const STARTING_TOTAL_PIECES = 8;
-    const APP_VERSION = "v0.2.5";
+    const APP_VERSION = "v0.2.6";
 
     const turnSteps = [
       { kind: "unit", typeId: 1, title: "King", instructions: "Each team may move/action all active Kings." },
@@ -3715,9 +3715,9 @@
       { id: 8, name: "Warrior (Bow)", move: 1, maxHp: 2, action: "Ranged Attack — Range 7, Damage 1. Cost: 1 Arrow.", ritual: "1 Silver, 2 Wood, 1 Rope, 1 Sulphur", category: "fighter", ritualCosts: [{ type: "currency", name: "silver", quantity: 1 }, { type: "resource", name: "Wood", quantity: 2 }, { type: "resource", name: "Rope", quantity: 1 }, { type: "resource", name: "Sulphur", quantity: 1 }] },
       { id: 9, name: "Warrior (Lance & Horse)", move: 4, maxHp: 3, action: "Melee Attack — Range 2, Damage 1.", ritual: "1 Wood, 1 Stone, 1 Rope, 3 Leather", category: "fighter", ritualCosts: [{ type: "resource", name: "Wood", quantity: 1 }, { type: "resource", name: "Stone", quantity: 1 }, { type: "resource", name: "Rope", quantity: 1 }, { type: "resource", name: "Leather", quantity: 3 }] },
       { id: 10, name: "Mage", move: 3, maxHp: 1, action: "Magic Attack — Range 7, Damage 1, targets 3 different units. Cost: delete 1 ally unit, not Mage.", ritual: "1 Gem, 6 Bronze", category: "fighter", ritualCosts: [{ type: "resource", name: "Gem", quantity: 1 }, { type: "currency", name: "bronze", quantity: 6 }] },
-      { id: 11, name: "Priest", move: 1, maxHp: 1, action: "Heal — Choose an eligible dead ally and revive them with full HP.", ritual: "2 Glass, 1 Sulphur", category: "support", ritualCosts: [{ type: "resource", name: "Glass", quantity: 2 }, { type: "resource", name: "Sulphur", quantity: 1 }] },
+      { id: 11, name: "Priest", move: 3, maxHp: 1, action: "Heal — Must be within 3 tiles of an eligible dead ally to revive them with full HP.", ritual: "2 Glass, 1 Sulphur", category: "support", ritualCosts: [{ type: "resource", name: "Glass", quantity: 2 }, { type: "resource", name: "Sulphur", quantity: 1 }] },
       { id: 12, name: "Medic", move: 4, maxHp: 2, action: "Heal — Must be within 3 tiles of a damaged allied unit to heal it by 1 HP. Cannot heal a Medic.", ritual: "1 Iron, 6 Leather, 3 Bronze", category: "support", ritualCosts: [{ type: "resource", name: "Iron", quantity: 1 }, { type: "resource", name: "Leather", quantity: 6 }, { type: "currency", name: "bronze", quantity: 3 }] },
-      { id: 13, name: "Necromancer", move: 1, maxHp: 1, action: "Heal — Choose an eligible dead ally unit and revive it with full HP.", ritual: "1 Gem, 7 Leather, 1 Silver, 2 Bronze", category: "support", ritualCosts: [{ type: "resource", name: "Gem", quantity: 1 }, { type: "resource", name: "Leather", quantity: 7 }, { type: "currency", name: "silver", quantity: 1 }, { type: "currency", name: "bronze", quantity: 2 }] },
+      { id: 13, name: "Necromancer", move: 3, maxHp: 1, action: "Heal — Must be within 3 tiles of an eligible dead ally unit to revive it with full HP.", ritual: "1 Gem, 7 Leather, 1 Silver, 2 Bronze", category: "support", ritualCosts: [{ type: "resource", name: "Gem", quantity: 1 }, { type: "resource", name: "Leather", quantity: 7 }, { type: "currency", name: "silver", quantity: 1 }, { type: "currency", name: "bronze", quantity: 2 }] },
       { id: 14, name: "Farmer", move: 1, maxHp: 6, action: "Farm — Gain 1 Bread, up to the 3 Bread storage limit.", ritual: "1 Gold, 6 Leather", category: "support", ritualCosts: [{ type: "currency", name: "gold", quantity: 1 }, { type: "resource", name: "Leather", quantity: 6 }] },
       { id: 15, name: "Artillerist", move: 2, maxHp: 2, action: "May load and fire a cannon as one action. Must be adjacent to the cannon. Passive — May push the cannon 1 tile in any direction to an unoccupied tile.", ritual: "3 Sulphur", category: "special", ritualCosts: [{ type: "resource", name: "Sulphur", quantity: 3 }] },
       { id: 16, name: "Mechanist", move: 4, maxHp: 2, action: "Repair — Repair a built item, such as a wall, base, or cannon. Passive — May push the cannon 1 tile in any direction to an unoccupied tile.", ritual: "1 Shield, 2 Sulphur", category: "special", ritualCosts: [{ type: "item", name: "Shield", quantity: 1 }, { type: "resource", name: "Sulphur", quantity: 2 }] },
@@ -7158,7 +7158,7 @@
             }
 
             if (priestCount > 0) {
-              tips.push("Priests can revive eligible defeated allies with full HP.");
+              tips.push("Priests can revive eligible defeated allies within 3 tiles with full HP.");
             }
 
             if (shopkeeperCount > 0) {
@@ -7700,6 +7700,7 @@
 
       if (lowerAction.includes("revive") || lowerAction.includes("eligible dead")) {
         add("Action", "Revive", false, true);
+        add("Range", "Within 3 tiles");
         add("HP", "Full HP");
 
         if (unitType.id === 13) {
