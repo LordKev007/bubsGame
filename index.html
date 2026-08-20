@@ -2735,6 +2735,303 @@
   
 
     /* ==========================================================
+       Layout modes: Original + Enchanted iPad presentation
+       ========================================================== */
+
+    .enchanted-hud,
+    .enchanted-inventory-panel,
+    .enchanted-bottom-nav,
+    .enchanted-detail-close {
+      display: none;
+    }
+
+    .settings-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      display: none;
+      place-items: center;
+      padding: max(18px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom));
+      background: rgba(18, 14, 10, 0.54);
+      backdrop-filter: blur(8px);
+    }
+
+    .settings-overlay.open { display: grid; }
+
+    .settings-sheet {
+      width: min(720px, 100%);
+      max-height: min(860px, 92vh);
+      overflow: auto;
+      border: 2px solid var(--border);
+      border-radius: 22px;
+      background: rgba(255, 248, 233, 0.98);
+      box-shadow: 0 24px 70px rgba(0,0,0,0.38);
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .settings-sheet-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid rgba(43,33,24,0.16);
+      padding-bottom: 12px;
+    }
+
+    .settings-sheet-header h2 { margin: 0; font-size: 30px; }
+    .settings-kicker { color: var(--muted); font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: .7px; }
+    .settings-close { width: 46px; height: 46px; border-radius: 50%; font-size: 28px; font-weight: 900; }
+    .settings-group { display: grid; gap: 8px; }
+    .settings-group h3 { margin: 0; color: var(--team-accent-dark); font-size: 18px; }
+    .settings-group p { margin: 0; color: var(--muted); font-size: 14px; font-weight: 700; line-height: 1.3; }
+    .settings-choice-grid { display: grid; gap: 8px; }
+    .settings-choice-grid.two-choice { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .settings-choice-grid.three-choice { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .settings-choice {
+      min-height: 74px;
+      border: 2px solid rgba(43,33,24,0.18);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.58);
+      padding: 11px;
+      text-align: left;
+      display: grid;
+      gap: 4px;
+      cursor: pointer;
+    }
+    .settings-choice strong { font-size: 17px; }
+    .settings-choice span { color: var(--muted); font-size: 13px; line-height: 1.25; }
+    .settings-choice.compact { min-height: 46px; text-align: center; place-items: center; font-weight: 900; }
+    .settings-choice.active { border-color: var(--team-accent); box-shadow: inset 0 0 0 2px var(--team-accent-soft); background: rgba(255,255,255,0.9); }
+    .settings-wide-btn { min-height: 46px; padding: 0 14px; font-weight: 900; }
+
+    .settings-button {
+      position: static;
+      display: inline-flex;
+      align-items: center;
+      min-height: 42px;
+      border: 1px solid rgba(43,33,24,.22);
+      border-radius: 999px;
+      padding: 5px 12px;
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      color: var(--muted);
+      background: rgba(255,255,255,.45);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    body[data-layout="enchanted"] {
+      padding: 6px 8px calc(82px + env(safe-area-inset-bottom));
+    }
+
+    body[data-layout="enchanted"] .app {
+      gap: 8px;
+      min-height: calc(100vh - 8px);
+    }
+
+    body[data-layout="enchanted"] .enchanted-hud {
+      position: sticky;
+      top: max(0px, env(safe-area-inset-top));
+      z-index: 120;
+      display: grid;
+      gap: 7px;
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      background: rgba(255,248,233,.96);
+      box-shadow: 0 8px 24px rgba(48,31,12,.22);
+      padding: 8px 10px;
+      backdrop-filter: blur(12px);
+    }
+
+    body[data-layout="enchanted"] .enchanted-hud-main {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .enchanted-brand { display: flex; align-items: center; gap: 8px; min-width: 0; }
+    .enchanted-brand-crest { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; color: #ffd66d; background: linear-gradient(145deg, var(--team-accent-dark), var(--team-accent)); border: 2px solid #d4a845; font-size: 22px; }
+    .enchanted-brand div { display: grid; line-height: 1.05; }
+    .enchanted-brand strong { font-size: 17px; white-space: nowrap; }
+    .enchanted-brand span:not(.enchanted-brand-crest) { color: var(--muted); font-size: 11px; font-weight: 900; text-transform: uppercase; }
+    .enchanted-phase { min-width: 0; display: grid; text-align: center; line-height: 1.08; }
+    .enchanted-phase span { color: var(--muted); font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: .45px; }
+    .enchanted-phase strong { color: var(--team-accent-dark); font-size: 20px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .enchanted-hud-actions { display: flex; gap: 6px; }
+    .enchanted-icon-btn { min-height: 38px; padding: 0 10px; border-radius: 10px; font-weight: 900; }
+
+    .enchanted-economy-strip {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+    .enchanted-economy-strip span { border: 1px solid rgba(43,33,24,.15); background: rgba(255,255,255,.58); border-radius: 999px; padding: 4px 8px; font-size: 12px; font-weight: 800; white-space: nowrap; }
+
+    body[data-layout="enchanted"].setup-complete .top-bar { display: none; }
+    body[data-layout="enchanted"] .top-bar { grid-template-columns: 1fr; }
+    body[data-layout="enchanted"] .currency-panel { display: none; }
+    body[data-layout="enchanted"] .title-card { padding: 6px 8px; justify-content: center; }
+    body[data-layout="enchanted"] .title-card > .crest,
+    body[data-layout="enchanted"] .title-card h1,
+    body[data-layout="enchanted"] .title-card .subtitle { display: none; }
+    body[data-layout="enchanted"] .title-card > div { width: 100%; }
+    body[data-layout="enchanted"] .title-card .header-tools { margin-top: 0; justify-content: center; }
+
+    body[data-layout="enchanted"] .walkthrough-panel { display: none; }
+    body[data-layout="enchanted"].coach-active .walkthrough-panel { display: block; }
+
+    body[data-layout="enchanted"] .turn-panel { padding: 8px; }
+    body[data-layout="enchanted"] .turn-panel .panel-header { margin-bottom: 5px; }
+    body[data-layout="enchanted"] .turn-panel > .panel-header .collapse-btn { display: none; }
+    body[data-layout="enchanted"] #turnContent.hidden { display: grid !important; }
+    body[data-layout="enchanted"] .turn-panel-grid { grid-template-columns: minmax(0, 1.25fr) minmax(285px, .75fr); gap: 7px; }
+    body[data-layout="enchanted"] .turn-callout { padding: 8px; gap: 6px; }
+    body[data-layout="enchanted"] .turn-main-callout { min-height: 0; grid-template-rows: auto auto auto auto auto auto auto; }
+    body[data-layout="enchanted"] .turn-step-title { font-size: 24px; }
+    body[data-layout="enchanted"] .turn-instructions { min-height: 0; font-size: 13px; }
+    body[data-layout="enchanted"] .current-reference-card { padding: 7px; gap: 5px; }
+    body[data-layout="enchanted"] .current-reference-full-action { display: none; }
+    body[data-layout="enchanted"].game-started .coin-area { display: none; }
+    body[data-layout="enchanted"] .turn-controls { display: none; }
+    body[data-layout="enchanted"] .turn-summary-panel { display: none; }
+    body[data-layout="enchanted"].phase-roundEnd .turn-summary-panel { display: block; }
+    body[data-layout="enchanted"].game-started #firstPlayerControls { display: none !important; }
+
+    body[data-layout="enchanted"] .summon-panel { display: none; }
+    body[data-layout="enchanted"]:not(.setup-complete) .summon-panel,
+    body[data-layout="enchanted"].phase-summon .summon-panel { display: block; }
+    body[data-layout="enchanted"] .summon-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    body[data-layout="enchanted"].phase-summon .summon-panel.collapsed .setup-status,
+    body[data-layout="enchanted"].phase-summon .summon-panel.collapsed .summon-grid { display: grid !important; }
+
+    body[data-layout="enchanted"] .enchanted-inventory-panel { display: block; padding: 8px; }
+    body[data-layout="enchanted"] .enchanted-inventory-panel .panel-header { margin-bottom: 6px; }
+    .enchanted-inventory-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; }
+    .enchanted-inventory-tabs button { min-height: 48px; border-radius: 12px; padding: 5px 8px; display: grid; place-items: center; gap: 2px; font-weight: 900; }
+    .enchanted-inventory-tabs button span { font-size: 12px; color: var(--muted); }
+    .enchanted-inventory-tabs button strong { font-size: 17px; color: var(--team-accent-dark); }
+    .enchanted-inventory-tabs button.active { outline: 3px solid var(--team-accent-soft); border-color: var(--team-accent); }
+    .enchanted-inventory-hint { margin-top: 5px; color: var(--muted); font-size: 11px; text-align: center; font-weight: 700; }
+
+    body[data-layout="enchanted"] #resourcesPanel,
+    body[data-layout="enchanted"] #breadPanel,
+    body[data-layout="enchanted"] #itemsPanel { display: none; }
+    body[data-layout="enchanted"][data-inventory-view="resources"] #resourcesPanel,
+    body[data-layout="enchanted"][data-inventory-view="bread"] #breadPanel,
+    body[data-layout="enchanted"][data-inventory-view="items"] #itemsPanel { display: block; }
+
+    body[data-layout="enchanted"] #resourcesPanel .panel-header,
+    body[data-layout="enchanted"] #breadPanel .panel-header,
+    body[data-layout="enchanted"] #itemsPanel .panel-header { margin-bottom: 5px; }
+    body[data-layout="enchanted"] #resourcesPanel .collapse-btn,
+    body[data-layout="enchanted"] #breadPanel .collapse-btn,
+    body[data-layout="enchanted"] #itemsPanel .collapse-btn { display: none; }
+    body[data-layout="enchanted"][data-inventory-view="resources"] #resourcesPanel .panel-content.hidden,
+    body[data-layout="enchanted"][data-inventory-view="items"] #itemsPanel .panel-content.hidden { display: grid !important; }
+    body[data-layout="enchanted"][data-inventory-view="bread"] #breadPanel .panel-content.hidden { display: block !important; }
+    body[data-layout="enchanted"] .resource-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    body[data-layout="enchanted"] .item-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+    body[data-layout="enchanted"] .bases-panel { padding: 8px; }
+    body[data-layout="enchanted"] .bases-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+    body[data-layout="enchanted"] .base-card { padding: 8px; gap: 6px; }
+    body[data-layout="enchanted"] .base-card:not(.managing) [data-base-rename],
+    body[data-layout="enchanted"] .base-card:not(.managing) [data-base-capture],
+    body[data-layout="enchanted"] .base-card:not(.managing) .base-specialization-row,
+    body[data-layout="enchanted"] .base-card:not(.managing) .base-specialization-preview,
+    body[data-layout="enchanted"] .base-card:not(.managing) .base-management-status { display: none; }
+    body[data-layout="enchanted"] .base-card:not(.managing) .base-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    body[data-layout="enchanted"] .base-card.managing .base-controls { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .base-manage-btn { display: none; }
+    body[data-layout="enchanted"] .base-manage-btn { display: inline-grid; min-height: 34px; place-items: center; }
+
+    body[data-layout="enchanted"] .utility-panels-row { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+    body[data-layout="enchanted"] .animation-mode-control { display: none; }
+
+    body[data-layout="enchanted"] .controls { grid-template-columns: auto auto auto minmax(150px, 1fr); padding: 6px; }
+    body[data-layout="enchanted"] .controls .search { grid-column: 4; grid-row: 1; min-height: 42px; font-size: 15px; }
+    body[data-layout="enchanted"] .controls [data-filter="rules"] { display: none; }
+    body[data-layout="enchanted"] .controls .filter-btn { min-height: 42px; padding: 0 10px; }
+
+    body[data-layout="enchanted"] .main-grid { grid-template-columns: 1fr; }
+    body[data-layout="enchanted"] .units-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; }
+    body[data-layout="enchanted"] .unit-card { min-height: 112px; padding: 8px; grid-template-rows: auto auto auto; gap: 5px; }
+    body[data-layout="enchanted"] .unit-card .quick-action { display: none; }
+    body[data-layout="enchanted"] .unit-card .stat-pill { padding: 4px 5px; font-size: 12px; }
+    body[data-layout="enchanted"] .unit-card .stat-pill strong { font-size: 18px; }
+    body[data-layout="enchanted"] .unit-card .hp-btn,
+    body[data-layout="enchanted"] .unit-card .hp-readout { min-height: 38px; }
+
+    body[data-layout="enchanted"] .detail-panel {
+      position: fixed !important;
+      z-index: 180;
+      right: 10px;
+      bottom: calc(78px + env(safe-area-inset-bottom));
+      top: auto;
+      width: min(430px, calc(100vw - 20px));
+      max-height: min(680px, 72vh);
+      overflow: auto;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(125%);
+      transition: transform .22s ease, opacity .18s ease;
+      box-shadow: 0 18px 55px rgba(0,0,0,.4);
+      background: rgba(255,248,233,.985);
+    }
+    body[data-layout="enchanted"] .detail-panel.enchanted-open { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    body[data-layout="enchanted"] .enchanted-detail-close { display: grid; position: sticky; top: 0; margin-left: auto; z-index: 2; width: 42px; height: 42px; place-items: center; border-radius: 50%; font-size: 25px; font-weight: 900; }
+
+    body[data-layout="enchanted"] .enchanted-bottom-nav {
+      position: fixed;
+      left: 8px;
+      right: 8px;
+      bottom: max(6px, env(safe-area-inset-bottom));
+      z-index: 140;
+      display: grid;
+      grid-template-columns: minmax(100px, .7fr) minmax(0, 1fr) minmax(100px, .7fr);
+      gap: 7px;
+      align-items: center;
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 7px;
+      background: rgba(255,248,233,.97);
+      box-shadow: 0 10px 34px rgba(0,0,0,.28);
+      backdrop-filter: blur(12px);
+    }
+    .enchanted-bottom-nav button { min-height: 46px; border-radius: 11px; font-weight: 900; }
+    .enchanted-bottom-nav div { min-width: 0; display: grid; text-align: center; line-height: 1.08; }
+    .enchanted-bottom-nav span { color: var(--muted); font-size: 11px; font-weight: 900; text-transform: uppercase; }
+    .enchanted-bottom-nav strong { color: var(--team-accent-dark); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    @media (max-width: 980px) {
+      body[data-layout="enchanted"] .turn-panel-grid { grid-template-columns: 1fr; }
+      body[data-layout="enchanted"] .units-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      body[data-layout="enchanted"] .summon-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      body[data-layout="enchanted"] .resource-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      body[data-layout="enchanted"] .item-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 720px) {
+      .settings-choice-grid.two-choice, .settings-choice-grid.three-choice { grid-template-columns: 1fr; }
+      body[data-layout="enchanted"] .enchanted-hud-main { grid-template-columns: 1fr auto; }
+      body[data-layout="enchanted"] .enchanted-phase { grid-column: 1 / -1; grid-row: 2; }
+      body[data-layout="enchanted"] .enchanted-hud-actions { grid-column: 2; grid-row: 1; }
+      body[data-layout="enchanted"] .units-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      body[data-layout="enchanted"] .bases-grid,
+      body[data-layout="enchanted"] .utility-panels-row { grid-template-columns: 1fr !important; }
+      body[data-layout="enchanted"] .summon-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      body[data-layout="enchanted"] .controls { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      body[data-layout="enchanted"] .controls .search { grid-column: 1 / -1; grid-row: 2; }
+    }
+
+    /* ==========================================================
        Player-selectable visual themes
        ----------------------------------------------------------
        These themes only change the presentation. They do not
@@ -3069,6 +3366,35 @@
 </head>
 <body>
   <main class="app">
+    <section class="enchanted-hud" id="enchantedHud" aria-label="Enchanted game HUD">
+      <div class="enchanted-hud-main">
+        <div class="enchanted-brand">
+          <span class="enchanted-brand-crest" aria-hidden="true">♛</span>
+          <div>
+            <strong>King's Grid</strong>
+            <span id="enchantedHudRound">Setup</span>
+          </div>
+        </div>
+        <div class="enchanted-phase">
+          <span id="enchantedHudTeam">Choose your team</span>
+          <strong id="enchantedHudStep">Prepare the kingdom</strong>
+        </div>
+        <div class="enchanted-hud-actions">
+          <button class="enchanted-icon-btn" id="enchantedRulesButton" type="button">Rules</button>
+          <button class="enchanted-icon-btn" id="enchantedNewsButton" type="button">News</button>
+          <button class="enchanted-icon-btn" id="enchantedSettingsButton" type="button" aria-label="Open settings">⚙</button>
+        </div>
+      </div>
+      <div class="enchanted-economy-strip" aria-label="Economy summary">
+        <span>🥇 <strong id="enchantedGold">0</strong></span>
+        <span>🥈 <strong id="enchantedSilver">0</strong></span>
+        <span>🥉 <strong id="enchantedBronze">0</strong></span>
+        <span>🍞 <strong id="enchantedBread">0/3</strong></span>
+        <span>Resources <strong id="enchantedResources">0/11</strong></span>
+        <span>Items <strong id="enchantedItems">0/11</strong></span>
+      </div>
+    </section>
+
     <section class="top-bar" id="gameHeaderPanel" aria-label="King's Grid header">
       <div class="title-card">
         <div class="crest" aria-hidden="true">♛</div>
@@ -3241,6 +3567,21 @@
       </div>
     </section>
 
+    <section class="tracker-panel enchanted-inventory-panel" id="enchantedInventoryPanel" aria-label="Compact inventory">
+      <div class="panel-header">
+        <div>
+          <h2>Inventory</h2>
+          <div class="panel-note" id="enchantedInventorySummary">Resources 0/11 · Bread 0/3 · Items 0/11</div>
+        </div>
+      </div>
+      <div class="enchanted-inventory-tabs" role="group" aria-label="Choose inventory section">
+        <button type="button" data-enchanted-inventory="resources"><span>Resources</span><strong id="enchantedInventoryResources">0/11</strong></button>
+        <button type="button" data-enchanted-inventory="bread"><span>Bread</span><strong id="enchantedInventoryBread">0/3</strong></button>
+        <button type="button" data-enchanted-inventory="items"><span>Items</span><strong id="enchantedInventoryItems">0/11</strong></button>
+      </div>
+      <div class="enchanted-inventory-hint">Tap a category to open it. Tap it again to close.</div>
+    </section>
+
     <section class="tracker-panel" id="resourcesPanel" aria-label="Resource tracker">
       <div class="panel-header">
         <div>
@@ -3349,6 +3690,7 @@
       <section class="units-grid" id="unitsGrid" aria-label="Unit tracker cards"></section>
 
       <aside class="detail-panel" id="detailPanel" aria-label="Selected unit details">
+        <button class="enchanted-detail-close" id="enchantedDetailClose" type="button" aria-label="Close selected unit details">×</button>
         <div class="detail-title">
           <div class="badge" id="detailBadge">1</div>
           <h2 id="detailName">King</h2>
@@ -3391,8 +3733,66 @@
       </aside>
     </section>
 
-    <div class="footer-note">Tip: In Safari on iPad, use Share → Add to Home Screen to make this feel like a little boardgame app. <span id="appVersionLabel">v0.2.15</span></div>
+    <div class="footer-note">Tip: In Safari on iPad, use Share → Add to Home Screen to make this feel like a little boardgame app. <span id="appVersionLabel">v0.2.16</span></div>
   </main>
+
+  <nav class="enchanted-bottom-nav" id="enchantedBottomNav" aria-label="Turn navigation">
+    <button id="enchantedPreviousTurn" type="button">‹ Previous</button>
+    <div>
+      <span id="enchantedBottomRound">Before Round 1</span>
+      <strong id="enchantedBottomStep">Setup</strong>
+    </div>
+    <button id="enchantedNextTurn" type="button">Next ›</button>
+  </nav>
+
+  <div class="settings-overlay" id="settingsOverlay" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <div class="settings-sheet">
+      <div class="settings-sheet-header">
+        <div>
+          <div class="settings-kicker">King's Grid</div>
+          <h2 id="settingsTitle">Settings</h2>
+        </div>
+        <button class="settings-close" id="settingsClose" type="button" aria-label="Close settings">×</button>
+      </div>
+
+      <div class="settings-group">
+        <h3>Layout</h3>
+        <p>Both layouts use the exact same saved game. Switch at any time.</p>
+        <div class="settings-choice-grid two-choice">
+          <button class="settings-choice" type="button" data-layout-choice="original">
+            <strong>Original</strong>
+            <span>The familiar full tracker with every panel in its established position.</span>
+          </button>
+          <button class="settings-choice" type="button" data-layout-choice="enchanted">
+            <strong>Enchanted</strong>
+            <span>iPad-focused HUD, compact cards, phase-aware panels and drawers.</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <h3>Theme</h3>
+        <div class="settings-choice-grid three-choice" id="settingsThemeChoices">
+          <button class="settings-choice compact" type="button" data-theme-choice="classic">Classic</button>
+          <button class="settings-choice compact" type="button" data-theme-choice="scroll">Olde Scroll</button>
+          <button class="settings-choice compact" type="button" data-theme-choice="arcane">Arcane Night</button>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <h3>Giving Tile Reveal</h3>
+        <div class="settings-choice-grid two-choice">
+          <button class="settings-choice compact" type="button" data-settings-reveal="subtle">Subtle</button>
+          <button class="settings-choice compact" type="button" data-settings-reveal="awesome">Awesome</button>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <h3>Testing</h3>
+        <button class="settings-wide-btn" id="settingsTestMode" type="button">Test Mode: Off</button>
+      </div>
+    </div>
+  </div>
 
   <div class="giving-results-overlay" id="givingResultsOverlay">
     <div class="giving-results-modal">
@@ -3424,7 +3824,7 @@
     const MAX_ITEM_SLOTS = 11;
     const MAX_BREAD = 3;
     const STARTING_TOTAL_PIECES = 8;
-    const APP_VERSION = "v0.2.15";
+    const APP_VERSION = "v0.2.16";
 
     const turnSteps = [
       { kind: "unit", typeId: 1, title: "King", instructions: "Each team may move/action all active Kings." },
@@ -3731,6 +4131,7 @@
       teamSelected: false,
       testMode: false,
       selectedTheme: "classic",
+      layoutMode: "original",
       search: "",
       nextPieceId: 1,
       shopOpen: false,
@@ -3802,6 +4203,9 @@
 
     let state = loadState();
     let shopSaleSelection = {};
+    let enchantedDetailOpen = false;
+    let enchantedInventorySection = "";
+    const enchantedManagedBaseIds = new Set();
 
     const walkthroughContent = document.getElementById("walkthroughContent");
     const toggleWalkthroughPanel = document.getElementById("toggleWalkthroughPanel");
@@ -4156,6 +4560,131 @@
       state.selectedTheme = THEME_OPTIONS[nextIndex].id;
       applySelectedTheme();
       saveState();
+    }
+
+    const LAYOUT_OPTIONS = [
+      { id: "original", label: "Original" },
+      { id: "enchanted", label: "Enchanted" }
+    ];
+
+    function getLayoutOption(layoutId) {
+      return LAYOUT_OPTIONS.find(layout => layout.id === layoutId) || LAYOUT_OPTIONS[0];
+    }
+
+    function applySelectedLayout() {
+      const layout = getLayoutOption(state.layoutMode);
+      state.layoutMode = layout.id;
+      document.body.dataset.layout = layout.id;
+
+      const settingsButton = document.getElementById("settingsButton");
+      if (settingsButton) {
+        settingsButton.textContent = `Settings · ${layout.label}`;
+        settingsButton.title = `Layout: ${layout.label}. Open settings.`;
+      }
+
+      document.querySelectorAll("[data-layout-choice]").forEach(button => {
+        button.classList.toggle("active", button.dataset.layoutChoice === layout.id);
+      });
+    }
+
+    function setLayoutMode(layoutId) {
+      const layout = getLayoutOption(layoutId);
+      state.layoutMode = layout.id;
+      if (layout.id === "enchanted" && state.filter === "rules") state.filter = "all";
+      enchantedDetailOpen = false;
+      enchantedInventorySection = "";
+      enchantedManagedBaseIds.clear();
+      saveState();
+      render();
+    }
+
+    function openSettings() {
+      const overlay = document.getElementById("settingsOverlay");
+      if (overlay) overlay.classList.add("open");
+    }
+
+    function closeSettings() {
+      const overlay = document.getElementById("settingsOverlay");
+      if (overlay) overlay.classList.remove("open");
+    }
+
+    function ensureSettingsButton() {
+      let button = document.getElementById("settingsButton");
+      if (!button) {
+        button = document.createElement("button");
+        button.id = "settingsButton";
+        button.className = "settings-button";
+        button.type = "button";
+        button.addEventListener("click", openSettings);
+      }
+
+      const headerTools = document.querySelector(".header-tools");
+      if (headerTools && button.parentNode !== headerTools) {
+        headerTools.appendChild(button);
+      }
+      applySelectedLayout();
+    }
+
+    function renderEnchantedChrome() {
+      const currentStep = getCurrentTurnStep();
+      const currentTeam = getCurrentTurnTeam();
+      const started = Boolean(state.turnOrder && state.turnOrder.started);
+      const resourceCount = getTotalForCollection("resources");
+      const itemCount = getTotalForCollection("items");
+
+      document.body.classList.toggle("setup-complete", Boolean(state.setupComplete));
+      document.body.classList.toggle("game-started", started);
+      document.body.classList.toggle("coach-active", Boolean(state.coach && state.coach.active));
+      document.body.dataset.inventoryView = enchantedInventorySection || "none";
+
+      ["unit", "giving", "summon", "crafting", "shopping", "roundEnd"].forEach(kind => {
+        document.body.classList.toggle(`phase-${kind}`, started && currentStep && currentStep.kind === kind);
+      });
+
+      const roundText = started ? `Round ${state.turnOrder.round}` : (state.setupComplete ? "Ready to start" : "Setup");
+      const teamText = started ? `${getTeamLabel(currentTeam)} acts now` : (state.teamSelected ? `${getTeamLabel(state.team)} tracker` : "Choose your team");
+      const stepText = started ? currentStep.title : (state.setupComplete ? "Choose first player" : "Prepare the kingdom");
+
+      const setText = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value; };
+      setText("enchantedHudRound", roundText);
+      setText("enchantedHudTeam", teamText);
+      setText("enchantedHudStep", stepText);
+      setText("enchantedGold", state.currency.gold || 0);
+      setText("enchantedSilver", state.currency.silver || 0);
+      setText("enchantedBronze", state.currency.bronze || 0);
+      setText("enchantedBread", `${state.bread || 0}/${MAX_BREAD}`);
+      setText("enchantedResources", `${resourceCount}/${MAX_RESOURCE_SLOTS}`);
+      setText("enchantedItems", `${itemCount}/${MAX_ITEM_SLOTS}`);
+      setText("enchantedInventorySummary", `Resources ${resourceCount}/${MAX_RESOURCE_SLOTS} · Bread ${state.bread || 0}/${MAX_BREAD} · Items ${itemCount}/${MAX_ITEM_SLOTS}`);
+      setText("enchantedInventoryResources", `${resourceCount}/${MAX_RESOURCE_SLOTS}`);
+      setText("enchantedInventoryBread", `${state.bread || 0}/${MAX_BREAD}`);
+      setText("enchantedInventoryItems", `${itemCount}/${MAX_ITEM_SLOTS}`);
+      setText("enchantedBottomRound", roundText);
+      setText("enchantedBottomStep", started ? `${getTeamLabel(currentTeam)} · ${currentStep.title}` : stepText);
+
+      document.querySelectorAll("[data-enchanted-inventory]").forEach(button => {
+        button.classList.toggle("active", button.dataset.enchantedInventory === enchantedInventorySection);
+      });
+      document.querySelectorAll("[data-theme-choice]").forEach(button => {
+        button.classList.toggle("active", button.dataset.themeChoice === state.selectedTheme);
+      });
+      document.querySelectorAll("[data-settings-reveal]").forEach(button => {
+        button.classList.toggle("active", button.dataset.settingsReveal === state.givingAnimationMode);
+      });
+
+      const settingsTestMode = document.getElementById("settingsTestMode");
+      if (settingsTestMode) {
+        settingsTestMode.textContent = `Test Mode: ${state.testMode ? "On" : "Off"}`;
+        settingsTestMode.classList.toggle("active", Boolean(state.testMode));
+      }
+
+      const detailPanel = document.getElementById("detailPanel");
+      if (detailPanel) detailPanel.classList.toggle("enchanted-open", state.layoutMode === "enchanted" && enchantedDetailOpen);
+
+      const enchantedPrevious = document.getElementById("enchantedPreviousTurn");
+      const enchantedNext = document.getElementById("enchantedNextTurn");
+      if (enchantedPrevious) enchantedPrevious.disabled = previousTurn.disabled;
+      if (enchantedNext) enchantedNext.disabled = nextTurn.disabled;
     }
 
 
@@ -5062,6 +5591,7 @@
       applySelectedTheme();
       ensureRulesButton();
       ensureRoundNewsButton();
+      ensureSettingsButton();
     }
 
     function saveState() {
@@ -8762,7 +9292,7 @@
         const specialization = getBaseSpecialization(pendingSpecializationId);
         const ownerClass = `${base.owner}-owner`;
         const card = document.createElement("article");
-        card.className = `base-card ${ownerClass}`;
+        card.className = `base-card ${ownerClass}${enchantedManagedBaseIds.has(base.baseId) ? " managing" : ""}`;
 
         const optionsHtml = baseSpecializations.map(option => `
           <option value="${option.id}" ${specialization.id === option.id ? "selected" : ""}>${option.name}</option>
@@ -8774,7 +9304,10 @@
         card.innerHTML = `
           <div class="base-card-top">
             <div class="base-name">${base.name}</div>
-            <div class="base-owner-pill ${ownerClass}">${getTeamLabel(base.owner)}</div>
+            <div style="display:flex; gap:6px; align-items:center; justify-content:flex-end;">
+              <div class="base-owner-pill ${ownerClass}">${getTeamLabel(base.owner)}</div>
+              <button class="base-btn base-manage-btn" type="button" data-base-manage="${base.baseId}">${enchantedManagedBaseIds.has(base.baseId) ? "Done" : "Manage"}</button>
+            </div>
           </div>
           <div class="base-stats">
             <div class="base-stat-pill"><span>HP</span><strong>${base.currentHp}/${base.maxHp || BASE_MAX_HP}</strong></div>
@@ -8800,7 +9333,7 @@
             <button class="base-btn primary" data-base-apply-specialization="${base.baseId}">Apply</button>
           </div>
           ${renderBaseSpecializationPreview(specialization)}
-          <div class="base-requirement-note ${specializationReadiness}">${selectedStatus}</div>
+          <div class="base-requirement-note base-management-status ${specializationReadiness}">${selectedStatus}</div>
         `;
 
         fragment.appendChild(card);
@@ -9194,6 +9727,7 @@
           }
           state.selectedPieceId = piece.pieceId;
           state.selectedRuleTypeId = unitType.id;
+          if (state.layoutMode === "enchanted") enchantedDetailOpen = true;
           saveState();
           render();
         });
@@ -9246,6 +9780,7 @@
           }
           state.selectedRuleTypeId = unitType.id;
           state.selectedPieceId = null;
+          if (state.layoutMode === "enchanted") enchantedDetailOpen = true;
           saveState();
           render();
         });
@@ -9340,7 +9875,7 @@
       document.documentElement.style.setProperty("--team-accent-dark", isRedTeam ? "#5b1510" : (isBlueTeam ? "#17314e" : "#4a4034"));
       document.documentElement.style.setProperty("--team-accent-soft", isRedTeam ? "rgba(161, 43, 36, 0.14)" : (isBlueTeam ? "rgba(36, 77, 120, 0.12)" : "rgba(118, 106, 90, 0.16)"));
 
-      teamButtons.forEach(button => {
+    teamButtons.forEach(button => {
         button.classList.toggle("active", selectedTeam !== null && button.dataset.team === selectedTeam);
         button.disabled = Boolean(state.turnOrder && state.turnOrder.started);
         button.title = state.turnOrder && state.turnOrder.started
@@ -9360,7 +9895,9 @@
       ensureThemePicker();
       ensureRulesButton();
       ensureRoundNewsButton();
+      ensureSettingsButton();
       applySelectedTheme();
+      applySelectedLayout();
       renderTeam();
       renderTestMode();
       renderWalkthrough();
@@ -9377,6 +9914,7 @@
       renderFilters();
       renderUnits();
       renderDetails();
+      renderEnchantedChrome();
 
       const appVersionLabel = document.getElementById("appVersionLabel");
       if (appVersionLabel) {
@@ -9478,6 +10016,15 @@
     });
 
     basesGrid.addEventListener("click", event => {
+      const manageButton = event.target.closest("[data-base-manage]");
+      if (manageButton) {
+        const baseId = Number(manageButton.dataset.baseManage);
+        if (enchantedManagedBaseIds.has(baseId)) enchantedManagedBaseIds.delete(baseId);
+        else enchantedManagedBaseIds.add(baseId);
+        render();
+        return;
+      }
+
       const hpButton = event.target.closest("[data-base-hp]");
       if (hpButton) {
         changeBaseHp(Number(hpButton.dataset.baseId), Number(hpButton.dataset.baseHp));
@@ -9748,6 +10295,35 @@
           state.selectedPieceId = null;
         }
         saveState();
+        render();
+      });
+    });
+
+    document.getElementById("settingsClose").addEventListener("click", closeSettings);
+    document.getElementById("settingsOverlay").addEventListener("click", event => {
+      if (event.target.id === "settingsOverlay") closeSettings();
+    });
+    document.getElementById("enchantedSettingsButton").addEventListener("click", openSettings);
+    document.getElementById("enchantedRulesButton").addEventListener("click", openRulesWindow);
+    document.getElementById("enchantedNewsButton").addEventListener("click", openRoundNewsWindow);
+    document.getElementById("enchantedPreviousTurn").addEventListener("click", () => previousTurn.click());
+    document.getElementById("enchantedNextTurn").addEventListener("click", () => nextTurn.click());
+    document.getElementById("enchantedDetailClose").addEventListener("click", () => { enchantedDetailOpen = false; render(); });
+
+    document.querySelectorAll("[data-layout-choice]").forEach(button => {
+      button.addEventListener("click", () => { setLayoutMode(button.dataset.layoutChoice); closeSettings(); });
+    });
+    document.querySelectorAll("[data-theme-choice]").forEach(button => {
+      button.addEventListener("click", () => { state.selectedTheme = getThemeOption(button.dataset.themeChoice).id; saveState(); render(); });
+    });
+    document.querySelectorAll("[data-settings-reveal]").forEach(button => {
+      button.addEventListener("click", () => { state.givingAnimationMode = button.dataset.settingsReveal; saveState(); render(); });
+    });
+    document.getElementById("settingsTestMode").addEventListener("click", () => { state.testMode = !state.testMode; saveState(); render(); });
+    document.querySelectorAll("[data-enchanted-inventory]").forEach(button => {
+      button.addEventListener("click", () => {
+        const section = button.dataset.enchantedInventory;
+        enchantedInventorySection = enchantedInventorySection === section ? "" : section;
         render();
       });
     });
