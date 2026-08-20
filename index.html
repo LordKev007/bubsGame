@@ -3679,7 +3679,7 @@
         <div class="panel-header">
           <div>
             <h2>Cannon</h2>
-            <div class="panel-note">Load using Cannon Ball</div>
+            <div class="panel-note">Load using Cannon Ball · Range 8 tiles</div>
           </div>
           <button class="collapse-btn" id="toggleCannonPanel" type="button" aria-expanded="true">Collapse</button>
         </div>
@@ -3907,7 +3907,7 @@
     const MAX_ITEM_SLOTS = 11;
     const MAX_BREAD = 3;
     const STARTING_TOTAL_PIECES = 8;
-    const APP_VERSION = "v0.2.22";
+    const APP_VERSION = "v0.2.23";
 
     const turnSteps = [
       { kind: "unit", typeId: 1, title: "King", instructions: "Each team may move/action all active Kings." },
@@ -3996,6 +3996,7 @@
     const BASE_MAX_HP = 6;
     const MAX_CANNONS_PER_PLAYER = 1;
     const CANNON_MAX_HP = 2;
+    const CANNON_RANGE = 8;
 
     const baseSpecializations = [
       {
@@ -5321,11 +5322,12 @@
         <li>A Cannon Ball instantly destroys a wall it hits, including an Iron Defence.</li>
         <li>A Cannon Ball deals <strong>2 damage</strong> when fired at a unit or another Cannon.</li>
         <li>A Mechanist may use its Repair action to restore <strong>2 HP</strong> to a damaged Cannon, up to the Cannon's normal ${CANNON_MAX_HP}-HP maximum.</li>
+        <li>A Cannon may fire at a target up to <strong>${CANNON_RANGE} tiles</strong> away.</li>
         <li>Cannon Balls may be fired over walls.</li>
         <li>You may deliberately use your Cannon to destroy one of your own walls.</li>
         <li>A Cannon does not move normally. A Mechanist or Artillerist may passively push it <strong>1 tile</strong> in any direction to an unoccupied tile.</li>
       </ul>
-      <div class="tracker-note"><strong>Range:</strong> The current game data does not give a numeric Cannon firing range. Do not infer one from Bow or Mage range.</div>
+      <div class="ruling"><strong>Cannon range:</strong> Maximum firing range is <strong>${CANNON_RANGE} tiles</strong>.</div>
     </section>
 
     <section id="inventory">
@@ -5462,7 +5464,6 @@
     <section id="open-design" class="undefined">
       <h2>23. Rules / Implementation Points Still Requiring a Definition</h2>
       <p>The audit found the following points for which the current design history does not supply a complete ruling. They are listed here so an older draft or an assumption is not accidentally treated as law.</p>
-            <div class="warning"><strong>Cannon firing range:</strong> Cannon damage, loading, wall interaction, and firing are defined, but no numeric maximum firing range is currently specified.</div>
       <div class="warning"><strong>How grid distance is counted:</strong> Movement and abilities use distances such as “within 3 tiles,” but the current design does not explicitly state whether diagonal steps count as one tile or specify another formal distance metric.</div>
       <p class="small">No missing value or condition has been inferred. That is deliberate: an authoritative reference should distinguish an unresolved rule from a made-up ruling.</p>
     </section>
