@@ -287,6 +287,7 @@
     }
 
     .base-card {
+      position: relative;
       border: 3px solid rgba(43, 33, 24, 0.18);
       background: rgba(255,255,255,0.54);
       border-radius: 14px;
@@ -303,6 +304,22 @@
     .base-card.blue-owner {
       border-color: #244d78;
       box-shadow: 0 0 0 1px rgba(36, 77, 120, 0.18), 0 8px 18px rgba(36, 77, 120, 0.12);
+    }
+
+    .base-rebuilding-ribbon {
+      position: absolute;
+      top: -10px;
+      right: 10px;
+      z-index: 3;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #fff0bd, #dfb94f);
+      border: 1px solid rgba(120, 82, 12, 0.42);
+      color: #4b3408;
+      font-size: 12px;
+      font-weight: 900;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.16);
+      white-space: nowrap;
     }
 
     .base-card-top {
@@ -373,7 +390,7 @@
 
     .base-controls {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 6px;
     }
 
@@ -2943,12 +2960,11 @@
     body[data-layout="enchanted"] .bases-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
     body[data-layout="enchanted"] .base-card { padding: 8px; gap: 6px; }
     body[data-layout="enchanted"] .base-card:not(.managing) [data-base-rename],
-    body[data-layout="enchanted"] .base-card:not(.managing) [data-base-capture],
     body[data-layout="enchanted"] .base-card:not(.managing) .base-specialization-row,
     body[data-layout="enchanted"] .base-card:not(.managing) .base-specialization-preview,
     body[data-layout="enchanted"] .base-card:not(.managing) .base-management-status { display: none; }
     body[data-layout="enchanted"] .base-card:not(.managing) .base-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    body[data-layout="enchanted"] .base-card.managing .base-controls { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    body[data-layout="enchanted"] .base-card.managing .base-controls { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .base-manage-btn { display: none; }
     body[data-layout="enchanted"] .base-manage-btn { display: inline-grid; min-height: 34px; place-items: center; }
 
@@ -3362,6 +3378,39 @@
       border-color: rgba(168, 139, 250, 0.36);
     }
 
+    /* Recruitment Center roster-loss desertion */
+    .recruitment-desertion-overlay { position: fixed; inset: 0; z-index: 520; display: none; place-items: center; padding: max(18px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom)); background: rgba(18, 14, 10, 0.72); backdrop-filter: blur(9px); }
+    .recruitment-desertion-overlay.open { display: grid; }
+    .recruitment-desertion-sheet { width: min(760px, 100%); max-height: min(900px, 92vh); overflow: auto; border: 3px solid #8f5d28; border-radius: 22px; background: rgba(255, 248, 233, 0.99); box-shadow: 0 28px 80px rgba(0,0,0,0.48); padding: 18px; display: grid; gap: 14px; }
+    .recruitment-desertion-kicker { color: #8a3e25; font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: .8px; }
+    .recruitment-desertion-title { margin: 0; font-size: 30px; color: #5d2818; }
+    .recruitment-desertion-note { margin: 0; color: var(--muted); font-weight: 800; line-height: 1.35; }
+    .recruitment-desertion-count { border: 1px solid rgba(93,40,24,.24); background: rgba(143,93,40,.10); border-radius: 12px; padding: 9px 12px; font-weight: 900; color: #5d2818; }
+    .recruitment-desertion-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }
+    .recruitment-desertion-piece { min-height: 64px; border: 2px solid rgba(43,33,24,.18); border-radius: 14px; background: rgba(255,255,255,.68); text-align: left; padding: 10px 12px; display: grid; gap: 3px; cursor: pointer; color: var(--ink); }
+    .recruitment-desertion-piece strong { font-size: 16px; }
+    .recruitment-desertion-piece span { color: var(--muted); font-size: 13px; font-weight: 800; }
+    .recruitment-desertion-piece.selected { border-color: #a12b24; background: rgba(255,225,218,.94); box-shadow: inset 0 0 0 1px rgba(161,43,36,.22); }
+    .recruitment-desertion-actions { display: grid; grid-template-columns: 1fr; gap: 8px; }
+    .recruitment-desertion-confirm { min-height: 48px; border: 1px solid rgba(43,33,24,.3); border-radius: 12px; background: linear-gradient(180deg, #ffe1da, #e7a094); font-weight: 900; cursor: pointer; }
+    .recruitment-desertion-confirm:disabled { opacity: .45; cursor: not-allowed; }
+    @media (max-width: 700px) { .recruitment-desertion-grid { grid-template-columns: 1fr; } }
+
+    /* Manual two-iPad captured-base bookkeeping */
+    .capture-base-overlay { position: fixed; inset: 0; z-index: 515; display: none; place-items: center; padding: max(18px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom)); background: rgba(18,14,10,.70); backdrop-filter: blur(9px); }
+    .capture-base-overlay.open { display: grid; }
+    .capture-base-sheet { width: min(620px, 100%); border: 3px solid var(--border); border-radius: 22px; background: rgba(255,248,233,.99); box-shadow: 0 28px 80px rgba(0,0,0,.48); padding: 18px; display: grid; gap: 14px; }
+    .capture-base-kicker { color: var(--team-accent-dark); font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: .8px; }
+    .capture-base-title { margin: 0; font-size: 30px; color: var(--ink); }
+    .capture-base-note { margin: 0; color: var(--muted); font-weight: 800; line-height: 1.35; }
+    .capture-base-field { display: grid; gap: 6px; }
+    .capture-base-field label { font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); }
+    .capture-base-field input, .capture-base-field select { width: 100%; min-height: 46px; border: 1px solid rgba(43,33,24,.28); border-radius: 12px; background: rgba(255,255,255,.76); color: var(--ink); padding: 8px 10px; font-weight: 800; }
+    .capture-base-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .capture-base-actions button { min-height: 48px; border: 1px solid rgba(43,33,24,.3); border-radius: 12px; background: linear-gradient(180deg,#fff9eb,#ead7af); color: var(--ink); font-weight: 900; cursor: pointer; }
+    .capture-base-actions .primary { background: linear-gradient(180deg,#edf8ed,#c8e0c4); }
+    @media (max-width: 560px) { .capture-base-actions { grid-template-columns: 1fr; } }
+
 </style>
 </head>
 <body>
@@ -3540,7 +3589,7 @@
       <div class="panel-header">
         <h2>Add Pieces to Board</h2>
         <div class="summon-header-actions">
-          <div class="panel-note"><span id="activePieceCount">0</span> / 15 pieces · King max: 1 · Other units max: 3</div>
+          <div class="panel-note"><span id="activePieceCount">0</span> / <span id="activePieceLimit">15</span> pieces · King max: 1 · Other units max: 3</div>
           <button class="collapse-btn" id="toggleSummonPanel" type="button">Collapse</button>
         </div>
       </div>
@@ -3555,14 +3604,14 @@
       <div class="panel-header">
         <div>
           <h2>Bases</h2>
-          <div class="panel-note"><span id="baseCount">0</span> / 4 bases · 6 HP each · one specialization per base</div>
+          <div class="panel-note"><span id="baseCount">0</span> controlled bases · 4 bases maximum on the physical board · Build new bases with Base Builders</div>
         </div>
         <button class="collapse-btn" id="toggleBasesPanel" type="button" aria-expanded="true">Collapse</button>
       </div>
       <div class="bases-content" id="basesContent">
         <div class="bases-grid" id="basesGrid"></div>
         <div class="bases-actions">
-          <button class="base-btn primary" id="addBaseButton" type="button">Add Base</button>
+          <button class="base-btn primary" id="addBaseButton" type="button">Capture Enemy Base</button>
         </div>
       </div>
     </section>
@@ -3733,7 +3782,7 @@
       </aside>
     </section>
 
-    <div class="footer-note">Tip: In Safari on iPad, use Share → Add to Home Screen to make this feel like a little boardgame app. <span id="appVersionLabel">v0.2.16</span></div>
+    <div class="footer-note">Tip: In Safari on iPad, use Share → Add to Home Screen to make this feel like a little boardgame app. <span id="appVersionLabel">v0.2.19</span></div>
   </main>
 
   <nav class="enchanted-bottom-nav" id="enchantedBottomNav" aria-label="Turn navigation">
@@ -3744,6 +3793,39 @@
     </div>
     <button id="enchantedNextTurn" type="button">Next ›</button>
   </nav>
+
+  <div class="recruitment-desertion-overlay" id="recruitmentDesertionOverlay" role="dialog" aria-modal="true" aria-labelledby="recruitmentDesertionTitle">
+    <div class="recruitment-desertion-sheet">
+      <div><div class="recruitment-desertion-kicker">Recruitment Center Lost</div><h2 class="recruitment-desertion-title" id="recruitmentDesertionTitle">The ranks are deserting</h2></div>
+      <p class="recruitment-desertion-note" id="recruitmentDesertionNote">Your roster capacity has fallen from 20 to 15.</p>
+      <div class="recruitment-desertion-count" id="recruitmentDesertionCount">Choose pieces to Desert.</div>
+      <div class="recruitment-desertion-grid" id="recruitmentDesertionGrid"></div>
+      <div class="recruitment-desertion-actions"><button class="recruitment-desertion-confirm" id="confirmRecruitmentDesertion" type="button" disabled>Confirm Desertion</button></div>
+    </div>
+  </div>
+
+  <div class="capture-base-overlay" id="captureBaseOverlay" role="dialog" aria-modal="true" aria-labelledby="captureBaseTitle">
+    <div class="capture-base-sheet">
+      <div>
+        <div class="capture-base-kicker">Two-iPad Capture</div>
+        <h2 class="capture-base-title" id="captureBaseTitle">Capture Enemy Base</h2>
+      </div>
+      <p class="capture-base-note">Use this after the other player has removed the defeated base from their tracker. Choose the specialization the physical base already had. Capturing does not pay or waive a new specialization cost; it simply records the inherited base on this iPad.</p>
+      <div class="capture-base-field">
+        <label for="captureBaseName">Base name</label>
+        <input id="captureBaseName" type="text" maxlength="48" autocomplete="off" />
+      </div>
+      <div class="capture-base-field">
+        <label for="captureBaseSpecialization">Existing specialization</label>
+        <select id="captureBaseSpecialization"></select>
+      </div>
+      <p class="capture-base-note">The captured base enters your tracker at <strong>0/6 HP · Rebuilding</strong>. It automatically gains 1 HP at the start of each new round until fully restored.</p>
+      <div class="capture-base-actions">
+        <button id="cancelCaptureBase" type="button">Cancel</button>
+        <button class="primary" id="confirmCaptureBase" type="button">Record Capture</button>
+      </div>
+    </div>
+  </div>
 
   <div class="settings-overlay" id="settingsOverlay" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
     <div class="settings-sheet">
@@ -3819,12 +3901,13 @@
 
     const MAX_COPIES_PER_UNIT = 3;
     const MAX_KING_COPIES = 1;
-    const MAX_ACTIVE_PIECES = 15;
+    const BASE_ACTIVE_PIECES = 15;
+    const RECRUITMENT_CENTER_ACTIVE_PIECES = 20;
     const MAX_RESOURCE_SLOTS = 11;
     const MAX_ITEM_SLOTS = 11;
     const MAX_BREAD = 3;
     const STARTING_TOTAL_PIECES = 8;
-    const APP_VERSION = "v0.2.16";
+    const APP_VERSION = "v0.2.19";
 
     const turnSteps = [
       { kind: "unit", typeId: 1, title: "King", instructions: "Each team may move/action all active Kings." },
@@ -3953,7 +4036,7 @@
           { type: "currency", name: "gold", quantity: 1 }
         ],
         requirements: [{ typeId: 19, quantity: 2, label: "2 active Strategists" }],
-        bonus: "Warrior and Mage summon recipes keep every listed cost type, but every quantity becomes 1."
+        bonus: "Roster capacity increases from 15 to 20 pieces while your team controls at least one living Recruitment Center. If that bonus is lost while above 15 pieces, choose enough non-King pieces to Desert until the roster returns to 15."
       },
       {
         id: "hospital",
@@ -4194,8 +4277,8 @@
       items: Object.fromEntries(itemTypes.map(itemName => [itemName, 0])),
       roundLog: [],
       bases: [
-        { baseId: 1, name: "Red Base", owner: "red", currentHp: BASE_MAX_HP, maxHp: BASE_MAX_HP, specializationId: "none" },
-        { baseId: 2, name: "Blue Base", owner: "blue", currentHp: BASE_MAX_HP, maxHp: BASE_MAX_HP, specializationId: "none" }
+        { baseId: 1, name: "Red Base", owner: "red", currentHp: BASE_MAX_HP, maxHp: BASE_MAX_HP, specializationId: "none", rebuilding: false, rebuildLastRound: null },
+        { baseId: 2, name: "Blue Base", owner: "blue", currentHp: BASE_MAX_HP, maxHp: BASE_MAX_HP, specializationId: "none", rebuilding: false, rebuildLastRound: null }
       ],
       nextBaseId: 3,
       activePieces: []
@@ -4268,6 +4351,7 @@
     const summonGrid = document.getElementById("summonGrid");
     const toggleSummonPanel = document.getElementById("toggleSummonPanel");
     const activePieceCount = document.getElementById("activePieceCount");
+    const activePieceLimit = document.getElementById("activePieceLimit");
     const setupStatus = document.getElementById("setupStatus");
     const setupStatusText = document.getElementById("setupStatusText");
     const finishSetup = document.getElementById("finishSetup");
@@ -4276,6 +4360,11 @@
     const toggleBasesPanel = document.getElementById("toggleBasesPanel");
     const baseCount = document.getElementById("baseCount");
     const addBaseButton = document.getElementById("addBaseButton");
+    const captureBaseOverlay = document.getElementById("captureBaseOverlay");
+    const captureBaseName = document.getElementById("captureBaseName");
+    const captureBaseSpecialization = document.getElementById("captureBaseSpecialization");
+    const cancelCaptureBase = document.getElementById("cancelCaptureBase");
+    const confirmCaptureBase = document.getElementById("confirmCaptureBase");
     const resourceGrid = document.getElementById("resourceGrid");
     const resourceUsed = document.getElementById("resourceUsed");
     const toggleResourcesPanel = document.getElementById("toggleResourcesPanel");
@@ -4300,6 +4389,78 @@
     const detailAction = document.getElementById("detailAction");
     const detailRitual = document.getElementById("detailRitual");
     const detailShieldStatus = document.getElementById("detailShieldStatus");
+
+    let recruitmentDesertionSelections = new Set();
+
+    function renderRecruitmentDesertion() {
+      const overlay = document.getElementById("recruitmentDesertionOverlay");
+      const grid = document.getElementById("recruitmentDesertionGrid");
+      const countLabel = document.getElementById("recruitmentDesertionCount");
+      const note = document.getElementById("recruitmentDesertionNote");
+      const confirmButton = document.getElementById("confirmRecruitmentDesertion");
+      if (!overlay || !grid || !countLabel || !confirmButton) return;
+
+      if (!needsRecruitmentCenterDesertion()) {
+        overlay.classList.remove("open");
+        recruitmentDesertionSelections.clear();
+        return;
+      }
+
+      const required = getRecruitmentCenterDesertionCount();
+      const eligiblePieces = state.activePieces.filter(piece => {
+        const unitType = getUnitType(piece.typeId);
+        return unitType && !isKingType(unitType);
+      });
+      const validIds = new Set(eligiblePieces.map(piece => Number(piece.pieceId)));
+      recruitmentDesertionSelections = new Set([...recruitmentDesertionSelections].filter(pieceId => validIds.has(Number(pieceId))));
+      if (recruitmentDesertionSelections.size > required) recruitmentDesertionSelections = new Set([...recruitmentDesertionSelections].slice(0, required));
+
+      overlay.classList.add("open");
+      if (note) note.textContent = `Your last living Recruitment Center is no longer providing its roster bonus. Capacity is now ${BASE_ACTIVE_PIECES}, so ${required} piece${required === 1 ? "" : "s"} must Desert immediately.`;
+      countLabel.textContent = `Selected ${recruitmentDesertionSelections.size} of ${required} required Desertion${required === 1 ? "" : "s"}.`;
+      confirmButton.disabled = recruitmentDesertionSelections.size !== required;
+      confirmButton.textContent = required === 1 ? "Confirm 1 Desertion" : `Confirm ${required} Desertions`;
+
+      grid.innerHTML = "";
+      eligiblePieces.slice().sort((a, b) => a.typeId - b.typeId || a.pieceId - b.pieceId).forEach(piece => {
+        const unitType = getUnitType(piece.typeId);
+        const selected = recruitmentDesertionSelections.has(Number(piece.pieceId));
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = `recruitment-desertion-piece${selected ? " selected" : ""}`;
+        button.dataset.desertPieceId = piece.pieceId;
+        button.innerHTML = `<strong>${unitType.name} #${getCopyNumber(piece)}</strong><span>${piece.currentHp > 0 ? `HP ${piece.currentHp}/${getEffectiveUnitMaxHp(unitType)}` : "Defeated · still occupies a roster slot"}${piece.hasShield ? " · Shielded" : ""}</span>`;
+        grid.appendChild(button);
+      });
+    }
+
+    function toggleRecruitmentDesertionPiece(pieceId) {
+      const numericId = Number(pieceId);
+      if (!needsRecruitmentCenterDesertion()) return;
+      const required = getRecruitmentCenterDesertionCount();
+      const piece = getPiece(numericId);
+      const unitType = piece ? getUnitType(piece.typeId) : null;
+      if (!piece || !unitType || isKingType(unitType)) return;
+      if (recruitmentDesertionSelections.has(numericId)) recruitmentDesertionSelections.delete(numericId);
+      else if (recruitmentDesertionSelections.size < required) recruitmentDesertionSelections.add(numericId);
+      renderRecruitmentDesertion();
+    }
+
+    function confirmRecruitmentDesertionSelection() {
+      if (!needsRecruitmentCenterDesertion()) return;
+      const required = getRecruitmentCenterDesertionCount();
+      if (recruitmentDesertionSelections.size !== required) return;
+      const deserters = [...recruitmentDesertionSelections].map(pieceId => getPiece(pieceId)).filter(Boolean).filter(piece => !isKingType(getUnitType(piece.typeId)));
+      if (deserters.length !== required) { recruitmentDesertionSelections.clear(); renderRecruitmentDesertion(); return; }
+      const deserterIds = new Set(deserters.map(piece => Number(piece.pieceId)));
+      const deserterNames = deserters.map(piece => `${getUnitType(piece.typeId).name} #${getCopyNumber(piece)}`);
+      state.activePieces = state.activePieces.filter(piece => !deserterIds.has(Number(piece.pieceId)));
+      if (state.selectedPieceId && deserterIds.has(Number(state.selectedPieceId))) state.selectedPieceId = state.activePieces.length > 0 ? state.activePieces[0].pieceId : null;
+      recruitmentDesertionSelections.clear();
+      logRoundEvent(`Recruitment Center lost — ${deserterNames.join(", ")} deserted the team. Roster returned to ${BASE_ACTIVE_PIECES}.`);
+      saveState();
+      render();
+    }
 
     function cloneDefaultState() {
       return JSON.parse(JSON.stringify(defaultState));
@@ -4474,10 +4635,28 @@
             ...(saved.coach || {})
           },
           roundLog: Array.isArray(saved.roundLog) ? saved.roundLog : [],
-          bases: Array.isArray(saved.bases) && saved.bases.length > 0 ? saved.bases : JSON.parse(JSON.stringify(defaultState.bases)),
+          bases: Array.isArray(saved.bases) ? saved.bases : JSON.parse(JSON.stringify(defaultState.bases)),
           nextBaseId: Number.isInteger(saved.nextBaseId) ? saved.nextBaseId : defaultState.nextBaseId,
           activePieces: Array.isArray(saved.activePieces) ? assignMissingCopyNumbers(saved.activePieces) : []
         };
+
+        // v0.2.18 Base rebuilding migration: older saves have no rebuilding
+        // metadata. Preserve their current owner/HP and treat those bases as
+        // not rebuilding until a future attack reduces them to 0 HP.
+        loadedState.bases = loadedState.bases.map(base => ({
+          ...base,
+          maxHp: Number.isFinite(Number(base.maxHp)) ? Number(base.maxHp) : BASE_MAX_HP,
+          currentHp: clamp(Number(base.currentHp || 0), 0, Number(base.maxHp || BASE_MAX_HP)),
+          rebuilding: Boolean(base.rebuilding) && Number(base.currentHp || 0) < Number(base.maxHp || BASE_MAX_HP),
+          rebuildLastRound: Number.isInteger(base.rebuildLastRound) ? base.rebuildLastRound : null
+        }));
+
+        // v0.2.19 Two-iPad base bookkeeping: each iPad tracks only bases
+        // currently controlled by its selected team. Older versions stored both
+        // teams' bases on each device; discard the opponent-owned copies here.
+        if (loadedState.teamSelected && (loadedState.team === "red" || loadedState.team === "blue")) {
+          loadedState.bases = loadedState.bases.filter(base => base.owner === loadedState.team);
+        }
 
         // v0.2.14 Stardust removal: discard the retired unfinished Stardust
         // counter from older saves rather than carrying dead state forward.
@@ -4749,7 +4928,7 @@
         6: "Bread storage still has a maximum of 3. Any Bread that cannot fit is lost.",
         8: "Only Wooden and Stone Defences take the 2 damage. Iron Defences are unaffected.",
         9: "A three-of-a-kind group means three copies of the same unit type. For each such group, remove one copy so only two remain.",
-        10: "Each player may add up to 2 Warriors for free. Normal copy limits and the 15-piece roster limit still apply. A free Bow Warrior receives no setup Arrows.",
+        10: "Each player may add up to 2 Warriors for free. Normal copy limits and that player’s current roster limit still apply (15 normally; 20 with a living controlled Recruitment Center). A free Bow Warrior receives no setup Arrows.",
         11: "A player who already owns a Cannon, whether stored or placed, gains nothing. The normal one-Cannon limit and item-space requirement apply.",
         12: "Only standard Resources count toward the seven. Bread, Items, and Currency are not discarded by Famine.",
         13: "Distribute 4 total damage among your damageable pieces. The King remains immune to damage.",
@@ -4932,10 +5111,14 @@
         <li>Choose teams: <strong>Red</strong> and <strong>Blue</strong>. Once turn tracking has started, the selected team cannot be changed on that tracker.</li>
         <li>Each player begins with one King plus <strong>7 starting units</strong>, for <strong>8 starting pieces total</strong>.</li>
         <li>The King is mandatory and limited to one copy. Each individual non-King unit type is limited to <strong>${MAX_COPIES_PER_UNIT} copies</strong>.</li>
-        <li>The game roster limit is <strong>${MAX_ACTIVE_PIECES} pieces per player in the tracker</strong>. Defeated pieces remain on the roster until removed and therefore continue to occupy a roster slot.</li>
+        <li>The normal game roster limit is <strong>${BASE_ACTIVE_PIECES} pieces per player</strong>. A player who controls at least one living <strong>Recruitment Center</strong> may instead have up to <strong>${RECRUITMENT_CENTER_ACTIVE_PIECES}</strong> pieces.</li>
+        <li>Recruitment Center roster capacity does <strong>not stack</strong>; controlling more than one Recruitment Center still gives a maximum of ${RECRUITMENT_CENTER_ACTIVE_PIECES}.</li>
+        <li>Defeated pieces remain on the roster until removed and therefore continue to occupy a roster slot.</li>
+        <li>If a player loses their last living controlled Recruitment Center while their roster is above ${BASE_ACTIVE_PIECES}, they must immediately choose enough <strong>non-King</strong> pieces to <strong>Desert</strong> until only ${BASE_ACTIVE_PIECES} pieces remain. Deserted pieces are removed from the roster and board with no refund. Defeated pieces may be chosen because they still occupy roster slots.</li>
         <li>Starting-unit selections are free; Summoning Costs do not apply during setup.</li>
         <li>Each Bow Warrior selected during setup grants <strong>3 Arrows</strong>. Bow Warriors gained or summoned later do not receive those free setup Arrows.</li>
         <li>Each player's starting base is placed <strong>two rows from that player's back rank, in the centre column</strong>.</li>
+        <li>Each iPad tracks only the bases currently controlled by its selected team. The physical board is authoritative; the two trackers are intentionally not network-linked.</li>
         <li>Finish setup, then determine the Round 1 first player by coin flip or manual first-player selection.</li>
       </ol>
       <h3>Eligible starting units</h3>
@@ -5052,25 +5235,23 @@
     <section id="bases">
       <h2>10. Bases</h2>
       <ul>
-        <li>There may be a maximum of <strong>${MAX_BASES} bases total</strong> in the game.</li>
+        <li>There may be a maximum of <strong>${MAX_BASES} bases total</strong> on the physical board. Because the iPads are not linked and each tracker stores only its own controlled bases, the players enforce this global four-base limit on the honour system.</li>
         <li>Every base has <strong>${BASE_MAX_HP} HP</strong>.</li>
         <li>Each player begins with one base, placed two rows from that player's back rank in the centre column.</li>
-        <li>A secondary base is created by a Base Builder action: choose a tile within 1 tile of the acting Base Builder that has at least <strong>3 adjacent Base Builders</strong>; that tile becomes a Base tile.</li>
+        <li>A secondary base is created by a Base Builder's <strong>Build</strong> action: choose a tile within 1 tile of the acting Base Builder that has at least <strong>3 adjacent Base Builders</strong>; that tile becomes a Base tile. Recording Build on that Base Builder creates the new unspecialized 6/6 base on that player's iPad.</li>
         <li>A secondary base may be created only on that player's <strong>starting-side half</strong> of the board. The centre Giving Tile marks the halfway point.</li>
         <li>If a non-King unit is standing on a base tile when that base would take damage, the unit takes the damage instead.</li>
         <li>Damage absorbed by the unit does <strong>not</strong> overflow to the base.</li>
         <li>A King standing on a base does not absorb damage for the base.</li>
-        <li>A base at 0 HP provides no specialization bonus. Its specialization remains recorded unless removed by another rule.</li>
+        <li>When an enemy attack reduces one of your bases from above 0 HP to <strong>0 HP</strong>, you immediately <strong>lose</strong> that base. Your iPad removes it from your controlled-base tracker.</li>
+        <li>The attacking player then uses <strong>Capture Enemy Base</strong> on their own iPad. They enter the base name and select the specialization the physical base already had. This is inherited bookkeeping, not a free specialization change: no specialization cost or unit prerequisite is paid or checked.</li>
+        <li>The captured base is added to the new controller's tracker at <strong>0/6 HP</strong> and immediately enters <strong>Rebuilding</strong>. It remains on the physical board throughout the transfer.</li>
+        <li>At the start of each of the next six rounds, a Rebuilding base automatically restores <strong>1 HP</strong>, to a maximum of 6 HP. This represents the townsfolk repairing the captured base.</li>
+        <li>The base remains labelled <strong>Rebuilding</strong> until it reaches 6/6 HP. The label disappears immediately when full health is reached.</li>
+        <li>A specialization at 0 HP is inactive. As soon as rebuilding raises the captured base above 0 HP, its inherited specialization bonus belongs to the new controller under the normal specialization rules.</li>
+        <li>If a Rebuilding base is attacked back down to 0 HP before reaching full health, its current controller removes it from their tracker and the enemy records the recapture on the other iPad at 0/6 HP, beginning a fresh six-round Rebuilding period.</li>
       </ul>
-      <h3>Capturing a base</h3>
-      <p>When a base is captured, the capturing player chooses one of the following outcomes:</p>
-      <ul>
-        <li>Destroy the base.</li>
-        <li>Keep the base with its current specialization.</li>
-        <li>Keep the base but remove its specialization.</li>
-        <li>If it is unspecialized, keep it as an unspecialized base.</li>
-      </ul>
-      <p>If a specialized base changes controller and its specialization is kept, the specialization bonus belongs to the new controller as soon as the base is above 0 HP.</p>
+      <div class="ruling"><strong>Two-iPad honour system:</strong> The defender records the loss first; the attacker records the capture on the other iPad and selects the base's inherited specialization. No network link is required. <strong>Recruitment Center consequence:</strong> removing a lost Recruitment Center immediately removes its former owner's roster-cap bonus and can trigger Desertion. The new controller does not receive that Recruitment Center bonus until rebuilding raises the captured base above 0 HP.</div>
     </section>
 
     <section id="specializations">
@@ -5161,12 +5342,12 @@
       <h2>16. Summoning</h2>
       <ul>
         <li>During your Summoning phase, you may summon <strong>one unit</strong>.</li>
-        <li>You must pay the complete Summoning Cost and remain within the 3-copy-per-type and ${MAX_ACTIVE_PIECES}-piece roster limits.</li>
+        <li>You must pay the complete Summoning Cost and remain within the 3-copy-per-type limit and your current roster limit: ${BASE_ACTIVE_PIECES} normally, or ${RECRUITMENT_CENTER_ACTIVE_PIECES} while controlling a living Recruitment Center.</li>
         <li>The King cannot be summoned.</li>
         <li>A Bow Warrior summoned after setup receives no free Arrows.</li>
-        <li>If you control an active Recruitment Center, Warrior and Mage recipes keep every listed <strong>cost type</strong>, but each listed quantity becomes <strong>1</strong>.</li>
+        <li>A Recruitment Center does <strong>not</strong> reduce Summoning Costs. Its bonus is increased roster capacity: ${BASE_ACTIVE_PIECES} → ${RECRUITMENT_CENTER_ACTIVE_PIECES} pieces.</li>
       </ul>
-      <div class="ruling"><strong>Recruitment Center examples:</strong> Sword becomes 1 Bronze + 1 Stone + 1 Wood; Spear becomes 1 Silver + 1 Wood + 1 Stone; Bow becomes 1 Silver + 1 Wood + 1 Rope + 1 Sulphur; Lance &amp; Horse becomes 1 Wood + 1 Stone + 1 Rope + 1 Leather; Mage becomes 1 Gem + 1 Bronze.</div>
+      <div class="ruling"><strong>Recruitment Center loss:</strong> If you have 19 pieces and lose your last living Recruitment Center, choose any 4 non-King roster pieces to Desert immediately, leaving 15. The tracker does not treat pieces 16–20 as special; you choose which pieces leave.</div>
       <h3>Baby Boom</h3>
       <p>Baby Boom is a World Event exception: it allows up to two free Warriors at round-end. It does not consume the normal Summoning phase, but normal copy and roster limits still apply.</p>
     </section>
@@ -5261,10 +5442,8 @@
       <h2>23. Rules / Implementation Points Still Requiring a Definition</h2>
       <p>The audit found the following points for which the current design history does not supply a complete ruling. They are listed here so an older draft or an assumption is not accidentally treated as law.</p>
       <div class="warning"><strong>Mechanist Repair amount:</strong> The Mechanist may Repair a wall, base, or cannon, but no current rule assigns a numeric number of HP restored by one Repair action.</div>
-      <div class="warning"><strong>How an enemy base is captured:</strong> The consequences of a successful base capture are defined, but the current rules do not define the unit, position, action, HP threshold, or other condition that makes the capture itself legal. In particular, no current rule says that a base must be at 0 HP before capture.</div>
       <div class="warning"><strong>Cannon firing range:</strong> Cannon damage, loading, wall interaction, and firing are defined, but no numeric maximum firing range is currently specified.</div>
       <div class="warning"><strong>How grid distance is counted:</strong> Movement and abilities use distances such as “within 3 tiles,” but the current design does not explicitly state whether diagonal steps count as one tile or specify another formal distance metric.</div>
-      <div class="tracker-note"><strong>Tracker mismatch — base capture outcomes:</strong> The game rules allow a captured base to be destroyed, kept with its specialization, or kept with the specialization removed. The current Capture button only changes ownership; it does not implement all three outcomes automatically. Players must therefore make the additional base-state adjustment manually until that control is expanded.</div>
       <p class="small">No missing value or condition has been inferred. That is deliberate: an authoritative reference should distinguish an unresolved rule from a made-up ruling.</p>
     </section>
   </main>
@@ -6042,7 +6221,7 @@
         getCurrentTurnTeam() === state.team &&
         isBabyBoomActiveThisRound() &&
         getBabyBoomRemainingThisRound() > 0 &&
-        state.activePieces.length < MAX_ACTIVE_PIECES
+        state.activePieces.length < getActivePieceLimit()
       );
     }
 
@@ -6057,7 +6236,7 @@
         return false;
       }
 
-      if (state.activePieces.length >= MAX_ACTIVE_PIECES) {
+      if (state.activePieces.length >= getActivePieceLimit()) {
         return false;
       }
 
@@ -6116,7 +6295,7 @@
       });
 
       if (addedCount === 0) {
-        window.alert("Those Warrior choices cannot be added. Check the 15-piece board limit and the 3-copy limit for each unit type.");
+        window.alert(`Those Warrior choices cannot be added. Check the ${getActivePieceLimit()}-piece roster limit and the 3-copy limit for each unit type.`);
         return;
       }
 
@@ -6418,6 +6597,24 @@
       );
     }
 
+    function getActivePieceLimit(team = state.team) {
+      return hasControlledBaseSpecialization("recruitment-center", team)
+        ? RECRUITMENT_CENTER_ACTIVE_PIECES
+        : BASE_ACTIVE_PIECES;
+    }
+
+    function needsRecruitmentCenterDesertion() {
+      return Boolean(
+        state.setupComplete &&
+        !hasControlledBaseSpecialization("recruitment-center", state.team) &&
+        state.activePieces.length > BASE_ACTIVE_PIECES
+      );
+    }
+
+    function getRecruitmentCenterDesertionCount() {
+      return Math.max(0, state.activePieces.length - getActivePieceLimit(state.team));
+    }
+
     function getEffectiveUnitMove(unitType, team = state.team) {
       if (unitType && unitType.id === 12 && hasControlledBaseSpecialization("hospital", team)) {
         return 6;
@@ -6465,15 +6662,7 @@
     }
 
     function getEffectiveSummonCosts(unitType) {
-      const costs = (unitType && unitType.ritualCosts ? unitType.ritualCosts : []).map(cost => ({ ...cost }));
-      if (
-        unitType &&
-        [6, 7, 8, 9, 10].includes(unitType.id) &&
-        hasControlledBaseSpecialization("recruitment-center")
-      ) {
-        return costs.map(cost => ({ ...cost, quantity: 1 }));
-      }
-      return costs;
+      return (unitType && unitType.ritualCosts ? unitType.ritualCosts : []).map(cost => ({ ...cost }));
     }
 
     function formatCostList(costs) {
@@ -6489,10 +6678,7 @@
       if (!unitType || unitType.id === 1) {
         return unitType ? unitType.ritual : "";
       }
-      const suffix = [6, 7, 8, 9, 10].includes(unitType.id) && hasControlledBaseSpecialization("recruitment-center")
-        ? " (Recruitment Center)"
-        : "";
-      return `${formatCostList(getEffectiveSummonCosts(unitType))}${suffix}`;
+      return formatCostList(getEffectiveSummonCosts(unitType));
     }
 
     function getEffectiveSilverToGoldCost() {
@@ -6668,32 +6854,146 @@
       `;
     }
 
-    function addBase() {
-      if (state.bases.length >= MAX_BASES) {
+    function getNextTrackedBaseName(prefix = "Base") {
+      const teamLabel = getTeamLabel(state.team);
+      return `${teamLabel} ${prefix} ${state.bases.length + 1}`;
+    }
+
+    function createTrackedBase({ name, specializationId = "none", currentHp = BASE_MAX_HP, rebuilding = false, rebuildLastRound = null } = {}) {
+      if (state.bases.length >= MAX_BASES || !hasSelectedTeam()) {
+        return null;
+      }
+
+      const base = {
+        baseId: state.nextBaseId,
+        name: (name || getNextTrackedBaseName()).trim(),
+        owner: state.team,
+        currentHp: clamp(Number(currentHp), 0, BASE_MAX_HP),
+        maxHp: BASE_MAX_HP,
+        specializationId: getBaseSpecialization(specializationId).id,
+        rebuilding: Boolean(rebuilding),
+        rebuildLastRound: Number.isInteger(rebuildLastRound) ? rebuildLastRound : null
+      };
+
+      state.bases.push(base);
+      state.nextBaseId += 1;
+      return base;
+    }
+
+    function establishBaseFromBuilder() {
+      if (state.bases.length >= MAX_BASES || !hasSelectedTeam()) {
+        return null;
+      }
+
+      return createTrackedBase({
+        name: getNextTrackedBaseName("Base"),
+        specializationId: "none",
+        currentHp: BASE_MAX_HP,
+        rebuilding: false,
+        rebuildLastRound: null
+      });
+    }
+
+    function openCaptureBaseDialog() {
+      if (!state.setupComplete) {
+        window.alert("Captured bases are recorded after setup. New bases are established through a Base Builder's Build action.");
         return;
       }
 
       if (!hasSelectedTeam()) {
-        window.alert("Select Red or Blue before adding a base.");
+        window.alert("Select Red or Blue before recording a captured base.");
         return;
       }
 
-      const owner = state.team;
-      const defaultName = `${getTeamLabel(owner)} Base ${state.bases.filter(base => base.owner === owner).length + 1}`;
+      if (state.bases.length >= MAX_BASES) {
+        window.alert("This tracker already contains 4 controlled bases. Check the physical board before recording another capture.");
+        return;
+      }
 
-      state.bases.push({
-        baseId: state.nextBaseId,
-        name: defaultName,
-        owner,
-        currentHp: BASE_MAX_HP,
-        maxHp: BASE_MAX_HP,
-        specializationId: "none"
+      captureBaseName.value = getNextTrackedBaseName("Captured Base");
+      captureBaseSpecialization.innerHTML = baseSpecializations
+        .map(specialization => `<option value="${specialization.id}">${specialization.name}</option>`)
+        .join("");
+      captureBaseSpecialization.value = "none";
+      captureBaseOverlay.classList.add("open");
+      window.setTimeout(() => captureBaseName.focus(), 0);
+    }
+
+    function closeCaptureBaseDialog() {
+      captureBaseOverlay.classList.remove("open");
+    }
+
+    function recordCapturedEnemyBase() {
+      if (!captureBaseOverlay.classList.contains("open")) return;
+
+      const specialization = getBaseSpecialization(captureBaseSpecialization.value);
+      const roundNumber = state.turnOrder && Number.isInteger(state.turnOrder.round) ? state.turnOrder.round : 0;
+      const name = captureBaseName.value.trim() || getNextTrackedBaseName("Captured Base");
+      const base = createTrackedBase({
+        name,
+        specializationId: specialization.id,
+        currentHp: 0,
+        rebuilding: true,
+        rebuildLastRound: roundNumber
       });
 
-      state.nextBaseId += 1;
-      logRoundEvent(`${defaultName} was established.`);
+      if (!base) return;
+
+      logRoundEvent(`${base.name} was captured from the enemy and added to this tracker at 0/${BASE_MAX_HP} HP with ${specialization.name === "None" ? "no specialization" : `the ${specialization.name} specialization`}. Rebuilding begins.`);
+      closeCaptureBaseDialog();
       saveState();
       render();
+    }
+
+    function loseBaseAtZero(base) {
+      if (!base) return;
+
+      const specialization = getBaseSpecialization(base.specializationId);
+      const baseName = base.name;
+      state.bases = state.bases.filter(candidate => candidate.baseId !== base.baseId);
+      if (state.pendingBaseSpecializations) delete state.pendingBaseSpecializations[String(base.baseId)];
+      enchantedManagedBaseIds.delete(base.baseId);
+
+      logRoundEvent(`${baseName} fell to 0 HP and was lost to the enemy. It was removed from this tracker${specialization.id === "none" ? "" : ` with its ${specialization.name} specialization`}. The capturing player must record it on their iPad.`);
+      window.alert(`${baseName} has fallen to 0 HP and is LOST. It has been removed from this tracker. The other player should now use “Capture Enemy Base” on their iPad and select the base's existing specialization.`);
+    }
+
+    function finishBaseRebuildingIfFull(base) {
+      if (!base || !base.rebuilding) return;
+      const maxHp = base.maxHp || BASE_MAX_HP;
+      if (base.currentHp >= maxHp) {
+        base.currentHp = maxHp;
+        base.rebuilding = false;
+        base.rebuildLastRound = null;
+        logRoundEvent(`${base.name} finished rebuilding and is fully restored at ${maxHp}/${maxHp} HP.`);
+      }
+    }
+
+    function processBaseRebuildingForRound(roundNumber) {
+      if (!Number.isInteger(roundNumber) || roundNumber < 1) return;
+
+      const hadHospitalBefore = hasControlledBaseSpecialization("hospital");
+
+      state.bases.forEach(base => {
+        if (!base.rebuilding) return;
+
+        const maxHp = base.maxHp || BASE_MAX_HP;
+        if (base.currentHp >= maxHp) {
+          finishBaseRebuildingIfFull(base);
+          return;
+        }
+
+        const lastRound = Number.isInteger(base.rebuildLastRound) ? base.rebuildLastRound : roundNumber - 1;
+        if (lastRound >= roundNumber) return;
+
+        const previousHp = base.currentHp;
+        base.currentHp = clamp(previousHp + 1, 0, maxHp);
+        base.rebuildLastRound = roundNumber;
+        logRoundEvent(`${base.name} rebuilding: ${previousHp} → ${base.currentHp} HP.`);
+        finishBaseRebuildingIfFull(base);
+      });
+
+      reconcileMedicHospitalHp(hadHospitalBefore);
     }
 
     function changeBaseHp(baseId, amount) {
@@ -6706,12 +7006,18 @@
       const hadHospitalBefore = hasControlledBaseSpecialization("hospital");
       const previousHp = base.currentHp;
       base.currentHp = clamp(base.currentHp + amount, 0, base.maxHp || BASE_MAX_HP);
-      reconcileMedicHospitalHp(hadHospitalBefore);
 
       if (base.currentHp !== previousHp) {
         logRoundEvent(`${base.name} HP changed: ${previousHp} → ${base.currentHp}.`);
       }
 
+      if (amount < 0 && previousHp > 0 && base.currentHp === 0) {
+        loseBaseAtZero(base);
+      } else {
+        finishBaseRebuildingIfFull(base);
+      }
+
+      reconcileMedicHospitalHp(hadHospitalBefore);
       saveState();
       render();
     }
@@ -6736,21 +7042,6 @@
       render();
     }
 
-    function captureBase(baseId) {
-      const base = getBase(baseId);
-
-      if (!base) {
-        return;
-      }
-
-      const hadHospitalBefore = hasControlledBaseSpecialization("hospital");
-      const previousOwner = base.owner;
-      base.owner = previousOwner === "red" ? "blue" : "red";
-      reconcileMedicHospitalHp(hadHospitalBefore);
-      logRoundEvent(`${base.name} was captured by ${getTeamLabel(base.owner)}.`);
-      saveState();
-      render();
-    }
 
     function setPendingBaseSpecialization(baseId, specializationId) {
       if (!state.pendingBaseSpecializations) {
@@ -6833,7 +7124,7 @@
       const existingCount = getPiecesForType(typeId).length;
       const maxCopies = getMaxCopiesForType(typeId);
 
-      if (state.activePieces.length >= MAX_ACTIVE_PIECES || existingCount >= maxCopies) {
+      if (state.activePieces.length >= getActivePieceLimit() || existingCount >= maxCopies) {
         return false;
       }
 
@@ -6877,17 +7168,14 @@
         })
         .join("");
 
-      const discountNote = [6, 7, 8, 9, 10].includes(unitType.id) && hasControlledBaseSpecialization("recruitment-center")
-        ? `<span class="summon-cost-line">⚔ Recruitment Center discount</span>`
-        : "";
-      return `<span class="summon-cost-heading">Cost:</span>${costLines}${discountNote}`;
+      return `<span class="summon-cost-heading">Cost:</span>${costLines}`;
     }
 
     function getAddPieceStatus(unitType) {
       const existingCount = getPiecesForType(unitType.id).length;
       const maxCopies = getMaxCopiesForType(unitType.id);
 
-      if (state.activePieces.length >= MAX_ACTIVE_PIECES) {
+      if (state.activePieces.length >= getActivePieceLimit()) {
         return "Board full";
       }
 
@@ -7717,6 +8005,11 @@
     }
 
     function canPayGenericActionCost(unitType) {
+      if (unitType && unitType.id === 2) {
+        if (state.bases.length >= MAX_BASES) return false;
+        if (getLivingPieceCountForType(2) < 3) return false;
+      }
+
       if (!canPayWorkerBuildCost(unitType)) {
         return false;
       }
@@ -7753,6 +8046,11 @@
       if (revivalItem) {
         state.items[revivalItem] = Math.max(0, (state.items[revivalItem] || 0) - 1);
         return ` Spent 1 ${revivalItem}. Revived unit returns at full HP beside the ${unitType.name}.`;
+      }
+
+      if (unitType.id === 2) {
+        const base = establishBaseFromBuilder();
+        return base ? ` ${base.name} was established at ${BASE_MAX_HP}/${BASE_MAX_HP} HP with no specialization.` : " No base was established.";
       }
 
       if (unitType.id === 18) {
@@ -7885,6 +8183,12 @@
         return;
       }
 
+      if (needsRecruitmentCenterDesertion()) {
+        window.alert(`Your Recruitment Center roster bonus is gone. Choose ${getRecruitmentCenterDesertionCount()} piece${getRecruitmentCenterDesertionCount() === 1 ? "" : "s"} to Desert before continuing.`);
+        renderRecruitmentDesertion();
+        return;
+      }
+
       if (canMakeOracleDecision()) {
         window.alert("Choose Allow Event or invoke the Oracle before advancing.");
         return;
@@ -7899,6 +8203,7 @@
         if (state.turnOrder.stepIndex >= getEffectiveTurnSteps().length) {
           state.turnOrder.stepIndex = 0;
           state.turnOrder.round += 1;
+          processBaseRebuildingForRound(state.turnOrder.round);
           state.turnOrder.firstTeam = flipTeam(state.turnOrder.firstTeam || state.turnOrder.startingTeam || "red");
         }
       }
@@ -9276,8 +9581,19 @@
 
     function renderBases() {
       basesGrid.innerHTML = "";
+
+      if (!hasSelectedTeam()) {
+        baseCount.textContent = "0";
+        addBaseButton.disabled = true;
+        basesGrid.innerHTML = `<div class="empty-state">Choose Red or Blue. This iPad will then track only that team's controlled bases.</div>`;
+        return;
+      }
+
       baseCount.textContent = state.bases.length;
-      addBaseButton.disabled = state.bases.length >= MAX_BASES;
+      addBaseButton.disabled = !state.setupComplete || state.bases.length >= MAX_BASES;
+      addBaseButton.title = !state.setupComplete
+        ? "Available after setup. New bases are created with Base Builder → Build."
+        : "Record a base captured from the other player on their iPad.";
       const basesCollapsed = isPanelCollapsed("bases");
       basesContent.classList.toggle("hidden", basesCollapsed);
       updatePanelToggle(toggleBasesPanel, basesCollapsed);
@@ -9302,6 +9618,7 @@
         const specializationReadiness = getBaseSpecializationReadiness(specialization);
 
         card.innerHTML = `
+          ${base.rebuilding ? `<div class="base-rebuilding-ribbon">🔨 Rebuilding · ${base.currentHp}/${base.maxHp || BASE_MAX_HP}</div>` : ""}
           <div class="base-card-top">
             <div class="base-name">${base.name}</div>
             <div style="display:flex; gap:6px; align-items:center; justify-content:flex-end;">
@@ -9324,7 +9641,6 @@
             <button class="base-btn danger" data-base-hp="-1" data-base-id="${base.baseId}">− HP</button>
             <button class="base-btn primary" data-base-hp="1" data-base-id="${base.baseId}">+ HP</button>
             <button class="base-btn" data-base-rename="${base.baseId}">Rename</button>
-            <button class="base-btn" data-base-capture="${base.baseId}">Capture</button>
           </div>
           <div class="base-specialization-row">
             <select class="base-select" data-base-specialize="${base.baseId}" aria-label="Specialization for ${base.name}">
@@ -9625,6 +9941,7 @@
       updatePanelToggle(toggleSummonPanel, summonCollapsed);
       summonGrid.innerHTML = "";
       activePieceCount.textContent = state.activePieces.length;
+      if (activePieceLimit) activePieceLimit.textContent = getActivePieceLimit();
       const fragment = document.createDocumentFragment();
 
       setupStatus.style.display = "grid";
@@ -9877,9 +10194,9 @@
 
     teamButtons.forEach(button => {
         button.classList.toggle("active", selectedTeam !== null && button.dataset.team === selectedTeam);
-        button.disabled = Boolean(state.turnOrder && state.turnOrder.started);
-        button.title = state.turnOrder && state.turnOrder.started
-          ? "Team selection is locked after the game starts. Reset the game to choose a different team."
+        button.disabled = Boolean(state.teamSelected);
+        button.title = state.teamSelected
+          ? "This iPad is assigned to this team and tracks only that team's bases. Reset the game to choose differently."
           : "Choose this tracker's team before starting the game.";
       });
     }
@@ -9915,12 +10232,18 @@
       renderUnits();
       renderDetails();
       renderEnchantedChrome();
+      renderRecruitmentDesertion();
 
       const appVersionLabel = document.getElementById("appVersionLabel");
       if (appVersionLabel) {
         appVersionLabel.textContent = APP_VERSION;
       }
     }
+
+    const recruitmentDesertionGrid = document.getElementById("recruitmentDesertionGrid");
+    const confirmRecruitmentDesertion = document.getElementById("confirmRecruitmentDesertion");
+    if (recruitmentDesertionGrid) recruitmentDesertionGrid.addEventListener("click", event => { const button = event.target.closest("[data-desert-piece-id]"); if (button) toggleRecruitmentDesertionPiece(button.dataset.desertPieceId); });
+    if (confirmRecruitmentDesertion) confirmRecruitmentDesertion.addEventListener("click", confirmRecruitmentDesertionSelection);
 
     toggleWalkthroughPanel.addEventListener("click", () => {
       state.walkthroughPanelCollapsed = !state.walkthroughPanelCollapsed;
@@ -9970,7 +10293,13 @@
     });
 
     addBaseButton.addEventListener("click", () => {
-      addBase();
+      openCaptureBaseDialog();
+    });
+
+    cancelCaptureBase.addEventListener("click", closeCaptureBaseDialog);
+    confirmCaptureBase.addEventListener("click", recordCapturedEnemyBase);
+    captureBaseOverlay.addEventListener("click", event => {
+      if (event.target === captureBaseOverlay) closeCaptureBaseDialog();
     });
 
     toggleBasesPanel.addEventListener("click", () => {
@@ -10034,12 +10363,6 @@
       const renameButton = event.target.closest("[data-base-rename]");
       if (renameButton) {
         renameBase(Number(renameButton.dataset.baseRename));
-        return;
-      }
-
-      const captureButton = event.target.closest("[data-base-capture]");
-      if (captureButton) {
-        captureBase(Number(captureButton.dataset.baseCapture));
         return;
       }
 
@@ -10330,13 +10653,17 @@
 
     teamButtons.forEach(button => {
       button.addEventListener("click", () => {
-        if (state.turnOrder && state.turnOrder.started) {
-          window.alert("Team selection is locked after the game starts. Reset the game to choose a different team.");
+        const selectedTeam = button.dataset.team;
+
+        if (state.teamSelected) {
+          if (state.team === selectedTeam) return;
+          window.alert("This iPad is already assigned to a team and now tracks only that team's bases. Reset the game to choose a different team.");
           return;
         }
 
-        state.team = button.dataset.team;
+        state.team = selectedTeam;
         state.teamSelected = true;
+        state.bases = state.bases.filter(base => base.owner === selectedTeam);
         saveState();
         render();
       });
