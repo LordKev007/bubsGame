@@ -3907,7 +3907,7 @@
     const MAX_ITEM_SLOTS = 11;
     const MAX_BREAD = 3;
     const STARTING_TOTAL_PIECES = 8;
-    const APP_VERSION = "v0.2.19";
+    const APP_VERSION = "v0.2.22";
 
     const turnSteps = [
       { kind: "unit", typeId: 1, title: "King", instructions: "Each team may move/action all active Kings." },
@@ -4183,7 +4183,7 @@
 
     const unitTypes = [
       { id: 1, name: "King", move: 3, maxHp: 6, action: "Passive — Empower: Any friendly piece that starts its turn within 3 tiles of the King gains +1 movement for that turn.", ritual: "Cannot be summoned", category: "royal", ritualCosts: [] },
-      { id: 2, name: "Base Builder", move: 2, maxHp: 1, action: "Build Base — Choose a location within 1 tile that has at least 3 adjacent Base Builders. That tile becomes a Base tile.", ritual: "1 Silver, 2 Bronze, 2 Stone, 2 Rope", category: "worker", ritualCosts: [{ type: "currency", name: "silver", quantity: 1 }, { type: "currency", name: "bronze", quantity: 2 }, { type: "resource", name: "Stone", quantity: 2 }, { type: "resource", name: "Rope", quantity: 2 }] },
+      { id: 2, name: "Base Builder", move: 2, maxHp: 1, action: "Build Base — Choose a location within 1 tile of this Base Builder. One living Base Builder is sufficient. That tile becomes a Base tile.", ritual: "1 Wood, 1 Stone, 1 Sulphur, 1 Rope, 1 Leather, 1 Glass, 1 Gold", category: "worker", ritualCosts: [{ type: "resource", name: "Wood", quantity: 1 }, { type: "resource", name: "Stone", quantity: 1 }, { type: "resource", name: "Sulphur", quantity: 1 }, { type: "resource", name: "Rope", quantity: 1 }, { type: "resource", name: "Leather", quantity: 1 }, { type: "resource", name: "Glass", quantity: 1 }, { type: "currency", name: "gold", quantity: 1 }] },
       { id: 3, name: "Wood Worker", move: 2, maxHp: 6, action: "Build Wooden Defence — Place a wooden defence within 1 tile. Cost: 2 Wood.", ritual: "3 Wood, 1 Sulphur", category: "worker", ritualCosts: [{ type: "resource", name: "Wood", quantity: 3 }, { type: "resource", name: "Sulphur", quantity: 1 }] },
       { id: 4, name: "Stone Worker", move: 2, maxHp: 6, action: "Build Stone Defence — Place a stone defence within 1 tile. Cost: 2 Stone.", ritual: "3 Stone, 2 Sulphur", category: "worker", ritualCosts: [{ type: "resource", name: "Stone", quantity: 3 }, { type: "resource", name: "Sulphur", quantity: 2 }] },
       { id: 5, name: "Iron Worker", move: 2, maxHp: 6, action: "Build Iron Defence — Place an iron defence within 1 tile. Cost: 2 Iron.", ritual: "3 Iron, 3 Sulphur", category: "worker", ritualCosts: [{ type: "resource", name: "Iron", quantity: 3 }, { type: "resource", name: "Sulphur", quantity: 3 }] },
@@ -4197,7 +4197,7 @@
       { id: 13, name: "Necromancer", move: 3, maxHp: 1, action: "Revive — Spend 1 Demonic Totem. Revive an eligible defeated ally within 3 tiles (6 with a controlled Graveyard) at full HP, placing the revived unit beside the Necromancer.", ritual: "1 Gem, 7 Leather, 1 Silver, 2 Bronze", category: "support", ritualCosts: [{ type: "resource", name: "Gem", quantity: 1 }, { type: "resource", name: "Leather", quantity: 7 }, { type: "currency", name: "silver", quantity: 1 }, { type: "currency", name: "bronze", quantity: 2 }] },
       { id: 14, name: "Farmer", move: 1, maxHp: 6, action: "Farm — Gain 1 Bread, up to the 3 Bread storage limit.", ritual: "1 Gold, 6 Leather", category: "support", ritualCosts: [{ type: "currency", name: "gold", quantity: 1 }, { type: "resource", name: "Leather", quantity: 6 }] },
       { id: 15, name: "Artillerist", move: 2, maxHp: 2, action: "May load and fire a cannon as one action. Must be adjacent to the cannon. Passive — May push the cannon 1 tile in any direction to an unoccupied tile.", ritual: "3 Sulphur", category: "special", ritualCosts: [{ type: "resource", name: "Sulphur", quantity: 3 }] },
-      { id: 16, name: "Mechanist", move: 4, maxHp: 2, action: "Repair — Repair a built item, such as a wall, base, or cannon. Passive — May push the cannon 1 tile in any direction to an unoccupied tile.", ritual: "1 Shield, 2 Sulphur", category: "special", ritualCosts: [{ type: "item", name: "Shield", quantity: 1 }, { type: "resource", name: "Sulphur", quantity: 2 }] },
+      { id: 16, name: "Mechanist", move: 4, maxHp: 2, action: "Repair — Restore 2 HP to one eligible damaged wall or cannon, up to its normal maximum HP. Passive — May push the cannon 1 tile in any direction to an unoccupied tile.", ritual: "1 Shield, 2 Sulphur", category: "special", ritualCosts: [{ type: "item", name: "Shield", quantity: 1 }, { type: "resource", name: "Sulphur", quantity: 2 }] },
       { id: 17, name: "Oracle", move: 1, maxHp: 1, action: "Negate — When your team is responsible for revealing the World Event, after the random event is revealed but before it resolves, you may invoke an Oracle to negate that event for both players. The Oracle then Ascends to the heavens and is removed from the board. The negated World Event cannot occur again for the next 15 rounds.", ritual: "3 Glass", category: "special", ritualCosts: [{ type: "resource", name: "Glass", quantity: 3 }] },
       { id: 18, name: "Thief", move: 4, maxHp: 1, action: "If within 5 tiles of the opponent's King, steal 1 Bronze from the opponent's hand.", ritual: "2 Bronze, 1 Rope", category: "special", ritualCosts: [{ type: "currency", name: "bronze", quantity: 2 }, { type: "resource", name: "Rope", quantity: 1 }] },
       { id: 19, name: "Strategist", move: 1, maxHp: 1, action: "Delete this unit on any ally unit's turn to grant that ally a second action for the round.", ritual: "3 Sulphur, 1 Iron", category: "special", ritualCosts: [{ type: "resource", name: "Sulphur", quantity: 3 }, { type: "resource", name: "Iron", quantity: 1 }] },
@@ -4911,11 +4911,28 @@
         return `<tr><td><strong>${escapeRulesHtml(recipe.resultName)}</strong></td><td>${escapeRulesHtml(resultLabel)}</td><td>${formatRulesCost(recipe.costs)}</td></tr>`;
       }).join("");
 
-      const shopRows = ["bronze", "silver", "gold"].flatMap(currency =>
-        shopPurchases
-          .filter(purchase => purchase.costCurrency === currency)
-          .map(purchase => `<tr><td>${purchase.costAmount} ${escapeRulesHtml(titleCaseCurrency(currency))}</td><td>${purchase.quantity} ${escapeRulesHtml(purchase.targetName)}${purchase.quantity > 1 && purchase.targetName === "Shield" ? "s" : ""}</td></tr>`)
-      ).join("");
+      const shopReceiveGroups = [...new Set(shopPurchases.map(purchase => purchase.targetName))]
+        .sort((a, b) => a.localeCompare(b));
+
+      const shopRows = shopReceiveGroups.map(targetName => {
+        const purchases = shopPurchases
+          .filter(purchase => purchase.targetName === targetName)
+          .sort((a, b) => {
+            if (a.quantity !== b.quantity) return a.quantity - b.quantity;
+            const currencyOrder = { bronze: 0, silver: 1, gold: 2 };
+            const currencyDifference = (currencyOrder[a.costCurrency] ?? 99) - (currencyOrder[b.costCurrency] ?? 99);
+            if (currencyDifference !== 0) return currencyDifference;
+            return a.costAmount - b.costAmount;
+          });
+
+        const targetTypeLabel = purchases[0] && purchases[0].targetType === "item" ? "Item" : "Resource";
+        const rows = purchases.map(purchase => {
+          const pluralSuffix = purchase.quantity > 1 && purchase.targetName === "Shield" ? "s" : "";
+          return `<tr><td>${purchase.costAmount} ${escapeRulesHtml(titleCaseCurrency(purchase.costCurrency))}</td><td><strong>${purchase.quantity} ${escapeRulesHtml(purchase.targetName)}${pluralSuffix}</strong></td></tr>`;
+        }).join("");
+
+        return `<tr class="shop-receive-group"><td colspan="2">${escapeRulesHtml(targetName)} <span>${targetTypeLabel}</span></td></tr>${rows}`;
+      }).join("");
 
       const givingTags = givingTileRewardPool
         .map(reward => `<span class="tag">${escapeRulesHtml(reward.name)}</span>`)
@@ -5024,6 +5041,8 @@
     th { color: white; background: linear-gradient(180deg, var(--blue), var(--blue-dark)); font-weight: 900; text-transform: uppercase; letter-spacing: .35px; white-space: nowrap; }
     tr:last-child td { border-bottom: 0; }
     tbody tr:nth-child(even) td { background: rgba(255,255,255,.25); }
+    .shop-receive-group td { background: #e8d7ae !important; color: var(--blue-dark); font-weight: 900; text-transform: uppercase; letter-spacing: .35px; border-top: 2px solid rgba(43,33,24,.18); }
+    .shop-receive-group td span { margin-left: 7px; color: var(--muted); font-size: 12px; font-weight: 900; text-transform: none; letter-spacing: 0; }
     .small { font-size: 13px; color: var(--muted); }
     .rule-number { display: inline-grid; place-items: center; min-width: 30px; height: 30px; padding: 0 8px; margin-right: 7px; border-radius: 999px; background: var(--blue-dark); color: white; font-weight: 900; }
     .phase-strip { display: flex; flex-wrap: wrap; gap: 7px; margin: 10px 0; }
@@ -5238,7 +5257,7 @@
         <li>There may be a maximum of <strong>${MAX_BASES} bases total</strong> on the physical board. Because the iPads are not linked and each tracker stores only its own controlled bases, the players enforce this global four-base limit on the honour system.</li>
         <li>Every base has <strong>${BASE_MAX_HP} HP</strong>.</li>
         <li>Each player begins with one base, placed two rows from that player's back rank in the centre column.</li>
-        <li>A secondary base is created by a Base Builder's <strong>Build</strong> action: choose a tile within 1 tile of the acting Base Builder that has at least <strong>3 adjacent Base Builders</strong>; that tile becomes a Base tile. Recording Build on that Base Builder creates the new unspecialized 6/6 base on that player's iPad.</li>
+        <li>A secondary base is created by a Base Builder's <strong>Build</strong> action: choose a tile within 1 tile of the acting Base Builder; <strong>only that one living Base Builder is required</strong>. That tile becomes a Base tile. Recording Build on that Base Builder creates the new unspecialized 6/6 base on that player's iPad.</li>
         <li>A secondary base may be created only on that player's <strong>starting-side half</strong> of the board. The centre Giving Tile marks the halfway point.</li>
         <li>If a non-King unit is standing on a base tile when that base would take damage, the unit takes the damage instead.</li>
         <li>Damage absorbed by the unit does <strong>not</strong> overflow to the base.</li>
@@ -5283,6 +5302,7 @@
         <li><strong>Stone Defence:</strong> 6 HP.</li>
         <li><strong>Iron Defence:</strong> cannot be destroyed by basic attacks; a Cannon is required.</li>
         <li>Basic attacks may damage Wooden and Stone Defences.</li>
+        <li>A Mechanist may use its Repair action to restore <strong>2 HP</strong> to one eligible damaged wall, up to that wall's normal maximum HP.</li>
         <li>A wall protects units adjacent to it, friendly or enemy, from Bow ranged attacks, Mage magic attacks, and Cannon Balls.</li>
         <li>Forced movement from a World Event stops at the board edge or an existing wall.</li>
       </ul>
@@ -5300,6 +5320,7 @@
         <li>Each shot consumes one loaded Cannon Ball.</li>
         <li>A Cannon Ball instantly destroys a wall it hits, including an Iron Defence.</li>
         <li>A Cannon Ball deals <strong>2 damage</strong> when fired at a unit or another Cannon.</li>
+        <li>A Mechanist may use its Repair action to restore <strong>2 HP</strong> to a damaged Cannon, up to the Cannon's normal ${CANNON_MAX_HP}-HP maximum.</li>
         <li>Cannon Balls may be fired over walls.</li>
         <li>You may deliberately use your Cannon to destroy one of your own walls.</li>
         <li>A Cannon does not move normally. A Mechanist or Artillerist may passively push it <strong>1 tile</strong> in any direction to an unoccupied tile.</li>
@@ -5441,8 +5462,7 @@
     <section id="open-design" class="undefined">
       <h2>23. Rules / Implementation Points Still Requiring a Definition</h2>
       <p>The audit found the following points for which the current design history does not supply a complete ruling. They are listed here so an older draft or an assumption is not accidentally treated as law.</p>
-      <div class="warning"><strong>Mechanist Repair amount:</strong> The Mechanist may Repair a wall, base, or cannon, but no current rule assigns a numeric number of HP restored by one Repair action.</div>
-      <div class="warning"><strong>Cannon firing range:</strong> Cannon damage, loading, wall interaction, and firing are defined, but no numeric maximum firing range is currently specified.</div>
+            <div class="warning"><strong>Cannon firing range:</strong> Cannon damage, loading, wall interaction, and firing are defined, but no numeric maximum firing range is currently specified.</div>
       <div class="warning"><strong>How grid distance is counted:</strong> Movement and abilities use distances such as “within 3 tiles,” but the current design does not explicitly state whether diagonal steps count as one tile or specify another formal distance metric.</div>
       <p class="small">No missing value or condition has been inferred. That is deliberate: an authoritative reference should distinguish an unresolved rule from a made-up ruling.</p>
     </section>
@@ -8007,7 +8027,6 @@
     function canPayGenericActionCost(unitType) {
       if (unitType && unitType.id === 2) {
         if (state.bases.length >= MAX_BASES) return false;
-        if (getLivingPieceCountForType(2) < 3) return false;
       }
 
       if (!canPayWorkerBuildCost(unitType)) {
@@ -8059,6 +8078,12 @@
         // the successful steal and adds the Bronze to this player's currency.
         state.currency.bronze = (state.currency.bronze || 0) + 1;
         return " Stole 1 Bronze.";
+      }
+
+      if (unitType.id === 16) {
+        // Walls are tracked on the physical board, while Cannon HP is tracked
+        // separately in the tracker. Do not guess which target was repaired.
+        return " Restore 2 HP to one eligible damaged wall or cannon, up to its normal maximum HP.";
       }
 
       return payWorkerBuildCost(unitType);
@@ -9195,7 +9220,7 @@
       if (lowerAction.includes("build base")) {
         add("Action", "Build Base", false, true);
         add("Range", "Within 1 tile");
-        add("Needs", "3 adjacent Base Builders", true);
+        add("Needs", "1 living Base Builder", true);
         return data;
       }
 
@@ -9268,7 +9293,8 @@
 
       if (lowerAction.includes("repair")) {
         add("Action", "Repair", false, true);
-        add("Targets", "Walls, bases, cannons", true);
+        add("Targets", "Eligible damaged walls or cannon", true);
+        add("Amount", "+2 HP, up to normal maximum", true);
         add("Passive", "Push cannon 1 tile", true);
         add("Push", "To unoccupied tile", true);
         return data;
