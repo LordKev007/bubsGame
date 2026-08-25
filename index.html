@@ -2701,6 +2701,54 @@
       padding-bottom: 2px;
     }
 
+    .version-refresh-panel {
+      margin-top: 18px;
+      padding: 14px;
+      border: 2px solid rgba(43, 33, 24, 0.22);
+      border-radius: 16px;
+      background: rgba(255, 248, 233, 0.9);
+      text-align: center;
+      box-shadow: 0 6px 18px rgba(48, 31, 12, 0.10);
+    }
+
+    .version-refresh-title {
+      font-size: 13px;
+      font-weight: 950;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--team-accent-dark);
+      margin-bottom: 8px;
+    }
+
+    .version-refresh-meta {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px 14px;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .version-refresh-meta strong { color: var(--ink); }
+
+    .version-refresh-btn {
+      min-height: 44px;
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-weight: 950;
+      font-size: 14px;
+    }
+
+    .version-refresh-status {
+      min-height: 18px;
+      margin-top: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--muted);
+    }
+
     @media (max-width: 1200px) {
       .resource-grid { grid-template-columns: repeat(5, minmax(112px, 1fr)); }
       .shop-grid { grid-template-columns: repeat(3, minmax(190px, 1fr)); }
@@ -2923,7 +2971,8 @@
 
     body[data-layout="enchanted"] .summon-panel { display: none; }
     body[data-layout="enchanted"]:not(.setup-complete) .summon-panel,
-    body[data-layout="enchanted"].phase-summon .summon-panel { display: block; }
+    body[data-layout="enchanted"].phase-summon .summon-panel,
+    body[data-layout="enchanted"].test-mode .summon-panel { display: block; }
     body[data-layout="enchanted"] .summon-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
     body[data-layout="enchanted"].phase-summon .summon-panel.collapsed .setup-status,
     body[data-layout="enchanted"].phase-summon .summon-panel.collapsed .summon-grid { display: grid !important; }
@@ -3430,6 +3479,7 @@
         </div>
         <div class="enchanted-hud-actions">
           <button class="enchanted-icon-btn" id="enchantedRulesButton" type="button">Rules</button>
+          <button class="enchanted-icon-btn" id="enchantedStrategyButton" type="button">Strategy</button>
           <button class="enchanted-icon-btn" id="enchantedNewsButton" type="button">News</button>
           <button class="enchanted-icon-btn" id="enchantedSettingsButton" type="button" aria-label="Open settings">⚙</button>
         </div>
@@ -3679,7 +3729,7 @@
         <div class="panel-header">
           <div>
             <h2>Cannon</h2>
-            <div class="panel-note">Load using Cannon Ball · Range 8 tiles</div>
+            <div class="panel-note">Load using Cannon Ball · Range 8 tiles · Damage 4</div>
           </div>
           <button class="collapse-btn" id="toggleCannonPanel" type="button" aria-expanded="true">Collapse</button>
         </div>
@@ -3782,7 +3832,18 @@
       </aside>
     </section>
 
-    <div class="footer-note">Tip: In Safari on iPad, use Share → Add to Home Screen to make this feel like a little boardgame app. <span id="appVersionLabel">v0.2.19</span></div>
+    <div class="footer-note">Tip: In Safari on iPad, use Share → Add to Home Screen to make this feel like a little boardgame app.</div>
+
+    <section class="version-refresh-panel" id="versionRefreshPanel" aria-label="Game version and update controls">
+      <div class="version-refresh-title">King's Grid Version on This iPad</div>
+      <div class="version-refresh-meta">
+        <span>Current version: <strong id="appVersionLabel">v0.2.35</strong></span>
+        <span>Built: <strong id="appBuildTimeLabel">—</strong></span>
+        <span>First loaded on this iPad: <strong id="appFirstLoadedLabel">—</strong></span>
+      </div>
+      <button class="turn-btn primary version-refresh-btn" id="manualVersionRefresh" type="button">Check GitHub / Refresh to Latest</button>
+      <div class="version-refresh-status" id="manualVersionRefreshStatus" role="status" aria-live="polite">Not checked yet.</div>
+    </section>
   </main>
 
   <nav class="enchanted-bottom-nav" id="enchantedBottomNav" aria-label="Turn navigation">
@@ -3907,7 +3968,9 @@
     const MAX_ITEM_SLOTS = 11;
     const MAX_BREAD = 3;
     const STARTING_TOTAL_PIECES = 8;
-    const APP_VERSION = "v0.2.23";
+    const APP_VERSION = "v0.2.37";
+    const APP_BUILD_TIMESTAMP = "2026-08-25T01:35:01Z";
+    const VERSION_STATUS_STORAGE_KEY = "kingsGridVersionStatusV1";
 
     const turnSteps = [
       { kind: "unit", typeId: 1, title: "King", instructions: "Each team may move/action all active Kings." },
@@ -3946,7 +4009,7 @@
       { id: 4, name: "Heavy Wind", description: "Each player's pieces are pushed 2 tiles right from that player's perspective. Movement is stopped by the board border or existing walls.", effect: "note" },
       { id: 5, name: "Divergence", description: "Both players choose a non-King unit they control. Those units swap owners.", effect: "note" },
       { id: 6, name: "Bountiful Harvest", description: "Each player receives 2 Bread.", effect: "bread" },
-      { id: 7, name: "Peace Treaty", description: "All players move their Warriors and Mages 2 tiles back toward their initial base.", effect: "note" },
+      { id: 7, name: "Peace Treaty", description: "All players move their Warriors and Mages 5 tiles back toward their initial base. If a King has been captured, the captured King and the unit carrying that King are exempt and remain where they are.", effect: "note" },
       { id: 8, name: "Earthquake", description: "Deal 2 damage to each wall. Wood and Stone walls only.", effect: "note" },
       { id: 9, name: "Pisces", description: "If a player has three of a kind, that group must be reduced to two. Apply this to each three-of-a-kind group.", effect: "note" },
       { id: 10, name: "Baby Boom", description: "Each player can summon 2 Warriors for free.", effect: "baby-boom" },
@@ -3954,7 +4017,7 @@
       { id: 12, name: "Famine", description: "Each player must discard down to 7 Resources.", effect: "note" },
       { id: 13, name: "Disease", description: "Each player must deal 4 points of damage among their pieces.", effect: "note" },
       { id: 14, name: "Pestilence", description: "Insects eat all crops. All players lose all Bread.", effect: "pestilence" },
-      { id: 15, name: "Uno Reverso", description: "Piece turn order inverts. Player order does not change.", effect: "reverse-turn-order" },
+      { id: 15, name: "Uno Reverso", description: "The 20 unit initiative steps are reversed during the following round only. Player order and non-unit phases do not change.", effect: "reverse-turn-order" },
       { id: 16, name: "Free Trade Economy", description: "Normal shop purchases are 50% off during the following round only. Round up if necessary, so 3 becomes 2. Currency conversions and Resource selling are unchanged.", effect: "free-trade" },
       { id: 17, name: "God's Blessing", description: "Each player immediately receives 5 random Giving Tile rewards.", effect: "gods-blessing" },
       { id: 18, name: "Medical Breakthrough", description: "Each player may heal 4 points of damage among their pieces.", effect: "note" },
@@ -3997,6 +4060,7 @@
     const MAX_CANNONS_PER_PLAYER = 1;
     const CANNON_MAX_HP = 2;
     const CANNON_RANGE = 8;
+    const CANNON_DAMAGE = 4;
 
     const baseSpecializations = [
       {
@@ -4118,7 +4182,6 @@
         resultQuantity: 1,
         costs: [
           { type: "resource", name: "Wood", quantity: 3 },
-          { type: "resource", name: "Iron", quantity: 1 },
           { type: "resource", name: "Rope", quantity: 1 }
         ]
       },
@@ -4189,7 +4252,7 @@
       { id: 4, name: "Stone Worker", move: 2, maxHp: 6, action: "Build Stone Defence — Place a stone defence within 1 tile. Cost: 2 Stone.", ritual: "3 Stone, 2 Sulphur", category: "worker", ritualCosts: [{ type: "resource", name: "Stone", quantity: 3 }, { type: "resource", name: "Sulphur", quantity: 2 }] },
       { id: 5, name: "Iron Worker", move: 2, maxHp: 6, action: "Build Iron Defence — Place an iron defence within 1 tile. Cost: 2 Iron.", ritual: "3 Iron, 3 Sulphur", category: "worker", ritualCosts: [{ type: "resource", name: "Iron", quantity: 3 }, { type: "resource", name: "Sulphur", quantity: 3 }] },
       { id: 6, name: "Warrior (Sword)", move: 2, maxHp: 4, action: "Melee Attack — Range 1, Damage 2.", ritual: "4 Bronze, 1 Stone, 1 Wood", category: "fighter", ritualCosts: [{ type: "currency", name: "bronze", quantity: 4 }, { type: "resource", name: "Stone", quantity: 1 }, { type: "resource", name: "Wood", quantity: 1 }] },
-      { id: 7, name: "Warrior (Spear)", move: 2, maxHp: 4, action: "Melee Attack — Range 3, Damage 1.", ritual: "2 Silver, 1 Wood, 1 Stone", category: "fighter", ritualCosts: [{ type: "currency", name: "silver", quantity: 2 }, { type: "resource", name: "Wood", quantity: 1 }, { type: "resource", name: "Stone", quantity: 1 }] },
+      { id: 7, name: "Warrior (Spear)", move: 2, maxHp: 4, action: "Melee Attack — Range 3, Damage 1. On a hit, the enemy is knocked back 2 tiles.", ritual: "2 Silver, 1 Wood, 1 Stone", category: "fighter", ritualCosts: [{ type: "currency", name: "silver", quantity: 2 }, { type: "resource", name: "Wood", quantity: 1 }, { type: "resource", name: "Stone", quantity: 1 }] },
       { id: 8, name: "Warrior (Bow)", move: 1, maxHp: 2, action: "Ranged Attack — Range 7, Damage 1. Cost: 1 Arrow.", ritual: "1 Silver, 2 Wood, 1 Rope, 1 Sulphur", category: "fighter", ritualCosts: [{ type: "currency", name: "silver", quantity: 1 }, { type: "resource", name: "Wood", quantity: 2 }, { type: "resource", name: "Rope", quantity: 1 }, { type: "resource", name: "Sulphur", quantity: 1 }] },
       { id: 9, name: "Warrior (Lance & Horse)", move: 4, maxHp: 3, action: "Melee Attack — Range 2, Damage 1.", ritual: "1 Wood, 1 Stone, 1 Rope, 3 Leather", category: "fighter", ritualCosts: [{ type: "resource", name: "Wood", quantity: 1 }, { type: "resource", name: "Stone", quantity: 1 }, { type: "resource", name: "Rope", quantity: 1 }, { type: "resource", name: "Leather", quantity: 3 }] },
       { id: 10, name: "Mage", move: 3, maxHp: 1, action: "Magic Attack — Range 7, Damage 1, targets 3 different units. Cost: delete 1 ally unit, not Mage.", ritual: "1 Gem, 6 Bronze", category: "fighter", ritualCosts: [{ type: "resource", name: "Gem", quantity: 1 }, { type: "currency", name: "bronze", quantity: 6 }] },
@@ -4264,6 +4327,7 @@
         meteorRespecializationByRound: {},
         initiativeOrderVersion: 2,
         reversePieceOrder: false,
+        reversePieceOrderRound: null,
         freeTradeRound: null,
         freeTradeActive: false
       },
@@ -4666,6 +4730,34 @@
           delete loadedState.collapsedPanels.stardust;
         }
 
+        // v0.2.26 Uno Reverso migration: older saves stored a permanent
+        // reversePieceOrder toggle. Uno Reverso is now round-scoped: when
+        // revealed at the end of Round N, only Round N+1 is reversed. Recover
+        // that target round from World Event history when possible.
+        if (!Number.isInteger(loadedState.turnOrder.reversePieceOrderRound)) {
+          const unoEventRounds = Object.entries(loadedState.turnOrder.worldEventsByRound || {})
+            .filter(([roundNumber, eventId]) =>
+              Number(eventId) === 15 &&
+              !(loadedState.turnOrder.worldEventsNegatedByRound || {})[String(roundNumber)]
+            )
+            .map(([roundNumber]) => Number(roundNumber))
+            .filter(roundNumber => Number.isInteger(roundNumber) && roundNumber > 0);
+
+          if (unoEventRounds.length > 0) {
+            const targetRound = Math.max(...unoEventRounds) + 1;
+            loadedState.turnOrder.reversePieceOrderRound = targetRound >= loadedState.turnOrder.round
+              ? targetRound
+              : null;
+          } else if (loadedState.turnOrder.reversePieceOrder) {
+            // Fallback for an old save with no event history: preserve the
+            // reversed order for the currently loaded round only, never forever.
+            loadedState.turnOrder.reversePieceOrderRound = loadedState.turnOrder.round;
+          } else {
+            loadedState.turnOrder.reversePieceOrderRound = null;
+          }
+        }
+        loadedState.turnOrder.reversePieceOrder = false;
+
         // v0.2.10 Free Trade Economy migration: this World Event is revealed
         // at the end of a round, so its discount applies to the following full
         // round only. Older saves used a permanent boolean flag. Recover the
@@ -4854,7 +4946,7 @@
 
       const settingsTestMode = document.getElementById("settingsTestMode");
       if (settingsTestMode) {
-        settingsTestMode.textContent = `Test Mode: ${state.testMode ? "On" : "Off"}`;
+        settingsTestMode.textContent = state.testMode ? "Test Mode: On · Free Character Adds" : "Test Mode: Off";
         settingsTestMode.classList.toggle("active", Boolean(state.testMode));
       }
 
@@ -4912,8 +5004,29 @@
         return `<tr><td><strong>${escapeRulesHtml(recipe.resultName)}</strong></td><td>${escapeRulesHtml(resultLabel)}</td><td>${formatRulesCost(recipe.costs)}</td></tr>`;
       }).join("");
 
+      const shopReceiveDisplayOrder = [
+        "Wood",
+        "Stone",
+        "Iron",
+        "Sulphur",
+        "Rope",
+        "Leather",
+        "Glass",
+        "Gem",
+        "Arrow",
+        "Shield",
+        "Cannon Ball"
+      ];
+
       const shopReceiveGroups = [...new Set(shopPurchases.map(purchase => purchase.targetName))]
-        .sort((a, b) => a.localeCompare(b));
+        .sort((a, b) => {
+          const aIndex = shopReceiveDisplayOrder.indexOf(a);
+          const bIndex = shopReceiveDisplayOrder.indexOf(b);
+          const aRank = aIndex === -1 ? Number.MAX_SAFE_INTEGER : aIndex;
+          const bRank = bIndex === -1 ? Number.MAX_SAFE_INTEGER : bIndex;
+          if (aRank !== bRank) return aRank - bRank;
+          return a.localeCompare(b);
+        });
 
       const shopRows = shopReceiveGroups.map(targetName => {
         const purchases = shopPurchases
@@ -4944,15 +5057,16 @@
         4: "Move each of your pieces 2 tiles to the right from your own perspective. The board edge and existing walls stop this forced movement.",
         5: "Each player chooses one non-King unit they control; the chosen units exchange owners.",
         6: "Bread storage still has a maximum of 3. Any Bread that cannot fit is lost.",
+        7: "Move each Warrior and Mage 5 tiles back toward that player’s initial base. If a King has been captured, the captured King and the unit carrying that King are exempt from Peace Treaty movement; both remain where they are.",
         8: "Only Wooden and Stone Defences take the 2 damage. Iron Defences are unaffected.",
         9: "A three-of-a-kind group means three copies of the same unit type. For each such group, remove one copy so only two remain.",
         10: "Each player may add up to 2 Warriors for free. Normal copy limits and that player’s current roster limit still apply (15 normally; 20 with a living controlled Recruitment Center). A free Bow Warrior receives no setup Arrows.",
         11: "A player who already owns a Cannon, whether stored or placed, gains nothing. The normal one-Cannon limit and item-space requirement apply.",
         12: "Only standard Resources count toward the seven. Bread, Items, and Currency are not discarded by Famine.",
         13: "Distribute 4 total damage among your damageable pieces. The King remains immune to damage.",
-        15: "This toggles the order of the 20 unit initiative steps. If the unit order is normal, it becomes reversed; if already reversed, it returns to normal. Player order and the five non-unit phases remain unchanged.",
+        15: "The 20 unit initiative steps are reversed during the following round only. Player order and the five non-unit phases remain unchanged. After that one round, unit initiative automatically returns to normal.",
         16: "The discount applies during the following round only. Normal shop-purchase prices are halved and rounded up, with a minimum price of 1. Currency conversion rates and Resource-selling rates are not discounted.",
-        17: "Roll five rewards from the normal Giving Tile pool. Resource/Bread storage limits still apply; blocked rewards are lost and are not rerolled.",
+        17: "Roll five rewards from the normal Giving Tile pool. If Bread is rolled while Bread storage is already full at 3/3, replace that roll with a random non-Bread Giving Tile reward. Other blocked rewards are lost and are not rerolled.",
         18: "Distribute up to 4 points of healing among damaged non-King pieces, never above each piece's current maximum HP.",
         19: "Add up to 3 Shields, limited by available Item slots. Any Shields that do not fit are lost.",
         20: "Of all Warriors and Mages you control, choose exactly one of those units to keep if you have any. All of your other Warriors and Mages are lost. Every other unit type remains."
@@ -5094,6 +5208,7 @@
     <nav aria-label="Rules contents">
       <h2>Contents</h2>
       <ol class="toc">
+        <li><a href="#authority">Rules authority &amp; how to resolve a call</a></li>
         <li><a href="#objective">Objective</a></li>
         <li><a href="#setup">Setup</a></li>
         <li><a href="#round">Round &amp; initiative order</a></li>
@@ -5115,7 +5230,6 @@
         <li><a href="#world-events">World Events &amp; Oracle</a></li>
         <li><a href="#event-table">World Event rulings table</a></li>
         <li><a href="#two-trackers">Two-tracker bookkeeping</a></li>
-        <li><a href="#open-design">Open design point</a></li>
       </ol>
     </nav>
 
@@ -5154,7 +5268,7 @@
       <h3>Exact normal initiative order</h3>
       <div class="table-wrap"><table><thead><tr><th>#</th><th>Step</th><th>Type</th><th>Rule</th></tr></thead><tbody>${initiativeRows}</tbody></table></div>
       <h3>Uno Reverso</h3>
-      <p><strong>Uno Reverso</strong> reverses only the 20 unit steps. The player who is first in the round still acts first on every step, and the five non-unit phases remain in their normal order. A later Uno Reverso toggles the unit order back to normal.</p>
+      <p><strong>Uno Reverso</strong> reverses only the 20 unit steps during the <strong>following round only</strong>. The player who is first in that round still acts first on every step, and the five non-unit phases remain in their normal order. When that round ends, unit initiative automatically returns to normal.</p>
     </section>
 
     <section id="unit-turns">
@@ -5320,14 +5434,14 @@
         <li>An adjacent <strong>Artillerist</strong> may load and fire the Cannon as a single action.</li>
         <li>Each shot consumes one loaded Cannon Ball.</li>
         <li>A Cannon Ball instantly destroys a wall it hits, including an Iron Defence.</li>
-        <li>A Cannon Ball deals <strong>2 damage</strong> when fired at a unit or another Cannon.</li>
+        <li>A Cannon Ball deals <strong>${CANNON_DAMAGE} damage</strong> when fired at a unit or another Cannon.</li>
         <li>A Mechanist may use its Repair action to restore <strong>2 HP</strong> to a damaged Cannon, up to the Cannon's normal ${CANNON_MAX_HP}-HP maximum.</li>
         <li>A Cannon may fire at a target up to <strong>${CANNON_RANGE} tiles</strong> away.</li>
         <li>Cannon Balls may be fired over walls.</li>
         <li>You may deliberately use your Cannon to destroy one of your own walls.</li>
         <li>A Cannon does not move normally. A Mechanist or Artillerist may passively push it <strong>1 tile</strong> in any direction to an unoccupied tile.</li>
       </ul>
-      <div class="ruling"><strong>Cannon range:</strong> Maximum firing range is <strong>${CANNON_RANGE} tiles</strong>.</div>
+      <div class="ruling"><strong>Cannon fire:</strong> Maximum firing range is <strong>${CANNON_RANGE} tiles</strong>. A hit on a unit or another Cannon deals <strong>${CANNON_DAMAGE} damage</strong>.</div>
     </section>
 
     <section id="inventory">
@@ -5356,7 +5470,8 @@
       <ul>
         <li><strong>Iron and Gem are not in the Giving Tile pool.</strong></li>
         <li>Resource rewards require an open Resource slot. Bread uses its separate Bread storage.</li>
-        <li>If a rolled reward cannot fit, that reward is lost; it is not rerolled.</li>
+        <li>If <strong>Bread</strong> is rolled while Bread storage is already full at 3/3, reroll that reward as a random <strong>non-Bread</strong> Giving Tile reward instead. This reroll exception applies only to Bread.</li>
+        <li>If any other rolled reward cannot fit, or if the non-Bread replacement cannot fit in Resource storage, that reward is lost; it is not rerolled again.</li>
         <li>God's Blessing uses this exact same reward pool and capacity rules for five rolls.</li>
       </ul>
     </section>
@@ -5461,12 +5576,6 @@
       </ul>
     </section>
 
-    <section id="open-design" class="undefined">
-      <h2>23. Rules / Implementation Points Still Requiring a Definition</h2>
-      <p>The audit found the following points for which the current design history does not supply a complete ruling. They are listed here so an older draft or an assumption is not accidentally treated as law.</p>
-      <div class="warning"><strong>How grid distance is counted:</strong> Movement and abilities use distances such as “within 3 tiles,” but the current design does not explicitly state whether diagonal steps count as one tile or specify another formal distance metric.</div>
-      <p class="small">No missing value or condition has been inferred. That is deliberate: an authoritative reference should distinguish an unresolved rule from a made-up ruling.</p>
-    </section>
   </main>
 </body>
 </html>`;
@@ -5485,6 +5594,277 @@
       rulesWindow.document.write(buildRulesWindowHtml());
       rulesWindow.document.close();
       rulesWindow.focus();
+    }
+
+    const chainSummoningStrategy = {
+      twoUnit: [
+        { heading: "Wood Worker", start: 1, combos: [
+          "Wood Worker + Mage", "Wood Worker + Medic", "Wood Worker + Necromancer", "Wood Worker + Farmer", "Wood Worker + Oracle", "Wood Worker + Thief", "Wood Worker + Shopkeeper"
+        ]},
+        { heading: "Stone Worker", start: 8, combos: [
+          "Stone Worker + Mage", "Stone Worker + Medic", "Stone Worker + Necromancer", "Stone Worker + Farmer", "Stone Worker + Oracle", "Stone Worker + Thief", "Stone Worker + Shopkeeper"
+        ]},
+        { heading: "Iron Worker", start: 15, combos: [
+          "Iron Worker + Warrior (Sword)", "Iron Worker + Warrior (Spear)", "Iron Worker + Warrior (Lance & Horse)", "Iron Worker + Mage", "Iron Worker + Necromancer", "Iron Worker + Farmer", "Iron Worker + Oracle", "Iron Worker + Thief", "Iron Worker + Shopkeeper"
+        ]},
+        { heading: "Warrior (Sword)", start: 24, combos: [
+          "Warrior (Sword) + Priest", "Warrior (Sword) + Artillerist", "Warrior (Sword) + Mechanist", "Warrior (Sword) + Oracle", "Warrior (Sword) + Strategist"
+        ]},
+        { heading: "Warrior (Spear)", start: 29, combos: [
+          "Warrior (Spear) + Priest", "Warrior (Spear) + Artillerist", "Warrior (Spear) + Mechanist", "Warrior (Spear) + Oracle", "Warrior (Spear) + Strategist"
+        ]},
+        { heading: "Warrior (Bow)", start: 34, combos: [
+          "Warrior (Bow) + Oracle"
+        ]},
+        { heading: "Warrior (Lance & Horse)", start: 35, combos: [
+          "Warrior (Lance & Horse) + Mage", "Warrior (Lance & Horse) + Priest", "Warrior (Lance & Horse) + Artillerist", "Warrior (Lance & Horse) + Mechanist", "Warrior (Lance & Horse) + Oracle", "Warrior (Lance & Horse) + Strategist", "Warrior (Lance & Horse) + Shopkeeper"
+        ]},
+        { heading: "Mage", start: 42, combos: [
+          "Mage + Priest", "Mage + Artillerist", "Mage + Mechanist", "Mage + Oracle", "Mage + Strategist"
+        ]},
+        { heading: "Priest", start: 47, combos: [
+          "Priest + Medic", "Priest + Necromancer", "Priest + Farmer", "Priest + Thief", "Priest + Shopkeeper"
+        ]},
+        { heading: "Medic", start: 52, combos: [
+          "Medic + Artillerist", "Medic + Mechanist", "Medic + Oracle"
+        ]},
+        { heading: "Necromancer", start: 55, combos: [
+          "Necromancer + Artillerist", "Necromancer + Mechanist", "Necromancer + Oracle", "Necromancer + Strategist"
+        ]},
+        { heading: "Farmer", start: 59, combos: [
+          "Farmer + Artillerist", "Farmer + Mechanist", "Farmer + Oracle", "Farmer + Strategist"
+        ]},
+        { heading: "Artillerist", start: 63, combos: [
+          "Artillerist + Oracle", "Artillerist + Thief", "Artillerist + Shopkeeper"
+        ]},
+        { heading: "Mechanist", start: 66, combos: [
+          "Mechanist + Oracle", "Mechanist + Thief", "Mechanist + Shopkeeper"
+        ]},
+        { heading: "Oracle", start: 69, combos: [
+          "Oracle + Thief", "Oracle + Strategist", "Oracle + Shopkeeper"
+        ]},
+        { heading: "Thief", start: 72, combos: [
+          "Thief + Strategist"
+        ]},
+        { heading: "Strategist", start: 73, combos: [
+          "Strategist + Shopkeeper"
+        ]}
+      ],
+      threeUnit: [
+        { heading: "Wood Worker", start: 1, combos: [
+          "Wood Worker + Mage + Oracle", "Wood Worker + Medic + Oracle", "Wood Worker + Necromancer + Oracle", "Wood Worker + Farmer + Oracle", "Wood Worker + Oracle + Thief", "Wood Worker + Oracle + Shopkeeper"
+        ]},
+        { heading: "Stone Worker", start: 7, combos: [
+          "Stone Worker + Mage + Oracle", "Stone Worker + Medic + Oracle", "Stone Worker + Necromancer + Oracle", "Stone Worker + Farmer + Oracle", "Stone Worker + Oracle + Thief", "Stone Worker + Oracle + Shopkeeper"
+        ]},
+        { heading: "Iron Worker", start: 13, combos: [
+          "Iron Worker + Warrior (Sword) + Oracle", "Iron Worker + Warrior (Spear) + Oracle", "Iron Worker + Warrior (Lance & Horse) + Mage", "Iron Worker + Warrior (Lance & Horse) + Oracle", "Iron Worker + Warrior (Lance & Horse) + Shopkeeper", "Iron Worker + Mage + Oracle", "Iron Worker + Necromancer + Oracle", "Iron Worker + Farmer + Oracle", "Iron Worker + Oracle + Thief", "Iron Worker + Oracle + Shopkeeper"
+        ]},
+        { heading: "Warrior (Sword)", start: 23, combos: [
+          "Warrior (Sword) + Artillerist + Oracle", "Warrior (Sword) + Mechanist + Oracle", "Warrior (Sword) + Oracle + Strategist"
+        ]},
+        { heading: "Warrior (Spear)", start: 26, combos: [
+          "Warrior (Spear) + Artillerist + Oracle", "Warrior (Spear) + Mechanist + Oracle", "Warrior (Spear) + Oracle + Strategist"
+        ]},
+        { heading: "Warrior (Lance & Horse)", start: 29, combos: [
+          "Warrior (Lance & Horse) + Mage + Priest", "Warrior (Lance & Horse) + Mage + Artillerist", "Warrior (Lance & Horse) + Mage + Mechanist", "Warrior (Lance & Horse) + Mage + Oracle", "Warrior (Lance & Horse) + Mage + Strategist", "Warrior (Lance & Horse) + Priest + Shopkeeper", "Warrior (Lance & Horse) + Artillerist + Oracle", "Warrior (Lance & Horse) + Artillerist + Shopkeeper", "Warrior (Lance & Horse) + Mechanist + Oracle", "Warrior (Lance & Horse) + Mechanist + Shopkeeper", "Warrior (Lance & Horse) + Oracle + Strategist", "Warrior (Lance & Horse) + Oracle + Shopkeeper", "Warrior (Lance & Horse) + Strategist + Shopkeeper"
+        ]},
+        { heading: "Mage", start: 42, combos: [
+          "Mage + Artillerist + Oracle", "Mage + Mechanist + Oracle", "Mage + Oracle + Strategist"
+        ]},
+        { heading: "Medic", start: 45, combos: [
+          "Medic + Artillerist + Oracle", "Medic + Mechanist + Oracle"
+        ]},
+        { heading: "Necromancer", start: 47, combos: [
+          "Necromancer + Artillerist + Oracle", "Necromancer + Mechanist + Oracle", "Necromancer + Oracle + Strategist"
+        ]},
+        { heading: "Farmer", start: 50, combos: [
+          "Farmer + Artillerist + Oracle", "Farmer + Mechanist + Oracle", "Farmer + Oracle + Strategist"
+        ]},
+        { heading: "Artillerist", start: 53, combos: [
+          "Artillerist + Oracle + Thief", "Artillerist + Oracle + Shopkeeper"
+        ]},
+        { heading: "Mechanist", start: 55, combos: [
+          "Mechanist + Oracle + Thief", "Mechanist + Oracle + Shopkeeper"
+        ]},
+        { heading: "Oracle", start: 57, combos: [
+          "Oracle + Thief + Strategist", "Oracle + Strategist + Shopkeeper"
+        ]}
+      ],
+      fourUnit: [
+        "Iron Worker + Warrior (Lance & Horse) + Mage + Oracle",
+        "Iron Worker + Warrior (Lance & Horse) + Oracle + Shopkeeper",
+        "Warrior (Lance & Horse) + Mage + Artillerist + Oracle",
+        "Warrior (Lance & Horse) + Mage + Mechanist + Oracle",
+        "Warrior (Lance & Horse) + Mage + Oracle + Strategist",
+        "Warrior (Lance & Horse) + Artillerist + Oracle + Shopkeeper",
+        "Warrior (Lance & Horse) + Mechanist + Oracle + Shopkeeper",
+        "Warrior (Lance & Horse) + Oracle + Strategist + Shopkeeper"
+      ]
+    };
+
+    function buildChainStrategyWindowHtml() {
+      const escapeHtml = value => String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+      const renderGroupedCombos = groups => groups.map(group => `
+        <section class="combo-group">
+          <h3>${escapeHtml(group.heading)}</h3>
+          <ol start="${group.start}">
+            ${group.combos.map(combo => `<li>${escapeHtml(combo)}</li>`).join("")}
+          </ol>
+        </section>
+      `).join("");
+
+      const fourUnitRows = chainSummoningStrategy.fourUnit
+        .map(combo => `<li><strong>${escapeHtml(combo)}</strong></li>`)
+        .join("");
+
+      return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>King's Grid - Chain Summoning Strategy ${APP_VERSION}</title>
+  <style>
+    :root {
+      --paper: #fff8e9;
+      --ink: #2b2118;
+      --muted: #6c5d4a;
+      --blue: #244d78;
+      --green: #2f6b45;
+      --purple: #69417c;
+      --border: #9b845f;
+      --shadow: rgba(48, 31, 12, 0.22);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      padding: 20px;
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.55), transparent 30%),
+        linear-gradient(135deg, #e7d3aa, #f8efd9 45%, #d3b982);
+    }
+    .strategy-page {
+      width: min(1080px, 100%);
+      margin: 0 auto;
+      display: grid;
+      gap: 16px;
+    }
+    .page-actions { display: flex; justify-content: flex-start; }
+    .back-to-tracker-btn {
+      border: 1px solid rgba(43, 33, 24, 0.3);
+      border-radius: 999px;
+      min-height: 42px;
+      padding: 0 16px;
+      color: var(--ink);
+      background: linear-gradient(180deg, #fff9eb, #ead7af);
+      box-shadow: 0 2px 0 rgba(0,0,0,0.18);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+    header, .intro-card, .strategy-section, .combo-group {
+      border: 2px solid var(--border);
+      background: rgba(255, 248, 233, 0.95);
+      box-shadow: 0 6px 18px var(--shadow);
+      border-radius: 18px;
+    }
+    header { padding: 20px; text-align: center; }
+    h1 { margin: 0; font-size: clamp(36px, 7vw, 68px); line-height: .95; color: #24160e; }
+    .subtitle { margin-top: 8px; color: var(--muted); font-size: 18px; font-weight: 900; }
+    .version { margin-top: 6px; color: var(--muted); font-size: 13px; font-weight: 800; }
+    .intro-card { padding: 18px; }
+    .intro-card p { margin: 0 0 10px; line-height: 1.5; font-size: 17px; }
+    .intro-card p:last-child { margin-bottom: 0; }
+    .jump-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .jump-links a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 38px;
+      padding: 0 12px;
+      border: 1px solid rgba(43,33,24,.22);
+      border-radius: 999px;
+      background: rgba(255,255,255,.6);
+      color: var(--blue);
+      text-decoration: none;
+      font-weight: 900;
+    }
+    .strategy-section { padding: 18px; display: grid; gap: 12px; }
+    .strategy-section > h2 { margin: 0; padding-bottom: 8px; border-bottom: 1px solid rgba(43,33,24,.18); font-size: 28px; }
+    #two-unit > h2 { color: var(--blue); }
+    #three-unit > h2 { color: var(--green); }
+    #four-unit > h2 { color: var(--purple); }
+    .group-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-items: start; }
+    .combo-group { padding: 14px; box-shadow: none; border-width: 1px; }
+    .combo-group h3 { margin: 0 0 8px; color: #3d2b1d; font-size: 21px; }
+    ol { margin: 0; padding-left: 32px; display: grid; gap: 6px; }
+    li { padding-left: 3px; line-height: 1.38; font-size: 16px; }
+    #four-unit ol { gap: 10px; }
+    #four-unit li { padding: 9px 10px; border: 1px solid rgba(43,33,24,.14); border-radius: 10px; background: rgba(255,255,255,.52); }
+    .note { color: var(--muted); font-weight: 800; }
+    @media (max-width: 760px) {
+      body { padding: 10px; }
+      header, .intro-card, .strategy-section { padding: 14px; }
+      .group-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="strategy-page">
+    <div class="page-actions"><button class="back-to-tracker-btn" type="button" onclick="window.close();">← Back to Tracker</button></div>
+    <header>
+      <h1>King's Grid</h1>
+      <div class="subtitle">Chain Summoning Strategy</div>
+      <div class="version">Strategy reference synchronized with tracker ${APP_VERSION}</div>
+    </header>
+    <section class="intro-card">
+      <p><strong>What this list means:</strong> These are good follow-up summons because the units in each combination have <strong>no overlapping summoning costs</strong>. Read each chain from left to right: begin with the first unit, then consider the following unit or units as efficient next summons.</p>
+      <p>For this strategy analysis, <strong>Bronze, Silver, and Gold are treated as one currency category</strong>. If two units require any of those currencies, that counts as an overlapping cost.</p>
+      <p class="note">This is a strategy reference, not an additional game rule. Normal summoning costs, roster limits, copy limits, and other requirements still apply.</p>
+      <nav class="jump-links" aria-label="Strategy sections">
+        <a href="#two-unit">2-Unit Combinations — 73</a>
+        <a href="#three-unit">3-Unit Combinations — 58</a>
+        <a href="#four-unit">4-Unit Combinations — 8</a>
+      </nav>
+    </section>
+    <section class="strategy-section" id="two-unit">
+      <h2>🟦 2-Unit Combinations — 73</h2>
+      <div class="group-grid">${renderGroupedCombos(chainSummoningStrategy.twoUnit)}</div>
+    </section>
+    <section class="strategy-section" id="three-unit">
+      <h2>🟩 3-Unit Combinations — 58</h2>
+      <div class="group-grid">${renderGroupedCombos(chainSummoningStrategy.threeUnit)}</div>
+    </section>
+    <section class="strategy-section" id="four-unit">
+      <h2>🟪 4-Unit Combinations — 8</h2>
+      <ol>${fourUnitRows}</ol>
+    </section>
+  </main>
+</body>
+</html>`;
+    }
+
+    function openChainStrategyWindow() {
+      const strategyWindow = window.open("", "_blank");
+
+      if (!strategyWindow) {
+        alert("The strategy window was blocked. Please allow pop-ups for this page, or try again from the browser menu.");
+        return;
+      }
+
+      strategyWindow.document.open();
+      strategyWindow.document.write(buildChainStrategyWindowHtml());
+      strategyWindow.document.close();
+      strategyWindow.focus();
     }
 
     function buildRoundNewsWindowHtml() {
@@ -5706,6 +6086,31 @@
       newsWindow.focus();
     }
 
+    function ensureChainStrategyButton() {
+      let button = document.getElementById("chainStrategyButton");
+
+      if (!button) {
+        button = document.createElement("button");
+        button.id = "chainStrategyButton";
+        button.className = "rules-button";
+        button.type = "button";
+        button.innerHTML = `<span>Strategy</span> Chains`;
+        button.title = "Open Bubs' chain summoning strategy reference in a new tab or window.";
+        button.addEventListener("click", openChainStrategyWindow);
+      }
+
+      const headerTools = document.querySelector(".header-tools");
+      const rulesButton = document.getElementById("rulesButton");
+
+      if (headerTools && button.parentNode !== headerTools) {
+        if (rulesButton && rulesButton.parentNode === headerTools && rulesButton.nextSibling) {
+          headerTools.insertBefore(button, rulesButton.nextSibling);
+        } else {
+          headerTools.appendChild(button);
+        }
+      }
+    }
+
     function ensureRoundNewsButton() {
       let button = document.getElementById("roundNewsButton");
 
@@ -5720,10 +6125,13 @@
       }
 
       const headerTools = document.querySelector(".header-tools");
+      const strategyButton = document.getElementById("chainStrategyButton");
       const rulesButton = document.getElementById("rulesButton");
 
       if (headerTools && button.parentNode !== headerTools) {
-        if (rulesButton && rulesButton.parentNode === headerTools && rulesButton.nextSibling) {
+        if (strategyButton && strategyButton.parentNode === headerTools && strategyButton.nextSibling) {
+          headerTools.insertBefore(button, strategyButton.nextSibling);
+        } else if (rulesButton && rulesButton.parentNode === headerTools && rulesButton.nextSibling) {
           headerTools.insertBefore(button, rulesButton.nextSibling);
         } else {
           headerTools.appendChild(button);
@@ -5790,6 +6198,7 @@
 
       applySelectedTheme();
       ensureRulesButton();
+      ensureChainStrategyButton();
       ensureRoundNewsButton();
       ensureSettingsButton();
     }
@@ -6006,9 +6415,12 @@
           state.bread = 0;
           return lostBread > 0 ? `Lost ${lostBread} Bread.` : "No Bread to lose.";
         }
-        case "reverse-turn-order":
-          state.turnOrder.reversePieceOrder = !state.turnOrder.reversePieceOrder;
-          return state.turnOrder.reversePieceOrder ? "Piece turn order is now inverted." : "Piece turn order returned to normal.";
+        case "reverse-turn-order": {
+          const reversedRound = state.turnOrder.round + 1;
+          state.turnOrder.reversePieceOrderRound = reversedRound;
+          state.turnOrder.reversePieceOrder = false; // Legacy flag retained only for save compatibility.
+          return `Uno Reverso will reverse the 20 unit initiative steps during Round ${reversedRound} only.`;
+        }
         case "free-trade": {
           const discountedRound = state.turnOrder.round + 1;
           state.turnOrder.freeTradeRound = discountedRound;
@@ -6666,13 +7078,42 @@
       return "";
     }
 
+    function getRevivalEligibleUnitNames(unitType) {
+      if (!unitType) return [];
+
+      if (unitType.id === 11) {
+        return [
+          "Base Builder",
+          "Wood Worker",
+          "Stone Worker",
+          "Iron Worker",
+          "Warrior (Sword)",
+          "Warrior (Spear)",
+          "Warrior (Bow)",
+          "Warrior (Lance & Horse)",
+          "Farmer",
+          "Artillerist",
+          "Mechanist",
+          "Thief",
+          "Shopkeeper"
+        ];
+      }
+
+      if (unitType.id === 13) {
+        return ["Mage", "Priest", "Medic", "Oracle"];
+      }
+
+      return [];
+    }
+
     function getEffectiveActionText(unitType, team = state.team) {
       if (!unitType) return "";
 
       if (unitType.id === 11 || unitType.id === 13) {
         const range = getEffectiveRevivalRange(unitType, team);
         const itemName = getRequiredRevivalItem(unitType);
-        return `Revive — Spend 1 ${itemName}. Revive an eligible defeated ally within ${range} tiles at full HP. Place the revived unit beside the ${unitType.name}.`;
+        const eligibleNames = getRevivalEligibleUnitNames(unitType).join(", ");
+        return `Revive — Spend 1 ${itemName}. Revive an eligible defeated ally within ${range} tiles at full HP. Place the revived unit beside the ${unitType.name}. Eligible defeated units: ${eligibleNames}.`;
       }
 
       if (unitType.id === 12 && hasControlledBaseSpecialization("hospital", team)) {
@@ -6696,9 +7137,18 @@
     }
 
     function getEffectiveSummonText(unitType) {
-      if (!unitType || unitType.id === 1) {
-        return unitType ? unitType.ritual : "";
+      if (!unitType) {
+        return "";
       }
+
+      if (state.setupComplete && state.testMode) {
+        return "Free (Test Mode)";
+      }
+
+      if (unitType.id === 1) {
+        return unitType.ritual;
+      }
+
       return formatCostList(getEffectiveSummonCosts(unitType));
     }
 
@@ -7153,6 +7603,10 @@
         return startingSetupTypeIds.includes(unitType.id) && state.activePieces.length < STARTING_TOTAL_PIECES;
       }
 
+      if (state.testMode) {
+        return true;
+      }
+
       if (unitType.id === 1) {
         return false;
       }
@@ -7167,6 +7621,10 @@
     function getSummonCostHtml(unitType) {
       if (!state.setupComplete) {
         return `<span class="summon-cost-line">Setup pick</span><span class="summon-cost-line">No cost</span>`;
+      }
+
+      if (state.testMode) {
+        return `<span class="summon-cost-heading">Test Mode</span><span class="summon-cost-line">Free</span>`;
       }
 
       if (unitType.id === 1) {
@@ -7220,6 +7678,10 @@
         return "Setup pick";
       }
 
+      if (state.testMode) {
+        return "Test Mode: add free";
+      }
+
       if (unitType.id === 1) {
         return "Cannot summon";
       }
@@ -7255,7 +7717,7 @@
 
       const unitType = getUnitType(typeId);
 
-      if (state.setupComplete) {
+      if (state.setupComplete && !state.testMode) {
         payCosts(getEffectiveSummonCosts(unitType));
         recordSummonUsed();
       }
@@ -7279,7 +7741,11 @@
       state.filter = state.filter === "rules" ? "all" : state.filter;
 
       if (state.setupComplete) {
-        logRoundEvent(`${unitType.name} was summoned. ${getSummonsRemainingThisTurn()} summon${getSummonsRemainingThisTurn() === 1 ? "" : "s"} remaining this turn.`);
+        if (state.testMode) {
+          logRoundEvent(`${unitType.name} was added free in Test Mode.`);
+        } else {
+          logRoundEvent(`${unitType.name} was summoned. ${getSummonsRemainingThisTurn()} summon${getSummonsRemainingThisTurn() === 1 ? "" : "s"} remaining this turn.`);
+        }
       }
 
       saveState();
@@ -8189,8 +8655,16 @@
       return `Before starting: ${issues.join("; ")}.`;
     }
 
+    function isUnoReversoActive() {
+      return Boolean(
+        state.turnOrder &&
+        Number.isInteger(state.turnOrder.reversePieceOrderRound) &&
+        state.turnOrder.round === state.turnOrder.reversePieceOrderRound
+      );
+    }
+
     function getEffectiveTurnSteps() {
-      if (!state.turnOrder || !state.turnOrder.reversePieceOrder) {
+      if (!isUnoReversoActive()) {
         return turnSteps;
       }
 
@@ -8352,10 +8826,26 @@
       return results;
     }
 
+    function getRandomNonBreadGivingTileReward() {
+      const alternatives = givingTileRewardPool.filter(reward => reward.name !== "Bread");
+      if (alternatives.length === 0) return null;
+      return alternatives[Math.floor(Math.random() * alternatives.length)];
+    }
+
     function applyGivingTileRewardsWithCapacity(rewards) {
       const gainedRewards = [];
 
-      rewards.forEach(reward => {
+      rewards.forEach(rolledReward => {
+        let reward = rolledReward;
+
+        // Bread is the one Giving Tile reward that rerolls when its dedicated
+        // storage is already full. The replacement is always a non-Bread
+        // reward, then normal Resource capacity rules apply to that result.
+        if (reward.name === "Bread" && state.bread >= MAX_BREAD) {
+          reward = getRandomNonBreadGivingTileReward();
+          if (!reward) return;
+        }
+
         if (reward.name === "Bread") {
           if (addBreadWithCapacity(1) > 0) {
             gainedRewards.push(reward);
@@ -8456,6 +8946,7 @@
         meteorRespecializationByRound: {},
         initiativeOrderVersion: 2,
         reversePieceOrder: false,
+        reversePieceOrderRound: null,
         freeTradeRound: null,
         freeTradeActive: false
       };
@@ -9208,6 +9699,9 @@
 
         add("Range", getNumberAfterLabel("Range"));
         add("Damage", getNumberAfterLabel("Damage"));
+        if (unitType.id === 7) {
+          add("Knockback", "2 tiles on hit", true);
+        }
         add("Targets", getNumberAfterLabel("Targets") || getNumberAfterLabel("targets"));
         add("Cost", getTextAfterLabel("Cost"), true);
         return data;
@@ -9255,10 +9749,8 @@
         add("Cost", `1 ${getRequiredRevivalItem(unitType)}`);
         add("Return", `Full HP beside ${unitType.name}`, true);
 
-        if (unitType.id === 13) {
-          add("Eligible", "Mage, Priest, Medic, Oracle", true);
-        } else if (unitType.id === 11) {
-          add("Eligible", "Base Builder, Workers, Warriors, Farmer, Artillerist, Mechanist, Thief, Shopkeeper", true);
+        if (unitType.id === 13 || unitType.id === 11) {
+          add("Eligible", getRevivalEligibleUnitNames(unitType).join(", "), true);
         } else {
           add("Target", "Eligible dead ally", true);
         }
@@ -9400,7 +9892,7 @@
       }
 
       const referenceText = {
-        giving: "Each occupied Giving Tile gives one random resource each round. Gem and Iron are excluded from the random pool.",
+        giving: "Each occupied Giving Tile gives one random Resource/Bread reward each round. Gem and Iron are excluded; Bread rerolls to a non-Bread reward if Bread storage is already full.",
         summon: "Summon one unit. The full Summoning Cost still applies.",
         crafting: "Craft items from resources. Recipes require the full cost and enough item space.",
         shopping: "Shop only during your Shopping step, and only with a living Shopkeeper.",
@@ -9979,12 +10471,16 @@
         finishSetup.style.display = "inline-block";
         finishSetup.disabled = state.activePieces.length !== STARTING_TOTAL_PIECES;
       } else {
-        const allowedSummons = getAllowedSummonsThisTurn();
-        const remainingSummons = isYourSummoningTurn() ? getSummonsRemainingThisTurn() : 0;
+        if (state.testMode) {
+          setupStatusText.textContent = `Test Mode: all characters may be added free at any time. Normal roster and copy limits still apply.`;
+        } else {
+          const allowedSummons = getAllowedSummonsThisTurn();
+          const remainingSummons = isYourSummoningTurn() ? getSummonsRemainingThisTurn() : 0;
 
-        setupStatusText.textContent = isYourSummoningTurn()
-          ? `Summoning Unit: ${remainingSummons} of ${allowedSummons} summon${allowedSummons === 1 ? "" : "s"} remaining.`
-          : `Summoning is only available during your Summoning Unit turn.`;
+          setupStatusText.textContent = isYourSummoningTurn()
+            ? `Summoning Unit: ${remainingSummons} of ${allowedSummons} summon${allowedSummons === 1 ? "" : "s"} remaining.`
+            : `Summoning is only available during your Summoning Unit turn.`;
+        }
 
         finishSetup.style.display = "none";
         finishSetup.disabled = true;
@@ -9998,7 +10494,7 @@
         const activeCount = getPiecesForType(unitType.id).length;
         const maxCopies = getMaxCopiesForType(unitType.id);
         const canAdd = canAddPieceType(unitType.id);
-        const buttonText = state.setupComplete ? "Summon" : "Add";
+        const buttonText = state.setupComplete ? (state.testMode ? "Add Free" : "Summon") : "Add";
         const row = document.createElement("div");
         row.className = "summon-row";
         row.innerHTML = `
@@ -10203,11 +10699,12 @@
     }
 
     function renderTestMode() {
+      document.body.classList.toggle("test-mode", Boolean(state.testMode));
       testModeToggle.classList.toggle("active", Boolean(state.testMode));
       testModeToggle.setAttribute("aria-pressed", String(Boolean(state.testMode)));
       testModeToggle.title = state.testMode
-        ? "Test Mode is ON. Manual economy edits are allowed."
-        : "Test Mode is OFF. Manual economy edits lock after setup.";
+        ? "Test Mode is ON. Manual economy edits are allowed and characters can be added free at any time."
+        : "Test Mode is OFF. Normal economy and summoning rules apply after setup.";
     }
 
     function renderTeam() {
@@ -10235,9 +10732,113 @@
       searchInput.value = state.search;
     }
 
+    function formatVersionTimestamp(value) {
+      if (!value) return "Unknown";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "Unknown";
+      return date.toLocaleString([], {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit"
+      });
+    }
+
+    function getVersionStatusInfo() {
+      let info = null;
+      try {
+        info = JSON.parse(localStorage.getItem(VERSION_STATUS_STORAGE_KEY) || "null");
+      } catch (error) {
+        info = null;
+      }
+
+      if (!info || info.version !== APP_VERSION || !info.firstLoadedAt) {
+        info = {
+          version: APP_VERSION,
+          firstLoadedAt: new Date().toISOString()
+        };
+        try {
+          localStorage.setItem(VERSION_STATUS_STORAGE_KEY, JSON.stringify(info));
+        } catch (error) {
+          // The game itself can still run if browser storage is temporarily unavailable.
+        }
+      }
+
+      return info;
+    }
+
+    function renderVersionRefreshPanel() {
+      const appVersionLabel = document.getElementById("appVersionLabel");
+      const appBuildTimeLabel = document.getElementById("appBuildTimeLabel");
+      const appFirstLoadedLabel = document.getElementById("appFirstLoadedLabel");
+      const info = getVersionStatusInfo();
+
+      if (appVersionLabel) appVersionLabel.textContent = APP_VERSION;
+      if (appBuildTimeLabel) appBuildTimeLabel.textContent = formatVersionTimestamp(APP_BUILD_TIMESTAMP);
+      if (appFirstLoadedLabel) appFirstLoadedLabel.textContent = formatVersionTimestamp(info.firstLoadedAt);
+    }
+
+    async function manuallyRefreshToLatestVersion() {
+      const button = document.getElementById("manualVersionRefresh");
+      const status = document.getElementById("manualVersionRefreshStatus");
+      if (!button || !status || button.disabled) return;
+
+      if (!/^https?:$/.test(window.location.protocol)) {
+        status.textContent = "Update check is available when King's Grid is running from GitHub Pages.";
+        return;
+      }
+
+      saveState();
+      button.disabled = true;
+      status.textContent = "Checking GitHub for the newest King's Grid…";
+
+      const refreshUrl = new URL(window.location.href);
+      refreshUrl.searchParams.set("kg_refresh", String(Date.now()));
+
+      try {
+        const response = await fetch(refreshUrl.toString(), {
+          method: "GET",
+          cache: "no-store",
+          credentials: "same-origin"
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const latestHtml = await response.text();
+        const match = latestHtml.match(/const\s+APP_VERSION\s*=\s*["']([^"']+)["']/);
+        const latestVersion = match ? match[1] : "";
+        const checkedAt = formatVersionTimestamp(new Date().toISOString());
+
+        if (latestVersion && latestVersion === APP_VERSION) {
+          status.textContent = `Already up to date — ${APP_VERSION}. Checked ${checkedAt}.`;
+          button.disabled = false;
+          return;
+        }
+
+        if (latestVersion) {
+          refreshUrl.searchParams.set("v", latestVersion);
+        }
+
+        status.textContent = latestVersion
+          ? `Found ${latestVersion}. Loading the newest copy now…`
+          : "Newest copy found. Loading it now…";
+
+        window.setTimeout(() => {
+          window.location.replace(refreshUrl.toString());
+        }, 350);
+      } catch (error) {
+        status.textContent = "Could not verify GitHub right now. Your saved game was not changed.";
+        button.disabled = false;
+      }
+    }
+
     function render() {
       ensureThemePicker();
       ensureRulesButton();
+      ensureChainStrategyButton();
       ensureRoundNewsButton();
       ensureSettingsButton();
       applySelectedTheme();
@@ -10261,10 +10862,7 @@
       renderEnchantedChrome();
       renderRecruitmentDesertion();
 
-      const appVersionLabel = document.getElementById("appVersionLabel");
-      if (appVersionLabel) {
-        appVersionLabel.textContent = APP_VERSION;
-      }
+      renderVersionRefreshPanel();
     }
 
     const recruitmentDesertionGrid = document.getElementById("recruitmentDesertionGrid");
@@ -10655,6 +11253,7 @@
     });
     document.getElementById("enchantedSettingsButton").addEventListener("click", openSettings);
     document.getElementById("enchantedRulesButton").addEventListener("click", openRulesWindow);
+    document.getElementById("enchantedStrategyButton").addEventListener("click", openChainStrategyWindow);
     document.getElementById("enchantedNewsButton").addEventListener("click", openRoundNewsWindow);
     document.getElementById("enchantedPreviousTurn").addEventListener("click", () => previousTurn.click());
     document.getElementById("enchantedNextTurn").addEventListener("click", () => nextTurn.click());
@@ -10734,6 +11333,44 @@
 
     previousTurn.addEventListener("click", () => {
       previousTurnStep();
+    });
+
+    function shouldIgnoreTurnKeyboardShortcut(event) {
+      if (event.repeat || event.ctrlKey || event.metaKey || event.altKey || event.shiftKey) {
+        return true;
+      }
+
+      if (document.querySelector('[aria-modal="true"].open')) {
+        return true;
+      }
+
+      const target = event.target;
+      return Boolean(
+        target instanceof HTMLElement &&
+        (target.matches("input, textarea, select") || target.isContentEditable)
+      );
+    }
+
+    document.addEventListener("keydown", event => {
+      if (shouldIgnoreTurnKeyboardShortcut(event)) {
+        return;
+      }
+
+      const isNextShortcut = event.key === "ArrowRight" || event.code === "Space" || event.key === " " || event.key === "Spacebar";
+      const isPreviousShortcut = event.key === "ArrowLeft";
+
+      if (isNextShortcut) {
+        if (nextTurn.disabled) return;
+        event.preventDefault();
+        nextTurn.click();
+        return;
+      }
+
+      if (isPreviousShortcut) {
+        if (previousTurn.disabled) return;
+        event.preventDefault();
+        previousTurn.click();
+      }
     });
 
     resetTurnOrder.addEventListener("click", () => {
@@ -10875,6 +11512,11 @@
         closeGivingRewardsOverlay();
       }
     });
+
+    const manualVersionRefresh = document.getElementById("manualVersionRefresh");
+    if (manualVersionRefresh) {
+      manualVersionRefresh.addEventListener("click", manuallyRefreshToLatestVersion);
+    }
 
     render();
   </script>
