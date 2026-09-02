@@ -1,0 +1,64 @@
+KING'S GRID v0.2.40 — HISTORICAL ROUND QUOTES
+
+Baseline
+--------
+Built from the complete v0.2.39 First Full Game Update.
+The existing game state storage key remains boardgameTrackerStateV11.
+
+New feature
+-----------
+At the final Next of each normal full-game round, before the tracker advances
+into the next round, the screen fades dark and presents a historical quotation
+selected from the local player's just-completed round log.
+
+Presentation:
+- full-screen dark interstitial
+- handwriting/pen-style iPad font stack
+- quotation centered on screen
+- author/speaker and source shown beneath it
+- tap, Next, Space, or Right Arrow continues into the next round
+- reloading while the quote is visible restores the same pending quote
+
+Selection:
+- offline only; no OpenAI, network, or server dependency
+- the release HTML embeds the full quote corpus
+- matching reacts to King's Grid actions, units, economy, damage, recovery,
+  fortifications, ranged attacks, artillery, special units, and World Events
+- quote history is tracked separately for Red and Blue
+- unseen relevant material is strongly preferred
+- source-family cooldown prevents near-duplicate excerpts from recurring closely
+- Battle Practice intentionally skips quotation interstitials
+
+Quote corpus
+------------
+- 2,598 displayable historical quote/excerpt records
+- 778 distinct source-quotation families
+- 37 authors/speakers/source traditions
+- 387 author/source combinations
+- maximum display length: 25 words
+
+The development workflow keeps the quote corpus separate, then compiles it into
+the playable single-file HTML. This release therefore remains a single-file,
+o-network iPad game.
+
+Validation
+----------
+PASS: JavaScript extracted to a real .js file and `node --check` completed.
+PASS: Static release validation confirmed v0.2.40, embedded corpus, v0.2.39
+      World Events 1-23, persistent state key, Oracle state, and Battle Practice.
+PASS: Quote IDs are unique; exact duplicate author+text records were removed.
+PASS: All 98 player-rounds from Kevin and Bubs' first full game produced strong
+      relevant quote candidates. Median strong candidate pool: 38; minimum: 9.
+PASS: Exact release transition functions passed a Node harness covering:
+      - quote appears before round increments
+      - round increments only after dismissal
+      - reload/pending quote logic
+      - stale quote-ID recovery for future corpus changes
+      - Battle Practice exclusion
+
+Browser smoke note
+------------------
+A Chromium smoke test was attempted, but this execution environment blocks
+navigation to both local files and localhost with ERR_BLOCKED_BY_ADMINISTRATOR.
+No browser-smoke claim is made. The JavaScript/static/transition validations
+above all passed.
