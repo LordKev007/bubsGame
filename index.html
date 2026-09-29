@@ -4173,8 +4173,12 @@
     const MAX_SEEDS = 50;
     const MAX_FARM_TILES_PER_TURN = 3;
     const STARTING_TOTAL_PIECES = 8;
-    const APP_VERSION = "v0.2.44";
-    const APP_BUILD_TIMESTAMP = "2026-09-02T01:45:00Z";
+    const WAR_BOND_ADVANCE_BRONZE = 6;
+    const WAR_BOND_DEBT_BRONZE_VALUE = 9;
+    const WAR_BOND_TERM_ROUNDS = 5;
+    const WARRIOR_TYPE_IDS = [6, 7, 8, 9];
+    const APP_VERSION = "v0.2.45";
+    const APP_BUILD_TIMESTAMP = "2026-09-28T23:35:02Z";
     const VERSION_STATUS_STORAGE_KEY = "kingsGridVersionStatusV1";
     const QUOTE_HISTORY_STORAGE_KEY = "kingsGridQuoteHistoryV1";
 
@@ -4210,6 +4214,7 @@
       { kind: "unit", typeId: 20, title: "Shopkeeper", instructions: "Each team may move/action all active Shopkeepers." },
       { kind: "giving", title: "Giving Tile Random Reward", instructions: "Each round, resolve one random Resource/Bread reward per Giving Tile occupied." },
       { kind: "summon", title: "Summoning Unit", instructions: "Summon a unit if you have the needed resources, items, and currency." },
+      { kind: "warBonds", title: "War Bonds", instructions: "Borrow 6 Bronze if eligible, or resolve any War Bond that has reached its due round." },
       { kind: "crafting", title: "Crafting", instructions: "Craft items if you have the full recipe and enough item space." },
       { kind: "shopping", title: "Shopping", instructions: "Shopping is available only if that team has an active living Shopkeeper." },
       { kind: "roundEnd", title: "End of Round Rewards", instructions: "Collect end-of-round income, reveal and resolve one World Event, and review the round summary." }
@@ -4247,7 +4252,8 @@
       { id: 20, name: "The Odyssey", description: "Each player chooses one Warrior or Mage to keep, if they have any. All of that player's other Warriors and Mages are lost. All other unit types remain.", effect: "note" },
       { id: 21, name: "Trench Foot", description: "Each player must distribute up to 6 points of damage among their living Warriors and Mages. If they have fewer than 6 total HP among applicable units, distribute as much damage as possible.", effect: "note" },
       { id: 22, name: "Look to the East", description: "Each player gains 1 Mage and 2 Lance & Horse Warriors for free, subject to normal roster and 3-copy limits.", effect: "look-east" },
-      { id: 23, name: "Infiltrator", description: "Each player may spawn any one non-King unit at an enemy base for free. Normal roster and 3-copy limits apply; determine the enemy base and exact legal placement during play.", effect: "infiltrator" }
+      { id: 23, name: "Infiltrator", description: "Each player may spawn any one non-King unit at an enemy base for free. Normal roster and 3-copy limits apply; determine the enemy base and exact legal placement during play.", effect: "infiltrator" },
+      { id: 24, name: "Debt Forgiveness", description: "All current War Bond loans are forgiven without repayment. Any previous War Bond default is also forgiven, restoring that player's eligibility to take a future loan.", effect: "debt-forgiveness" }
     ];
 
     const givingTileRewardPool = [
@@ -4559,7 +4565,7 @@
         infiltratorUsedByRound: {},
         meteorRespecializationByRound: {},
         pendingRoundQuote: null,
-        initiativeOrderVersion: 2,
+        initiativeOrderVersion: 3,
         reversePieceOrder: false,
         reversePieceOrderRound: null,
         freeTradeRound: null,
@@ -4569,6 +4575,12 @@
         gold: 0,
         silver: 0,
         bronze: 0
+      },
+      warBond: {
+        active: false,
+        takenRound: null,
+        dueRound: null,
+        defaulted: false
       },
       givingTiles: 0,
       bread: 0,
@@ -4998,15 +5010,17 @@
         ...(savedTurnOrder || {})
       };
 
-      if (migrated.initiativeOrderVersion === 2) {
+      if (migrated.initiativeOrderVersion === 3) {
         return migrated;
       }
 
-      // v0.2.7 moved unit #17 (now Oracle) from before Thief to the
-      // second-last unit initiative, immediately before Shopkeeper. Preserve
-      // the exact current step of an in-progress v0.2.6 game by mapping the
-      // old step identity to its new index (including Uno Reverso order).
-      const oldUnitTypeIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 11, 13, 14, 15, 16, 17, 18, 19, 20];
+      // Initiative migration: v0.2.7 moved Oracle later in the unit order,
+      // and v0.2.45 inserts War Bonds between Summoning and Crafting. Preserve
+      // the current step identity when opening an older save.
+      const legacyVersion = Number(migrated.initiativeOrderVersion) || 1;
+      const oldUnitTypeIds = legacyVersion >= 2
+        ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 11, 13, 14, 15, 16, 18, 19, 17, 20]
+        : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 11, 13, 14, 15, 16, 17, 18, 19, 20];
       const oldUnitSteps = oldUnitTypeIds.map(typeId => ({ kind: "unit", typeId }));
       const oldNonUnitSteps = [
         { kind: "giving" },
@@ -5015,7 +5029,11 @@
         { kind: "shopping" },
         { kind: "roundEnd" }
       ];
-      const oldEffectiveSteps = migrated.reversePieceOrder
+      const legacyReverseActive = Boolean(
+        migrated.reversePieceOrder ||
+        (Number.isInteger(migrated.reversePieceOrderRound) && migrated.round === migrated.reversePieceOrderRound)
+      );
+      const oldEffectiveSteps = legacyReverseActive
         ? [...oldUnitSteps].reverse().concat(oldNonUnitSteps)
         : oldUnitSteps.concat(oldNonUnitSteps);
       const newEffectiveSteps = migrated.reversePieceOrder
@@ -5027,7 +5045,7 @@
       );
 
       migrated.stepIndex = mappedIndex >= 0 ? mappedIndex : migrated.stepIndex;
-      migrated.initiativeOrderVersion = 2;
+      migrated.initiativeOrderVersion = 3;
       return migrated;
     }
 
@@ -5068,6 +5086,10 @@
           currency: {
             ...defaultState.currency,
             ...(saved.currency || {})
+          },
+          warBond: {
+            ...defaultState.warBond,
+            ...(saved.warBond || {})
           },
           resources: {
             ...defaultState.resources,
@@ -5299,7 +5321,7 @@
       document.body.classList.toggle("coach-active", Boolean(state.coach && state.coach.active));
       document.body.dataset.inventoryView = enchantedInventorySection || "none";
 
-      ["unit", "giving", "summon", "crafting", "shopping", "roundEnd"].forEach(kind => {
+      ["unit", "giving", "summon", "warBonds", "crafting", "shopping", "roundEnd"].forEach(kind => {
         document.body.classList.toggle(`phase-${kind}`, started && currentStep && currentStep.kind === kind);
       });
 
@@ -5459,7 +5481,7 @@
         11: "A player who already owns a Cannon, whether stored or placed, gains nothing. The normal one-Cannon limit and item-space requirement apply.",
         12: "Only standard Resources count toward the seven. Bread, Items, and Currency are not discarded by Famine.",
         13: "Distribute 4 total damage among your damageable pieces. The King remains immune to damage.",
-        15: "The 20 unit initiative steps are reversed during the following round only. Player order and the five non-unit phases remain unchanged. After that one round, unit initiative automatically returns to normal.",
+        15: "The 20 unit initiative steps are reversed during the following round only. Player order and the six non-unit phases remain unchanged. After that one round, unit initiative automatically returns to normal.",
         16: "The discount applies during the following round only. Normal shop-purchase prices are halved and rounded up, with a minimum price of 1. Currency conversion rates and Resource-selling rates are not discounted.",
         17: "Roll five rewards from the normal Giving Tile pool. If Bread is rolled while Bread storage is already full at 3/3, replace that roll with a random non-Bread Giving Tile reward. Other blocked rewards are lost and are not rerolled.",
         18: "Distribute up to 4 points of healing among damaged non-King pieces, never above each piece's current maximum HP.",
@@ -5467,7 +5489,8 @@
         20: "Of all Warriors and Mages you control, choose exactly one of those units to keep if you have any. All of your other Warriors and Mages are lost. Every other unit type remains.",
         21: "Distribute up to 6 total damage among your living Sword, Spear, Bow, Lance & Horse, and Mage pieces. If those applicable units have fewer than 6 total HP remaining, deal as much of the 6 as possible and ignore the excess.",
         22: "Each player may add up to 1 Mage and 2 Lance & Horse Warriors for free. Normal roster capacity and the normal 3-copy-per-unit-type limit apply; never exceed either limit.",
-        23: "Each player may add one free non-King unit, subject to normal roster capacity and the normal 3-copy-per-unit-type limit. Spawn that unit at an enemy base; the players determine the enemy base and exact legal placement during play."
+        23: "Each player may add one free non-King unit, subject to normal roster capacity and the normal 3-copy-per-unit-type limit. Spawn that unit at an enemy base; the players determine the enemy base and exact legal placement during play.",
+        24: "Clear any active War Bond immediately with no repayment and no Warrior forfeiture. Also clear any prior default lockout. After this event resolves, the player follows the normal War Bond rules again and may take a future loan when a War Bonds step occurs."
       };
 
       const worldEventRows = worldEvents.map(event => {
@@ -5597,7 +5620,7 @@
       <ol>
         <li>Use the rule stated on this page first.</li>
         <li>Unit position, range, adjacency, walls, captures, and other physical-board facts are decided from the board itself; the tracker does not measure them.</li>
-        <li>The tracker is authoritative for the state it explicitly manages: HP, inventories, Bread, Seeds, Currency, active bases and specializations, turn sequence, World Event history, Oracle cooldowns, and logged actions.</li>
+        <li>The tracker is authoritative for the state it explicitly manages: HP, inventories, Bread, Seeds, Currency, War Bonds, active bases and specializations, turn sequence, World Event history, Oracle cooldowns, and logged actions.</li>
         <li>If a rule is explicitly identified here as <strong>not yet numerically defined</strong>, do not invent a number from an older draft. That point requires a separate design ruling.</li>
       </ol>
       <div class="ruling"><strong>Terminology:</strong> “living” or “active living” means a unit currently on that player's roster with HP above 0. “Defeated” means a non-King unit at 0 HP. “Owned” or “controlled” means belonging to that team at the time the rule is checked.</div>
@@ -5622,6 +5645,7 @@
         <li><a href="#inventory">Resources, Items &amp; Currency</a></li>
         <li><a href="#giving">Giving Tiles</a></li>
         <li><a href="#summoning">Summoning</a></li>
+        <li><a href="#war-bonds">War Bonds</a></li>
         <li><a href="#crafting">Crafting</a></li>
         <li><a href="#shopping">Shopping</a></li>
         <li><a href="#round-end">End of round</a></li>
@@ -5662,11 +5686,11 @@
       <h2>4. Round Structure &amp; Initiative</h2>
       <p>Each round has a first player and a second player. On every initiative step, the first player completes that step for their matching pieces, then the second player completes the same step. If a player has no applicable piece or action, that player passes.</p>
       <p>After the complete round is finished, first-player order switches for the next round.</p>
-      <div class="phase-strip"><span>20 Unit Steps</span><span>Giving Tiles</span><span>Summoning</span><span>Crafting</span><span>Shopping</span><span>End of Round</span></div>
+      <div class="phase-strip"><span>20 Unit Steps</span><span>Giving Tiles</span><span>Summoning</span><span>War Bonds</span><span>Crafting</span><span>Shopping</span><span>End of Round</span></div>
       <h3>Exact normal initiative order</h3>
       <div class="table-wrap"><table><thead><tr><th>#</th><th>Step</th><th>Type</th><th>Rule</th></tr></thead><tbody>${initiativeRows}</tbody></table></div>
       <h3>Uno Reverso</h3>
-      <p><strong>Uno Reverso</strong> reverses only the 20 unit steps during the <strong>following round only</strong>. The player who is first in that round still acts first on every step, and the five non-unit phases remain in their normal order. When that round ends, unit initiative automatically returns to normal.</p>
+      <p><strong>Uno Reverso</strong> reverses only the 20 unit steps during the <strong>following round only</strong>. The player who is first in that round still acts first on every step, and the six non-unit phases remain in their normal order. When that round ends, unit initiative automatically returns to normal.</p>
     </section>
 
     <section id="unit-turns">
@@ -5895,8 +5919,23 @@
       <p>Baby Boom is a World Event exception: it allows up to two free Warriors at round-end. It does not consume the normal Summoning phase, but normal copy and roster limits still apply.</p>
     </section>
 
+    <section id="war-bonds">
+      <h2>17. War Bonds</h2>
+      <ul>
+        <li>During your War Bonds phase, if you have no active War Bond and are not locked out by an unresolved default, you may take a loan of <strong>6 Bronze</strong>.</li>
+        <li>Only <strong>one War Bond may be active at a time</strong>.</li>
+        <li>A War Bond taken in Round R is due during that player's War Bonds phase in <strong>Round R+5</strong>, giving five full rounds before repayment.</li>
+        <li>The debt is worth exactly <strong>1 Gold</strong> using the standard War Bond value of <strong>3 Bronze = 1 Silver</strong> and <strong>3 Silver = 1 Gold</strong>. This means the debt is 9 Bronze-equivalent.</li>
+        <li>Any exact combination may be used: 1 Gold; 3 Silver; 2 Silver + 3 Bronze; 1 Silver + 6 Bronze; or 9 Bronze.</li>
+        <li>When the debt is due, the player must either repay 1 Gold-equivalent or forfeit one <strong>living Warrior</strong>. A forfeited Warrior is removed from the roster and board, not left defeated for revival.</li>
+        <li>If the player cannot make any valid 1-Gold-equivalent payment and has no living Warrior to forfeit, the loan defaults. The debt is cleared, but that player may not take another War Bond unless Debt Forgiveness later removes the default.</li>
+        <li>After a successful repayment or Warrior forfeiture, that loan is closed and the player is eligible to take a future War Bond under the normal rules.</li>
+      </ul>
+      <div class="ruling"><strong>Debt Forgiveness:</strong> If this World Event resolves, every current War Bond is immediately forgiven without payment or Warrior loss, and any previous default lockout is erased. Normal War Bond rules apply again afterward.</div>
+    </section>
+
     <section id="crafting">
-      <h2>17. Crafting</h2>
+      <h2>18. Crafting</h2>
       <p>Crafting is available during your Crafting phase. You may craft repeatedly while you can pay each complete recipe and have enough Item slots for the complete result.</p>
       <div class="table-wrap"><table><thead><tr><th>Crafted Item</th><th>Result</th><th>Cost</th></tr></thead><tbody>${craftingRows}</tbody></table></div>
       <ul>
@@ -5907,7 +5946,7 @@
     </section>
 
     <section id="shopping">
-      <h2>18. Shopping, Currency Conversion &amp; Resource Selling</h2>
+      <h2>19. Shopping, Currency Conversion &amp; Resource Selling</h2>
       <p>Shopping is available only during your Shopping phase and only while you have at least one <strong>living Shopkeeper</strong>.</p>
       <h3>Shop catalogue</h3>
       <div class="table-wrap"><table><thead><tr><th>Price</th><th>Receive</th></tr></thead><tbody>${shopRows}</tbody></table></div>
@@ -5932,7 +5971,7 @@
     </section>
 
     <section id="round-end">
-      <h2>19. End of Round</h2>
+      <h2>20. End of Round</h2>
       <p>Each player's Round End segment contains that player's reward bookkeeping. One shared World Event is also resolved per full round.</p>
       <h3>Player reward</h3>
       <p>Each player receives <strong>1 free Bronze</strong>, then chooses exactly one bonus:</p>
@@ -5945,7 +5984,7 @@
     </section>
 
     <section id="world-events">
-      <h2>20. World Events &amp; the Oracle</h2>
+      <h2>21. World Events &amp; the Oracle</h2>
       <ul>
         <li>Exactly <strong>one World Event</strong> occurs per round.</li>
         <li>The team that is <strong>first player for that round</strong> is responsible for the random World Event reveal.</li>
@@ -5966,12 +6005,12 @@
     </section>
 
     <section id="event-table">
-      <h2>21. World Event Rulings Table</h2>
+      <h2>22. World Event Rulings Table</h2>
       <div class="table-wrap"><table><thead><tr><th>#</th><th>Event</th><th>Card Effect</th><th>Ruling / Clarification</th></tr></thead><tbody>${worldEventRows}</tbody></table></div>
     </section>
 
     <section id="two-trackers">
-      <h2>22. Two-Tracker Bookkeeping &amp; Round News</h2>
+      <h2>23. Two-Tracker Bookkeeping &amp; Round News</h2>
       <ul>
         <li>Each player's device tracks that player's own roster, inventory, Bread, Seeds, Currency, and local consequences of shared events.</li>
         <li>The revealing player uses the random World Event control. During that same shared reveal window, the other player records the same revealed event manually on their own tracker.</li>
@@ -6867,6 +6906,29 @@
         case "infiltrator":
           ensureInfiltratorState();
           return "Infiltrator offers one free non-King unit, subject to normal roster and copy limits. Place it at an enemy base on the physical board.";
+        case "debt-forgiveness": {
+          ensureWarBondState();
+          const hadActiveLoan = Boolean(state.warBond.active);
+          const hadDefault = Boolean(state.warBond.defaulted);
+          state.warBond.active = false;
+          state.warBond.takenRound = null;
+          state.warBond.dueRound = null;
+          state.warBond.defaulted = false;
+
+          if (hadActiveLoan && hadDefault) {
+            return "Active War Bond forgiven and previous default lockout cleared.";
+          }
+
+          if (hadActiveLoan) {
+            return "Active War Bond forgiven with no repayment or Warrior forfeiture.";
+          }
+
+          if (hadDefault) {
+            return "Previous War Bond default forgiven; eligibility to borrow is restored.";
+          }
+
+          return "No active War Bond or default to forgive; normal War Bond eligibility remains unchanged.";
+        }
         default:
           return "Resolve this event on the board.";
       }
@@ -7606,7 +7668,7 @@
       const arrows = countMatches(/fired an arrow|Crafted 5 Arrow|Purchased \d+ Arrow/g);
       const cannons = countMatches(/Cannon fired|Cannon loaded|Cannon Ball|Cannon HP changed/g);
       const farming = countMatches(/planted 1 tile|Seeds?|Bread|Bountiful Harvest/g);
-      const economy = countMatches(/Giving Tiles produced|Sold 3 Resources|Purchased |Converted |Market Boom|Market Crash|Gold|Silver|Bronze/g);
+      const economy = countMatches(/Giving Tiles produced|Sold 3 Resources|Purchased |Converted |Market Boom|Market Crash|War Bond|Debt Forgiveness|Gold|Silver|Bronze/g);
       const repairs = countMatches(/used Repair/g);
       const revives = countMatches(/used Revive|reviv|Sacred Artifact|Demonic Totem/gi);
       const steals = countMatches(/used Steal|Thief/g);
@@ -7663,7 +7725,8 @@
         ["Free Trade Economy", ["trade", "economy", "wealth"]],
         ["Trench Foot", ["wounds", "disease", "war", "endurance"]],
         ["Look to the East", ["reinforcement", "cavalry", "magic", "rescue"]],
-        ["Infiltrator", ["infiltration", "deception", "surprise"]]
+        ["Infiltrator", ["infiltration", "deception", "surprise"]],
+        ["Debt Forgiveness", ["economy", "fortune", "mercy", "relief"]]
       ];
       eventThemes.forEach(([eventName, tags]) => {
         if (!text.includes(eventName)) return;
@@ -9659,6 +9722,11 @@
         return;
       }
 
+      if (isWarBondResolutionRequired()) {
+        window.alert("Resolve the War Bond that is due before advancing. Repay 1 Gold-equivalent, forfeit a living Warrior, or record a default if neither is possible.");
+        return;
+      }
+
       if (canRevealWorldEvent()) {
         window.alert("Reveal this round's World Event before advancing.");
         return;
@@ -9711,6 +9779,136 @@
 
     function getCurrentTurnKey() {
       return `${state.turnOrder.round}-${state.turnOrder.stepIndex}-${state.turnOrder.teamIndex}`;
+    }
+
+    function ensureWarBondState() {
+      if (!state.warBond || typeof state.warBond !== "object") {
+        state.warBond = JSON.parse(JSON.stringify(defaultState.warBond));
+      }
+
+      state.warBond.active = Boolean(state.warBond.active);
+      state.warBond.defaulted = Boolean(state.warBond.defaulted);
+      state.warBond.takenRound = Number.isInteger(state.warBond.takenRound) ? state.warBond.takenRound : null;
+      state.warBond.dueRound = Number.isInteger(state.warBond.dueRound) ? state.warBond.dueRound : null;
+      if (state.warBond.active && state.warBond.dueRound === null && state.warBond.takenRound !== null) {
+        state.warBond.dueRound = state.warBond.takenRound + WAR_BOND_TERM_ROUNDS;
+      }
+    }
+
+    function getWarBondPaymentDefinitions() {
+      return [
+        { key: "1g", label: "Pay 1 Gold", gold: 1, silver: 0, bronze: 0 },
+        { key: "3s", label: "Pay 3 Silver", gold: 0, silver: 3, bronze: 0 },
+        { key: "2s3b", label: "Pay 2 Silver + 3 Bronze", gold: 0, silver: 2, bronze: 3 },
+        { key: "1s6b", label: "Pay 1 Silver + 6 Bronze", gold: 0, silver: 1, bronze: 6 },
+        { key: "9b", label: "Pay 9 Bronze", gold: 0, silver: 0, bronze: 9 }
+      ];
+    }
+
+    function canAffordWarBondPayment(payment) {
+      if (!payment) return false;
+      return (state.currency.gold || 0) >= payment.gold &&
+        (state.currency.silver || 0) >= payment.silver &&
+        (state.currency.bronze || 0) >= payment.bronze;
+    }
+
+    function getAvailableWarBondPayments() {
+      return getWarBondPaymentDefinitions().filter(canAffordWarBondPayment);
+    }
+
+    function getLivingWarriorsForWarBond() {
+      return state.activePieces.filter(piece => WARRIOR_TYPE_IDS.includes(Number(piece.typeId)) && Number(piece.currentHp) > 0);
+    }
+
+    function isLocalWarBondTurn() {
+      return Boolean(
+        state.turnOrder.started &&
+        getCurrentTurnStep().kind === "warBonds" &&
+        getCurrentTurnTeam() === state.team
+      );
+    }
+
+    function isWarBondDue() {
+      ensureWarBondState();
+      return Boolean(
+        state.warBond.active &&
+        Number.isInteger(state.warBond.dueRound) &&
+        state.turnOrder.round >= state.warBond.dueRound
+      );
+    }
+
+    function isWarBondResolutionRequired() {
+      return Boolean(isLocalWarBondTurn() && isWarBondDue());
+    }
+
+    function canTakeWarBond() {
+      ensureWarBondState();
+      return Boolean(isLocalWarBondTurn() && !state.warBond.active && !state.warBond.defaulted);
+    }
+
+    function takeWarBond() {
+      if (!canTakeWarBond()) return;
+
+      const takenRound = state.turnOrder.round;
+      state.currency.bronze = (state.currency.bronze || 0) + WAR_BOND_ADVANCE_BRONZE;
+      state.warBond.active = true;
+      state.warBond.takenRound = takenRound;
+      state.warBond.dueRound = takenRound + WAR_BOND_TERM_ROUNDS;
+      logRoundEvent(`War Bond taken: gained ${WAR_BOND_ADVANCE_BRONZE} Bronze. Debt of 1 Gold-equivalent is due in Round ${state.warBond.dueRound}.`);
+      saveState();
+      render();
+    }
+
+    function repayWarBond(paymentKey) {
+      if (!isWarBondResolutionRequired()) return;
+
+      const payment = getWarBondPaymentDefinitions().find(option => option.key === paymentKey);
+      if (!payment || !canAffordWarBondPayment(payment)) return;
+
+      state.currency.gold -= payment.gold;
+      state.currency.silver -= payment.silver;
+      state.currency.bronze -= payment.bronze;
+      state.warBond.active = false;
+      state.warBond.takenRound = null;
+      state.warBond.dueRound = null;
+      state.warBond.defaulted = false;
+      logRoundEvent(`War Bond repaid: ${payment.label.replace(/^Pay /, "")} paid to the bank.`);
+      saveState();
+      render();
+    }
+
+    function forfeitWarriorForWarBond(pieceId) {
+      if (!isWarBondResolutionRequired()) return;
+
+      const piece = getPiece(Number(pieceId));
+      if (!piece || !WARRIOR_TYPE_IDS.includes(Number(piece.typeId)) || Number(piece.currentHp) <= 0) return;
+
+      const unitType = getUnitType(piece.typeId);
+      const copyNumber = getCopyNumber(piece);
+      state.activePieces = state.activePieces.filter(candidate => candidate.pieceId !== piece.pieceId);
+      if (state.selectedPieceId === piece.pieceId) {
+        state.selectedPieceId = state.activePieces.length > 0 ? state.activePieces[0].pieceId : null;
+      }
+      state.warBond.active = false;
+      state.warBond.takenRound = null;
+      state.warBond.dueRound = null;
+      state.warBond.defaulted = false;
+      logRoundEvent(`War Bond settled by forfeiture: ${unitType ? unitType.name : "Warrior"} #${copyNumber} was removed from the roster.`);
+      saveState();
+      render();
+    }
+
+    function defaultWarBond() {
+      if (!isWarBondResolutionRequired()) return;
+      if (getAvailableWarBondPayments().length > 0 || getLivingWarriorsForWarBond().length > 0) return;
+
+      state.warBond.active = false;
+      state.warBond.takenRound = null;
+      state.warBond.dueRound = null;
+      state.warBond.defaulted = true;
+      logRoundEvent("War Bond defaulted: no 1-Gold-equivalent payment and no living Warrior were available. Future War Bonds are blocked until Debt Forgiveness.");
+      saveState();
+      render();
     }
 
     function canResolveGivingTiles() {
@@ -9917,7 +10115,7 @@
         lookEastAddsByRound: {},
         infiltratorUsedByRound: {},
         meteorRespecializationByRound: {},
-        initiativeOrderVersion: 2,
+        initiativeOrderVersion: 3,
         reversePieceOrder: false,
         reversePieceOrderRound: null,
         freeTradeRound: null,
@@ -10192,9 +10390,9 @@
         {
           label: "Round 1",
           title: "Use special systems",
-          text: "Giving Tiles, Summoning, Crafting, and Shopping only happen on their turn-order steps.",
+          text: "Giving Tiles, Summoning, War Bonds, Crafting, and Shopping only happen on their turn-order steps.",
           targetId: "specialSystemsPanel",
-          getTips: () => ["Giving Tiles reward resources every round.", "Shopping requires a living Shopkeeper.", "Crafting and Summoning are handled from the Turn Order step when they appear."]
+          getTips: () => ["Giving Tiles reward resources every round.", "War Bonds are optional unless a loan is due.", "Shopping requires a living Shopkeeper.", "Crafting and Summoning are handled from the Turn Order step when they appear."]
         },
         {
           label: "Round 1",
@@ -10408,9 +10606,12 @@
         : getPregameInstructions();
 
       const oracleDecisionPending = isStarted && canMakeOracleDecision();
+      const warBondResolutionPending = isStarted && isWarBondResolutionRequired();
       previousTurn.disabled = !isStarted || isFlipping;
-      nextTurn.disabled = !isStarted || isFlipping || oracleDecisionPending;
-      nextTurn.title = oracleDecisionPending ? "Resolve the Oracle decision before advancing." : "Advance to the next initiative step.";
+      nextTurn.disabled = !isStarted || isFlipping || oracleDecisionPending || warBondResolutionPending;
+      nextTurn.title = warBondResolutionPending
+        ? "Resolve the War Bond due this round before advancing."
+        : (oracleDecisionPending ? "Resolve the Oracle decision before advancing." : "Advance to the next initiative step.");
       firstPlayerControls.classList.toggle("hidden", isStarted && !isFlipping);
       coinFlipButton.disabled = isFlipping || !canStartTurnOrder();
       coinFlipButton.textContent = isFlipping ? "Flipping..." : "Flip Coin for First Player";
@@ -10968,6 +11169,7 @@
       const referenceText = {
         giving: "Each occupied Giving Tile gives one random Resource/Bread reward each round. Gem and Iron are excluded; Bread rerolls to a non-Bread reward if Bread storage is already full.",
         summon: "Summon one unit. The full Summoning Cost still applies.",
+        warBonds: "Borrow 6 Bronze if eligible. Five rounds later, repay exactly 1 Gold-equivalent or forfeit a living Warrior. A default blocks future loans until Debt Forgiveness.",
         crafting: "Craft items from resources. Recipes require the full cost and enough item space.",
         shopping: "Shop only during your Shopping step, and only with a living Shopkeeper.",
         roundEnd: "Claim 1 free Bronze, then choose Wood, Stone, Bread, or a second Bronze. Reveal the World Event; either player may invoke a living Oracle before it resolves."
@@ -11078,6 +11280,91 @@
             : `Wait for ${getTeamLabel(getCurrentTurnTeam())} to finish their summoning step.`)
           : "Finish setup before summoning begins."
       };
+
+      if (currentStep.kind === "warBonds") {
+        ensureWarBondState();
+        const currentTeam = getCurrentTurnTeam();
+        const isYourTurn = currentTeam === state.team;
+        const due = isWarBondDue();
+        const payments = getAvailableWarBondPayments();
+        const livingWarriors = getLivingWarriorsForWarBond();
+
+        if (!isYourTurn) {
+          turnPiecesList.innerHTML = `
+            <div class="round-reward-box">
+              <div class="round-reward-title">War Bonds</div>
+              <div class="round-reward-note">Wait for ${getTeamLabel(currentTeam)} to finish their War Bonds step.</div>
+            </div>
+          `;
+          return;
+        }
+
+        if (due) {
+          const paymentButtons = payments.length > 0
+            ? payments.map(payment => `<button class="round-reward-btn" type="button" data-war-bond-payment="${payment.key}">${payment.label}</button>`).join("")
+            : `<div class="round-summary-item">No exact 1-Gold-equivalent payment is currently available.</div>`;
+          const warriorOptions = livingWarriors.map(piece => {
+            const unitType = getUnitType(piece.typeId);
+            return `<option value="${piece.pieceId}">${unitType ? unitType.name : "Warrior"} #${getCopyNumber(piece)} · HP ${piece.currentHp}</option>`;
+          }).join("");
+          const warriorControl = livingWarriors.length > 0
+            ? `
+              <div class="baby-boom-grid" style="margin-top:10px;">
+                <label class="baby-boom-field">
+                  <span class="baby-boom-label">Or forfeit one living Warrior</span>
+                  <select class="baby-boom-select" id="warBondWarriorSelect">${warriorOptions}</select>
+                </label>
+                <button class="world-event-btn" type="button" data-action="forfeit-war-bond-warrior">Forfeit Selected Warrior</button>
+              </div>`
+            : "";
+          const defaultControl = payments.length === 0 && livingWarriors.length === 0
+            ? `<button class="world-event-btn" type="button" data-action="default-war-bond">Record Default</button>`
+            : "";
+
+          turnPiecesList.innerHTML = `
+            <div class="round-reward-box">
+              <div class="round-reward-title">⚔ War Bond Due — Round ${state.warBond.dueRound}</div>
+              <div class="round-reward-note">Repay exactly 1 Gold-equivalent (${WAR_BOND_DEBT_BRONZE_VALUE} Bronze value) using any available combination below, or forfeit one living Warrior. You cannot advance until the debt is resolved.</div>
+              <div class="round-reward-buttons">${paymentButtons}</div>
+              ${warriorControl}
+              ${defaultControl ? `<div class="turn-extra-controls" style="margin-top:10px;">${defaultControl}</div>` : ""}
+            </div>
+          `;
+          return;
+        }
+
+        if (state.warBond.active) {
+          const roundsRemaining = Math.max(0, state.warBond.dueRound - state.turnOrder.round);
+          turnPiecesList.innerHTML = `
+            <div class="round-reward-box">
+              <div class="round-reward-title">War Bond Active</div>
+              <div class="round-reward-note">You borrowed ${WAR_BOND_ADVANCE_BRONZE} Bronze in Round ${state.warBond.takenRound}. Repayment of 1 Gold-equivalent is due in Round ${state.warBond.dueRound} (${roundsRemaining} full round${roundsRemaining === 1 ? "" : "s"} remaining).</div>
+            </div>
+          `;
+          return;
+        }
+
+        if (state.warBond.defaulted) {
+          turnPiecesList.innerHTML = `
+            <div class="round-reward-box">
+              <div class="round-reward-title">War Bond Eligibility Suspended</div>
+              <div class="round-reward-note">A previous War Bond default prevents another loan. If Debt Forgiveness occurs, the default is cleared and normal borrowing eligibility returns.</div>
+            </div>
+          `;
+          return;
+        }
+
+        turnPiecesList.innerHTML = `
+          <div class="round-reward-box">
+            <div class="round-reward-title">War Bonds</div>
+            <div class="round-reward-note">Optional: borrow ${WAR_BOND_ADVANCE_BRONZE} Bronze now. The debt will be due in Round ${state.turnOrder.round + WAR_BOND_TERM_ROUNDS} and must be settled for exactly 1 Gold-equivalent or by forfeiting a living Warrior.</div>
+            <div class="turn-extra-controls">
+              <button class="turn-btn primary" type="button" data-action="take-war-bond">Take War Bond · +${WAR_BOND_ADVANCE_BRONZE} Bronze</button>
+            </div>
+          </div>
+        `;
+        return;
+      }
 
       if (currentStep.kind === "crafting") {
         const currentTeam = getCurrentTurnTeam();
@@ -12513,6 +12800,35 @@
           saveState();
           render();
         }
+        return;
+      }
+
+      const takeWarBondButton = event.target.closest('[data-action="take-war-bond"]');
+
+      if (takeWarBondButton) {
+        takeWarBond();
+        return;
+      }
+
+      const warBondPaymentButton = event.target.closest("[data-war-bond-payment]");
+
+      if (warBondPaymentButton) {
+        repayWarBond(warBondPaymentButton.dataset.warBondPayment);
+        return;
+      }
+
+      const forfeitWarBondWarriorButton = event.target.closest('[data-action="forfeit-war-bond-warrior"]');
+
+      if (forfeitWarBondWarriorButton) {
+        const warriorSelect = document.getElementById("warBondWarriorSelect");
+        forfeitWarriorForWarBond(warriorSelect ? Number(warriorSelect.value) : 0);
+        return;
+      }
+
+      const defaultWarBondButton = event.target.closest('[data-action="default-war-bond"]');
+
+      if (defaultWarBondButton) {
+        defaultWarBond();
         return;
       }
 
