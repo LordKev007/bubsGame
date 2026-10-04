@@ -1006,6 +1006,11 @@
       filter: grayscale(0.55);
     }
 
+    .current-piece-row.distracted-piece {
+      outline: 3px solid rgba(108, 63, 140, 0.45);
+      background: rgba(238, 224, 250, 0.72);
+    }
+
     .current-piece-name {
       min-width: 0;
     }
@@ -1017,7 +1022,8 @@
 
     .generic-action-btn,
     .farm-btn,
-    .fire-arrow-btn {
+    .fire-arrow-btn,
+    .distracted-toggle {
       border: 1px solid rgba(43, 33, 24, 0.3);
       background: linear-gradient(180deg, #fff1c7, #d9aa45);
       color: #39280a;
@@ -1032,14 +1038,16 @@
 
     .generic-action-btn:active,
     .farm-btn:active,
-    .fire-arrow-btn:active {
+    .fire-arrow-btn:active,
+    .distracted-toggle:active {
       transform: translateY(1px);
       box-shadow: 0 1px 0 rgba(0,0,0,0.18);
     }
 
     .generic-action-btn:disabled,
     .farm-btn:disabled,
-    .fire-arrow-btn:disabled {
+    .fire-arrow-btn:disabled,
+    .distracted-toggle:disabled {
       opacity: 0.45;
       cursor: not-allowed;
       filter: grayscale(0.35);
@@ -2450,6 +2458,36 @@
 
     .unit-card.selected.shielded {
       outline: 4px solid var(--team-accent);
+    }
+
+    .unit-card.distracted {
+      box-shadow: inset 0 0 0 4px rgba(108, 63, 140, 0.42);
+      background:
+        linear-gradient(135deg, rgba(225, 203, 242, 0.38), rgba(255,255,255,0.08)),
+        rgba(255, 248, 233, 0.92);
+    }
+
+    .distracted-toggle {
+      width: 100%;
+      min-height: 30px;
+      font-size: 12px;
+    }
+
+    .distracted-toggle.active {
+      background: linear-gradient(180deg, #ead9f6, #b995d1);
+      color: #3d1f54;
+      border-color: rgba(88, 45, 119, 0.55);
+    }
+
+    .distracted-reminder {
+      margin-top: 2px;
+      padding: 5px 7px;
+      border-radius: 8px;
+      background: rgba(108, 63, 140, 0.12);
+      color: #4a285e;
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 1.2;
     }
 
     .shield-ribbon {
@@ -4177,8 +4215,8 @@
     const WAR_BOND_DEBT_BRONZE_VALUE = 9;
     const WAR_BOND_TERM_ROUNDS = 5;
     const WARRIOR_TYPE_IDS = [6, 7, 8, 9];
-    const APP_VERSION = "v0.2.45";
-    const APP_BUILD_TIMESTAMP = "2026-09-28T23:35:02Z";
+    const APP_VERSION = "v0.2.46";
+    const APP_BUILD_TIMESTAMP = "2026-10-04T02:30:00Z";
     const VERSION_STATUS_STORAGE_KEY = "kingsGridVersionStatusV1";
     const QUOTE_HISTORY_STORAGE_KEY = "kingsGridQuoteHistoryV1";
 
@@ -4192,6 +4230,7 @@
 
 
     const turnSteps = [
+      { kind: "unit", typeId: 21, title: "Bard", instructions: "Each Bard may move and use Distract on up to two enemy units within 4 tiles. Distracted status lasts for the current round only." },
       { kind: "unit", typeId: 1, title: "King", instructions: "Each team may move/action all active Kings." },
       { kind: "unit", typeId: 2, title: "Base Builder", instructions: "Each team may move/action all active Base Builders." },
       { kind: "unit", typeId: 3, title: "Wood Worker", instructions: "Each team may move/action all active Wood Workers." },
@@ -4244,7 +4283,7 @@
       { id: 12, name: "Famine", description: "Each player must discard down to 7 Resources.", effect: "note" },
       { id: 13, name: "Disease", description: "Each player must deal 4 points of damage among their pieces.", effect: "note" },
       { id: 14, name: "Pestilence", description: "Insects eat all crops. All players lose all Bread.", effect: "pestilence" },
-      { id: 15, name: "Uno Reverso", description: "The 20 unit initiative steps are reversed during the following round only. Player order and non-unit phases do not change.", effect: "reverse-turn-order" },
+      { id: 15, name: "Uno Reverso", description: "The 21 unit initiative steps are reversed during the following round only. Player order and non-unit phases do not change.", effect: "reverse-turn-order" },
       { id: 16, name: "Free Trade Economy", description: "Normal shop purchases are 50% off during the following round only. Round up if necessary, so 3 becomes 2. Currency conversions and Resource selling are unchanged.", effect: "free-trade" },
       { id: 17, name: "God's Blessing", description: "Each player immediately receives 5 random Giving Tile rewards.", effect: "gods-blessing" },
       { id: 18, name: "Medical Breakthrough", description: "Each player may heal 4 points of damage among their pieces.", effect: "note" },
@@ -4498,7 +4537,8 @@
       { id: 17, name: "Oracle", move: 1, maxHp: 1, action: "Negate — After any World Event is revealed but before it resolves, either player may invoke one of their living Oracles, regardless of which player generated the event. The event is negated for both players; that Oracle Ascends and is removed. The negated World Event cannot occur again for the next 15 rounds.", ritual: "3 Glass", category: "special", ritualCosts: [{ type: "resource", name: "Glass", quantity: 3 }] },
       { id: 18, name: "Thief", move: 4, maxHp: 1, action: "If within 5 tiles of the opponent's King, steal 1 Bronze from the opponent's hand.", ritual: "2 Bronze, 1 Rope", category: "special", ritualCosts: [{ type: "currency", name: "bronze", quantity: 2 }, { type: "resource", name: "Rope", quantity: 1 }] },
       { id: 19, name: "Strategist", move: 1, maxHp: 1, action: "Delete this unit on any ally unit's turn to grant that ally a second action for the round.", ritual: "3 Sulphur, 1 Iron", category: "special", ritualCosts: [{ type: "resource", name: "Sulphur", quantity: 3 }, { type: "resource", name: "Iron", quantity: 1 }] },
-      { id: 20, name: "Shopkeeper", move: 2, maxHp: 3, action: "Passive — Allows the Shop feature during the Shopping step.", ritual: "5 Bronze", category: "special", ritualCosts: [{ type: "currency", name: "bronze", quantity: 5 }] }
+      { id: 20, name: "Shopkeeper", move: 2, maxHp: 3, action: "Passive — Allows the Shop feature during the Shopping step.", ritual: "5 Bronze", category: "special", ritualCosts: [{ type: "currency", name: "bronze", quantity: 5 }] },
+      { id: 21, name: "Bard", move: 3, maxHp: 4, action: "Distract — Choose up to 2 enemy units within 4 tiles. A distracted unit cannot end its movement farther from the Bard than its distance at the start of its turn. A distracted Warrior or Mage must either make no attack or attack only the Bard. Any other distracted unit cannot perform its action that turn. Distraction ends at the end of the round.", ritual: "1 Wood, 2 Rope, 2 Glass, 1 Silver", category: "support", ritualCosts: [{ type: "resource", name: "Wood", quantity: 1 }, { type: "resource", name: "Rope", quantity: 2 }, { type: "resource", name: "Glass", quantity: 2 }, { type: "currency", name: "silver", quantity: 1 }] }
     ];
 
     const STORAGE_KEY = "boardgameTrackerStateV11";
@@ -4565,7 +4605,7 @@
         infiltratorUsedByRound: {},
         meteorRespecializationByRound: {},
         pendingRoundQuote: null,
-        initiativeOrderVersion: 3,
+        initiativeOrderVersion: 4,
         reversePieceOrder: false,
         reversePieceOrderRound: null,
         freeTradeRound: null,
@@ -4792,7 +4832,8 @@
         typeId: king.id,
         copyNumber: 1,
         currentHp: king.maxHp,
-        hasShield: false
+        hasShield: false,
+        distractedRound: null
       });
 
       freshState.selectedPieceId = freshState.nextPieceId;
@@ -4900,7 +4941,8 @@
           typeId,
           copyNumber: copiesByType[typeId],
           currentHp: unitType.maxHp,
-          hasShield: false
+          hasShield: false,
+          distractedRound: null
         });
         practiceState.nextPieceId += 1;
       });
@@ -5010,25 +5052,34 @@
         ...(savedTurnOrder || {})
       };
 
-      if (migrated.initiativeOrderVersion === 3) {
+      if (migrated.initiativeOrderVersion === 4) {
         return migrated;
       }
 
-      // Initiative migration: v0.2.7 moved Oracle later in the unit order,
-      // and v0.2.45 inserts War Bonds between Summoning and Crafting. Preserve
-      // the current step identity when opening an older save.
+      // Initiative migration: v0.2.7 moved Oracle later, v0.2.45 inserted
+      // War Bonds, and v0.2.46 inserts Bard at the beginning of unit initiative.
+      // Preserve the current step identity when opening any older save.
       const legacyVersion = Number(migrated.initiativeOrderVersion) || 1;
       const oldUnitTypeIds = legacyVersion >= 2
         ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 11, 13, 14, 15, 16, 18, 19, 17, 20]
         : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 11, 13, 14, 15, 16, 17, 18, 19, 20];
       const oldUnitSteps = oldUnitTypeIds.map(typeId => ({ kind: "unit", typeId }));
-      const oldNonUnitSteps = [
-        { kind: "giving" },
-        { kind: "summon" },
-        { kind: "crafting" },
-        { kind: "shopping" },
-        { kind: "roundEnd" }
-      ];
+      const oldNonUnitSteps = legacyVersion >= 3
+        ? [
+            { kind: "giving" },
+            { kind: "summon" },
+            { kind: "warBonds" },
+            { kind: "crafting" },
+            { kind: "shopping" },
+            { kind: "roundEnd" }
+          ]
+        : [
+            { kind: "giving" },
+            { kind: "summon" },
+            { kind: "crafting" },
+            { kind: "shopping" },
+            { kind: "roundEnd" }
+          ];
       const legacyReverseActive = Boolean(
         migrated.reversePieceOrder ||
         (Number.isInteger(migrated.reversePieceOrderRound) && migrated.round === migrated.reversePieceOrderRound)
@@ -5036,7 +5087,7 @@
       const oldEffectiveSteps = legacyReverseActive
         ? [...oldUnitSteps].reverse().concat(oldNonUnitSteps)
         : oldUnitSteps.concat(oldNonUnitSteps);
-      const newEffectiveSteps = migrated.reversePieceOrder
+      const newEffectiveSteps = legacyReverseActive
         ? turnSteps.filter(step => step.kind === "unit").reverse().concat(turnSteps.filter(step => step.kind !== "unit"))
         : turnSteps;
       const oldStep = oldEffectiveSteps[migrated.stepIndex] || oldEffectiveSteps[0];
@@ -5045,7 +5096,7 @@
       );
 
       migrated.stepIndex = mappedIndex >= 0 ? mappedIndex : migrated.stepIndex;
-      migrated.initiativeOrderVersion = 3;
+      migrated.initiativeOrderVersion = 4;
       return migrated;
     }
 
@@ -5197,6 +5248,7 @@
           base.owner === loadedState.team && base.currentHp > 0 && base.specializationId === "hospital"
         );
         loadedState.activePieces.forEach(piece => {
+          piece.distractedRound = Number.isInteger(piece.distractedRound) ? piece.distractedRound : null;
           // Preserve injured/defeated Farmers; cap old 5–6 HP saves at 4.
           if (piece.typeId === 14) piece.currentHp = clamp(Number(piece.currentHp) || 0, 0, 4);
           if (piece.typeId === 12) {
@@ -5481,7 +5533,7 @@
         11: "A player who already owns a Cannon, whether stored or placed, gains nothing. The normal one-Cannon limit and item-space requirement apply.",
         12: "Only standard Resources count toward the seven. Bread, Items, and Currency are not discarded by Famine.",
         13: "Distribute 4 total damage among your damageable pieces. The King remains immune to damage.",
-        15: "The 20 unit initiative steps are reversed during the following round only. Player order and the six non-unit phases remain unchanged. After that one round, unit initiative automatically returns to normal.",
+        15: "The 21 unit initiative steps are reversed during the following round only. Player order and the six non-unit phases remain unchanged. After that one round, unit initiative automatically returns to normal.",
         16: "The discount applies during the following round only. Normal shop-purchase prices are halved and rounded up, with a minimum price of 1. Currency conversion rates and Resource-selling rates are not discounted.",
         17: "Roll five rewards from the normal Giving Tile pool. If Bread is rolled while Bread storage is already full at 3/3, replace that roll with a random non-Bread Giving Tile reward. Other blocked rewards are lost and are not rerolled.",
         18: "Distribute up to 4 points of healing among damaged non-King pieces, never above each piece's current maximum HP.",
@@ -5620,7 +5672,7 @@
       <ol>
         <li>Use the rule stated on this page first.</li>
         <li>Unit position, range, adjacency, walls, captures, and other physical-board facts are decided from the board itself; the tracker does not measure them.</li>
-        <li>The tracker is authoritative for the state it explicitly manages: HP, inventories, Bread, Seeds, Currency, War Bonds, active bases and specializations, turn sequence, World Event history, Oracle cooldowns, and logged actions.</li>
+        <li>The tracker is authoritative for the state it explicitly manages: HP, inventories, Bread, Seeds, Currency, War Bonds, Distracted markers, active bases and specializations, turn sequence, World Event history, Oracle cooldowns, and logged actions.</li>
         <li>If a rule is explicitly identified here as <strong>not yet numerically defined</strong>, do not invent a number from an older draft. That point requires a separate design ruling.</li>
       </ol>
       <div class="ruling"><strong>Terminology:</strong> “living” or “active living” means a unit currently on that player's roster with HP above 0. “Defeated” means a non-King unit at 0 HP. “Owned” or “controlled” means belonging to that team at the time the rule is checked.</div>
@@ -5679,18 +5731,18 @@
       </ol>
       <h3>Eligible starting units</h3>
       <div class="tag-list">${startingArmyTags}</div>
-      <div class="tracker-note"><strong>Setup note:</strong> Units not listed above may still be summoned later during the Summoning phase if their costs can be paid.</div>
+      <div class="tracker-note"><strong>Setup note:</strong> Units not listed above may still be summoned later during the Summoning phase if their costs can be paid. The <strong>Bard is not an initial-summon unit</strong> and therefore cannot be selected during setup.</div>
     </section>
 
     <section id="round">
       <h2>4. Round Structure &amp; Initiative</h2>
       <p>Each round has a first player and a second player. On every initiative step, the first player completes that step for their matching pieces, then the second player completes the same step. If a player has no applicable piece or action, that player passes.</p>
       <p>After the complete round is finished, first-player order switches for the next round.</p>
-      <div class="phase-strip"><span>20 Unit Steps</span><span>Giving Tiles</span><span>Summoning</span><span>War Bonds</span><span>Crafting</span><span>Shopping</span><span>End of Round</span></div>
+      <div class="phase-strip"><span>21 Unit Steps</span><span>Giving Tiles</span><span>Summoning</span><span>War Bonds</span><span>Crafting</span><span>Shopping</span><span>End of Round</span></div>
       <h3>Exact normal initiative order</h3>
       <div class="table-wrap"><table><thead><tr><th>#</th><th>Step</th><th>Type</th><th>Rule</th></tr></thead><tbody>${initiativeRows}</tbody></table></div>
       <h3>Uno Reverso</h3>
-      <p><strong>Uno Reverso</strong> reverses only the 20 unit steps during the <strong>following round only</strong>. The player who is first in that round still acts first on every step, and the six non-unit phases remain in their normal order. When that round ends, unit initiative automatically returns to normal.</p>
+      <p><strong>Uno Reverso</strong> reverses only the 21 unit steps during the <strong>following round only</strong>. The player who is first in that round still acts first on every step, and the six non-unit phases remain in their normal order. When that round ends, unit initiative automatically returns to normal.</p>
     </section>
 
     <section id="unit-turns">
@@ -5704,6 +5756,8 @@
         <li>The Strategist is an exception to normal timing: it may sacrifice itself on <strong>any ally unit's turn</strong> to give that ally a second action for the round.</li>
         <li>The Oracle's Negate ability is not used during the Oracle initiative step; it may be invoked during the World Event reveal window by <strong>either player</strong>, regardless of which player generated the event.</li>
         <li>The Shopkeeper's Shop Access is passive and is checked during Shopping.</li>
+        <li><strong>Bard — Distract:</strong> on the Bard initiative step, a living Bard may choose up to two enemy units within 4 tiles. Each target is Distracted for the remainder of the current round. It cannot end movement farther from the Bard than its distance at the start of its turn. A Warrior or Mage must either make no attack or attack only the Bard; any other target cannot perform its action that turn.</li>
+        <li>Because the two iPads are not networked, the player whose unit was targeted manually taps <strong>Mark Distracted</strong> on that unit. The status is round-scoped and disappears automatically when the tracker advances to the next round; the Bard must use Distract again to continue the effect and may choose different targets.</li>
       </ul>
     </section>
 
@@ -6094,6 +6148,9 @@
         ]},
         { heading: "Strategist", start: 73, combos: [
           "Strategist + Shopkeeper"
+        ]},
+        { heading: "Bard", start: 74, combos: [
+          "Bard + Stone Worker", "Bard + Iron Worker", "Bard + Artillerist", "Bard + Mechanist", "Bard + Strategist"
         ]}
       ],
       threeUnit: [
@@ -6878,7 +6935,7 @@
           const reversedRound = state.turnOrder.round + 1;
           state.turnOrder.reversePieceOrderRound = reversedRound;
           state.turnOrder.reversePieceOrder = false; // Legacy flag retained only for save compatibility.
-          return `Uno Reverso will reverse the 20 unit initiative steps during Round ${reversedRound} only.`;
+          return `Uno Reverso will reverse the 21 unit initiative steps during Round ${reversedRound} only.`;
         }
         case "free-trade": {
           const discountedRound = state.turnOrder.round + 1;
@@ -7137,7 +7194,8 @@
         typeId: unitType.id,
         copyNumber: getNextCopyNumberForType(unitType.id),
         currentHp: unitType.maxHp,
-        hasShield: false
+        hasShield: false,
+        distractedRound: null
       };
 
       state.nextPieceId += 1;
@@ -7669,6 +7727,7 @@
       const cannons = countMatches(/Cannon fired|Cannon loaded|Cannon Ball|Cannon HP changed/g);
       const farming = countMatches(/planted 1 tile|Seeds?|Bread|Bountiful Harvest/g);
       const economy = countMatches(/Giving Tiles produced|Sold 3 Resources|Purchased |Converted |Market Boom|Market Crash|War Bond|Debt Forgiveness|Gold|Silver|Bronze/g);
+      const distraction = countMatches(/Distract|Distracted/g);
       const repairs = countMatches(/used Repair/g);
       const revives = countMatches(/used Revive|reviv|Sacred Artifact|Demonic Totem/gi);
       const steals = countMatches(/used Steal|Thief/g);
@@ -7684,6 +7743,7 @@
       if (cannons) { addQuoteSignal(signals, "artillery", 4 + cannons * 1.25); addQuoteSignal(signals, "siege", 1 + cannons * .7); }
       if (farming) { addQuoteSignal(signals, "provisions", 2 + farming * .75); addQuoteSignal(signals, "agriculture", 1 + farming * .6); }
       if (economy) { addQuoteSignal(signals, "economy", 1 + economy * .45); addQuoteSignal(signals, "trade", economy * .25); addQuoteSignal(signals, "logistics", economy * .25); }
+      if (distraction) { addQuoteSignal(signals, "strategy", 2 + distraction); addQuoteSignal(signals, "deception", 1 + distraction * .75); addQuoteSignal(signals, "initiative", distraction * .5); }
       if (repairs) { addQuoteSignal(signals, "repair", 4 + repairs); addQuoteSignal(signals, "fortification", 1 + repairs); }
       if (revives) { addQuoteSignal(signals, "revival", 5 + revives * 2); addQuoteSignal(signals, "faith", 2 + revives); addQuoteSignal(signals, "death", revives); }
       if (steals) { addQuoteSignal(signals, "theft", 5 + steals); addQuoteSignal(signals, "deception", 2 + steals); }
@@ -8764,7 +8824,8 @@
         typeId: unitType.id,
         copyNumber: getNextCopyNumberForType(unitType.id),
         currentHp: getEffectiveUnitMaxHp(unitType),
-        hasShield: false
+        hasShield: false,
+        distractedRound: null
       };
 
       state.nextPieceId += 1;
@@ -9371,6 +9432,7 @@
     function canFarmWithPiece(piece) {
       const currentStep = getCurrentTurnStep();
       return Boolean(piece && piece.typeId === 14 && piece.currentHp > 0 &&
+        !isPieceDistracted(piece) &&
         state.turnOrder.started && currentStep.kind === "unit" &&
         currentStep.typeId === 14 && getCurrentTurnTeam() === state.team &&
         (state.seeds || 0) > 0 &&
@@ -9398,6 +9460,38 @@
       if (state.seeds === previous) return;
       saveState();
       render();
+    }
+
+    function isWarriorOrMageType(typeId) {
+      return WARRIOR_TYPE_IDS.includes(Number(typeId)) || Number(typeId) === 10;
+    }
+
+    function isPieceDistracted(piece) {
+      return Boolean(
+        piece &&
+        state.turnOrder &&
+        state.turnOrder.started &&
+        Number(piece.distractedRound) === Number(state.turnOrder.round)
+      );
+    }
+
+    function togglePieceDistracted(pieceId) {
+      const piece = getPiece(pieceId);
+      if (!piece || piece.currentHp <= 0 || !state.turnOrder || !state.turnOrder.started) return;
+
+      const unitType = getUnitType(piece.typeId);
+      const nowDistracted = !isPieceDistracted(piece);
+      piece.distractedRound = nowDistracted ? state.turnOrder.round : null;
+      logRoundEvent(`${unitType.name} #${getCopyNumber(piece)} was ${nowDistracted ? "marked Distracted" : "cleared of Distracted status"}${nowDistracted ? ` for Round ${state.turnOrder.round}` : ""}.`);
+      saveState();
+      render();
+    }
+
+    function getDistractedReminder(piece) {
+      if (!isPieceDistracted(piece)) return "";
+      return isWarriorOrMageType(piece.typeId)
+        ? "DISTRACTED — may not end movement farther from the Bard; may make no attack or attack the Bard only."
+        : "DISTRACTED — may not end movement farther from the Bard and cannot perform its action this turn.";
     }
 
     function hasGenericActionBeenUsedThisTurn(pieceId) {
@@ -9458,6 +9552,10 @@
 
       if (unitType.id === 18) {
         return "Steal";
+      }
+
+      if (unitType.id === 21) {
+        return "Distract";
       }
 
       return "Action";
@@ -9578,6 +9676,10 @@
         return " Restore 2 HP to one eligible damaged wall or cannon, up to its normal maximum HP.";
       }
 
+      if (unitType.id === 21) {
+        return " Choose up to 2 enemy units within 4 tiles. The opposing player marks those units Distracted on their iPad for this round.";
+      }
+
       return payWorkerBuildCost(unitType);
     }
 
@@ -9589,6 +9691,10 @@
       const unitType = getUnitType(piece.typeId);
       const currentStep = getCurrentTurnStep();
       const currentTeam = getCurrentTurnTeam();
+
+      if (isPieceDistracted(piece) && !isWarriorOrMageType(piece.typeId)) {
+        return false;
+      }
 
       return Boolean(
         shouldShowGenericActionButton(unitType) &&
@@ -9610,7 +9716,10 @@
 
       const unitType = getUnitType(piece.typeId);
       const actionLabel = getGenericActionLabel(unitType);
-      const effectNote = resolveGenericActionEffect(unitType);
+      let effectNote = resolveGenericActionEffect(unitType);
+      if (isPieceDistracted(piece) && isWarriorOrMageType(piece.typeId)) {
+        effectNote += " Distracted: this attack may target the Bard only.";
+      }
       recordGenericActionUsedThisTurn(piece.pieceId);
       logRoundEvent(`${unitType.name} #${getCopyNumber(piece)} used ${actionLabel}.${effectNote}`);
       saveState();
@@ -9773,6 +9882,7 @@
 
     function resetTurnOrderState() {
       state.turnOrder = JSON.parse(JSON.stringify(defaultState.turnOrder));
+      state.activePieces.forEach(piece => { piece.distractedRound = null; });
       saveState();
       render();
     }
@@ -10115,7 +10225,7 @@
         lookEastAddsByRound: {},
         infiltratorUsedByRound: {},
         meteorRespecializationByRound: {},
-        initiativeOrderVersion: 3,
+        initiativeOrderVersion: 4,
         reversePieceOrder: false,
         reversePieceOrderRound: null,
         freeTradeRound: null,
@@ -11040,6 +11150,17 @@
         return data;
       }
 
+      if (unitType.id === 21) {
+        add("Action", "Distract", false, true);
+        add("Range", "4 tiles");
+        add("Targets", "Up to 2 enemy units");
+        add("Movement", "Cannot finish farther from Bard", true);
+        add("Warrior / Mage", "No attack or Bard only", true);
+        add("Other units", "No action this turn", true);
+        add("Duration", "Until end of round", true);
+        return data;
+      }
+
       if (unitType.id === 14) {
         add("Action", "Plant crops", false, true);
         add("Limit", "3 tiles per turn");
@@ -11203,11 +11324,12 @@
           const unitType = getUnitType(piece.typeId);
           const copyNumber = getCopyNumber(piece);
           const row = document.createElement("div");
-          row.className = `current-piece-row${isPieceDefeated(piece) ? " dead-piece" : ""}`;
+          const distracted = isPieceDistracted(piece);
+          row.className = `current-piece-row${isPieceDefeated(piece) ? " dead-piece" : ""}${distracted ? " distracted-piece" : ""}`;
 
           const hasFiredArrow = unitType.id === 8 && hasBowFiredThisTurn(piece.pieceId);
           const fireButtonHtml = unitType.id === 8
-            ? `<button class="fire-arrow-btn" type="button" data-fire-arrow-piece-id="${piece.pieceId}" ${canFireArrow(piece) ? "" : "disabled"}>${hasFiredArrow ? "Fired" : "🔥 Fire"}</button>`
+            ? `<button class="fire-arrow-btn" type="button" data-fire-arrow-piece-id="${piece.pieceId}" ${canFireArrow(piece) ? "" : "disabled"}>${hasFiredArrow ? "Fired" : (distracted ? "🔥 Bard Only" : "🔥 Fire")}</button>`
             : "";
 
           const plantedTiles = unitType.id === 14 ? getFarmerPlantingsThisTurn(piece.pieceId) : 0;
@@ -11215,16 +11337,18 @@
             ? `<button class="farm-btn" type="button" data-farm-piece-id="${piece.pieceId}" title="Plant one tile for one Seed. ${plantedTiles}/3 planted this turn; ${state.seeds || 0} Seeds stored." ${canFarmWithPiece(piece) ? "" : "disabled"}>🌱 Plant 1 tile · ${plantedTiles}/3</button>`
             : "";
 
-          const genericActionLabel = getGenericActionLabel(unitType);
+          const genericActionLabel = distracted && isWarriorOrMageType(unitType.id)
+            ? "Attack Bard Only"
+            : getGenericActionLabel(unitType);
           const hasUsedGenericAction = shouldShowGenericActionButton(unitType) && hasGenericActionBeenUsedThisTurn(piece.pieceId);
           const genericActionButtonHtml = shouldShowGenericActionButton(unitType)
-            ? `<button class="generic-action-btn" type="button" data-generic-action-piece-id="${piece.pieceId}" ${canUseGenericAction(piece) ? "" : "disabled"}>${hasUsedGenericAction ? "Done" : genericActionLabel}</button>`
+            ? `<button class="generic-action-btn" type="button" data-generic-action-piece-id="${piece.pieceId}" ${canUseGenericAction(piece) ? "" : "disabled"}>${hasUsedGenericAction ? "Done" : (distracted && !isWarriorOrMageType(unitType.id) ? "Distracted · No Action" : genericActionLabel)}</button>`
             : "";
 
           row.innerHTML = `
             <div class="badge" style="background:${getBadgeColour(unitType.category)}">${unitType.id}</div>
-            <div class="current-piece-name">${unitType.name} #${copyNumber}${piece.hasShield ? " · 🛡" : ""}</div>
-            <div class="current-piece-stat">Move ${getEffectiveUnitMove(unitType)}</div>
+            <div class="current-piece-name">${unitType.name} #${copyNumber}${piece.hasShield ? " · 🛡" : ""}${distracted ? " · 🎵 DISTRACTED" : ""}</div>
+            <div class="current-piece-stat">${distracted ? "↔ Bard distance locked" : `Move ${getEffectiveUnitMove(unitType)}`}</div>
             <div class="current-piece-stat">${getPieceHpLabel(piece)}</div>
             ${fireButtonHtml}${farmButtonHtml}${genericActionButtonHtml}
           `;
@@ -11908,9 +12032,10 @@
         const isDead = isPieceDefeated(piece);
         const isSelected = piece.pieceId === state.selectedPieceId;
         const hasShield = Boolean(piece.hasShield);
+        const distracted = isPieceDistracted(piece);
 
         const card = document.createElement("article");
-        card.className = `unit-card${isDead ? " dead" : ""}${isSelected ? " selected" : ""}${hasShield ? " shielded" : ""}`;
+        card.className = `unit-card${isDead ? " dead" : ""}${isSelected ? " selected" : ""}${hasShield ? " shielded" : ""}${distracted ? " distracted" : ""}`;
         card.dataset.pieceId = piece.pieceId;
         card.setAttribute("role", "button");
         card.setAttribute("tabindex", "0");
@@ -11932,6 +12057,8 @@
             <div class="hp-readout">${getPieceHpLabel(piece)}</div>
             <button class="hp-btn" data-hp-change="1" data-piece-id="${piece.pieceId}" aria-label="Increase ${unitType.name} copy ${copyNumber} HP" ${isKingType(unitType) ? "disabled" : ""}>+</button>
           </div>
+          <button class="distracted-toggle${distracted ? " active" : ""}" type="button" data-toggle-distracted="${piece.pieceId}" ${!state.turnOrder.started || isDead ? "disabled" : ""}>${distracted ? "✓ DISTRACTED · Clear" : "🎵 Mark Distracted"}</button>
+          ${distracted ? `<div class="distracted-reminder">${getDistractedReminder(piece)}</div>` : ""}
           <div class="quick-action">${getEffectiveActionText(unitType)}</div>
         `;
 
@@ -12494,6 +12621,12 @@
     });
 
     unitsGrid.addEventListener("click", event => {
+      const distractedButton = event.target.closest("[data-toggle-distracted]");
+      if (distractedButton) {
+        togglePieceDistracted(Number(distractedButton.dataset.toggleDistracted));
+        return;
+      }
+
       const hpButton = event.target.closest("[data-hp-change]");
       if (!hpButton) {
         return;
