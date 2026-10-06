@@ -4215,7 +4215,7 @@
     const WAR_BOND_DEBT_BRONZE_VALUE = 9;
     const WAR_BOND_TERM_ROUNDS = 5;
     const WARRIOR_TYPE_IDS = [6, 7, 8, 9];
-    const APP_VERSION = "v0.2.46";
+    const APP_VERSION = "v0.2.47";
     const APP_BUILD_TIMESTAMP = "2026-10-04T02:30:00Z";
     const VERSION_STATUS_STORAGE_KEY = "kingsGridVersionStatusV1";
     const QUOTE_HISTORY_STORAGE_KEY = "kingsGridQuoteHistoryV1";
@@ -4230,8 +4230,8 @@
 
 
     const turnSteps = [
-      { kind: "unit", typeId: 21, title: "Bard", instructions: "Each Bard may move and use Distract on up to two enemy units within 4 tiles. Distracted status lasts for the current round only." },
       { kind: "unit", typeId: 1, title: "King", instructions: "Each team may move/action all active Kings." },
+      { kind: "unit", typeId: 21, title: "Bard", instructions: "Each Bard may move and use Distract on up to two enemy units within 4 tiles. Distracted status lasts for the current round only." },
       { kind: "unit", typeId: 2, title: "Base Builder", instructions: "Each team may move/action all active Base Builders." },
       { kind: "unit", typeId: 3, title: "Wood Worker", instructions: "Each team may move/action all active Wood Workers." },
       { kind: "unit", typeId: 4, title: "Stone Worker", instructions: "Each team may move/action all active Stone Workers." },
@@ -4605,7 +4605,7 @@
         infiltratorUsedByRound: {},
         meteorRespecializationByRound: {},
         pendingRoundQuote: null,
-        initiativeOrderVersion: 4,
+        initiativeOrderVersion: 5,
         reversePieceOrder: false,
         reversePieceOrderRound: null,
         freeTradeRound: null,
@@ -5052,17 +5052,20 @@
         ...(savedTurnOrder || {})
       };
 
-      if (migrated.initiativeOrderVersion === 4) {
+      if (migrated.initiativeOrderVersion === 5) {
         return migrated;
       }
 
       // Initiative migration: v0.2.7 moved Oracle later, v0.2.45 inserted
-      // War Bonds, and v0.2.46 inserts Bard at the beginning of unit initiative.
+      // War Bonds, v0.2.46 inserted Bard before King, and v0.2.47 corrects
+      // the normal order to King first, Bard second.
       // Preserve the current step identity when opening any older save.
       const legacyVersion = Number(migrated.initiativeOrderVersion) || 1;
-      const oldUnitTypeIds = legacyVersion >= 2
-        ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 11, 13, 14, 15, 16, 18, 19, 17, 20]
-        : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 11, 13, 14, 15, 16, 17, 18, 19, 20];
+      const oldUnitTypeIds = legacyVersion >= 4
+        ? [21, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 11, 13, 14, 15, 16, 18, 19, 17, 20]
+        : legacyVersion >= 2
+          ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 11, 13, 14, 15, 16, 18, 19, 17, 20]
+          : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 11, 13, 14, 15, 16, 17, 18, 19, 20];
       const oldUnitSteps = oldUnitTypeIds.map(typeId => ({ kind: "unit", typeId }));
       const oldNonUnitSteps = legacyVersion >= 3
         ? [
@@ -5096,7 +5099,7 @@
       );
 
       migrated.stepIndex = mappedIndex >= 0 ? mappedIndex : migrated.stepIndex;
-      migrated.initiativeOrderVersion = 4;
+      migrated.initiativeOrderVersion = 5;
       return migrated;
     }
 
