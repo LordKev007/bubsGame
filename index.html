@@ -4215,8 +4215,8 @@
     const WAR_BOND_DEBT_BRONZE_VALUE = 9;
     const WAR_BOND_TERM_ROUNDS = 5;
     const WARRIOR_TYPE_IDS = [6, 7, 8, 9];
-    const APP_VERSION = "v0.2.47";
-    const APP_BUILD_TIMESTAMP = "2026-10-04T02:30:00Z";
+    const APP_VERSION = "v0.2.48";
+    const APP_BUILD_TIMESTAMP = "2026-10-07T02:12:00Z";
     const VERSION_STATUS_STORAGE_KEY = "kingsGridVersionStatusV1";
     const QUOTE_HISTORY_STORAGE_KEY = "kingsGridQuoteHistoryV1";
 
@@ -9849,7 +9849,10 @@
         return;
       }
 
-      if (getPendingWorldEventForRound(state.turnOrder.round)) {
+      // A pending World Event should block leaving the End-of-Round reveal window,
+      // but it must NOT trap a player who used Back to inspect an earlier phase
+      // (for example Shopping). Allow normal forward navigation until roundEnd.
+      if (getCurrentTurnStep().kind === "roundEnd" && getPendingWorldEventForRound(state.turnOrder.round)) {
         window.alert("Finish both players' Oracle decisions and resolve or negate the World Event before advancing.");
         return;
       }
